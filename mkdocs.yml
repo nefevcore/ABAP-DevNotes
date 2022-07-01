@@ -2,7 +2,7 @@ site_name: ABAP开发笔记
 nav:
   - 概述: index.md
   - 编辑中:
-    - MIGO: ref/migo.md
+    - MIGO: others/migo.md
   - 主数据:
     - 主数据概述: master_data/index.md
     - 物料: master_data/material.md
@@ -44,20 +44,20 @@ nav:
     - 发票校验: fico/invoice_check.md
     - 发票预制: fico/invoice_park.md
     - 发票过账: fico/invoice_post.md
-  - 参考引用: 
-    - 参考引用概述: ref/index.md
-    - MIGO: ref/migo.md
-  - 报表: 
+  - 常见报表: 
     - 报表概述: report/index.md
   - 其他: 
     - 其他概述: others/index.md
-    - MarkDown语法: others/mdnote.md
+    - MIGO: others/migo.md
     - ALV相关: others/alv.md
-    - 文本取值工具: others/textproxy.md
-    - Excel上传下载: others/xlsx_io.md
-    - CMOD增强: others/cmod.md
-    - 邮件发送: others/send_mail.md
-    - 嵌套循环: others/nest_loop.md
+    - Excel处理: others/xlsx_io.md
+    - 文本取值工具: others/zcl_text.md
+  - 结语: about.md
+  - 附录: 
+    - MarkDown语法: ex/mdnote.md
+    - 嵌套循环: ex/nest_loop.md
+    - 邮件发送: ex/send_mail.md
+    - CMOD增强: ex/cmod.md
 theme: 
   name: material
 markdown_extensions:
