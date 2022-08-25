@@ -1,8 +1,7 @@
 site_name: ABAP开发笔记
 nav:
   - 概述: index.md
-  - 编辑中:
-    - MIGO: others/migo.md
+  - 更新: log.md
   - 主数据:
     - 主数据概述: master_data/index.md
     - 物料: master_data/material.md
@@ -27,31 +26,38 @@ nav:
     - 发货过账: sd/outbound_delivery_post.md
   - PP: 
     - PP模块概述: pp/index.md
+    - 工艺路线: pp/pp_routing.md
     - PIR: pp/pir.md
     - MRP: pp/mrp.md
     - 生产版本: pp/pp_version.md
     - 生产计划: pp/pp_planning.md
     - 生产工单: pp/pp_order.md
     - 报工确认: pp/pp_confirmation.md
-    - 生产订单收货: pp/pp_gi.md
-    - 领退料: pp/pp_gr.md
+    - 生产订单收货: pp/pp_gr.md
+    - 领退料: pp/pp_gi.md
     - 工单关闭: pp/pp_order_close.md
   - FICO: 
     - FICO模块概述: fico/index.md
-    - 资产负债表: fico/balance.md
-    - 利润表: fico/income.md
-    - 现金流量表: fico/cash_flow.md
+    - 三大报表:
+      - 通用取值模块: fico/fi_report.md
+      - 配置表参考: fico/fi_report_config.md
+      - 资产负债表: fico/fi_report_bs.md
+      - 利润表: fico/fi_report_pl.md
+      - 现金流量表: fico/fi_report_cf.md
     - 发票校验: fico/invoice_check.md
     - 发票预制: fico/invoice_park.md
     - 发票过账: fico/invoice_post.md
   - 常见报表: 
     - 报表概述: report/index.md
+    - 库存报表: report/stock.md
   - 其他: 
     - 其他概述: others/index.md
     - MIGO: others/migo.md
+    - 定价: others/pricing.md
     - ALV相关: others/alv.md
-    - Excel处理: others/xlsx_io.md
+    - Excel上传下载: others/xlsx_io.md
     - 文本取值工具: others/zcl_text.md
+    - SMARTFORMS相关: others/smartforms.md
   - 结语: about.md
   - 附录: 
     - MarkDown语法: ex/mdnote.md

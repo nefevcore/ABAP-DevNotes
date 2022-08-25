@@ -6,14 +6,8 @@
 
 - ***BAPI_MATERIAL_SAVEREPLICA***，允许扩展多个工厂，下面使用该函数维护物料。
 
-### 更新失败的情况
-
-单独更新计划价格1（成本核算视图2）失败，由于
-
-### 代码
-
 <details>
-<summary>函数形式</summary>
+<summary>示例代码</summary>
 
 ```ABAP
 FUNCTION zfm_demo_material_save_2
@@ -671,16 +665,16 @@ ENDFORM.
 
 ## 物料分类视图
 
+- ***BAPI_OBJCL_EXISTENCECHECK***，检查物料是否存在分类视图
+
 - ***BAPI_OBJCL_CREATE***，创建物料分类视图
 
 - ***BAPI_OBJCL_CHANGE***，修改物料分类视图
 
-- ***BAPI_OBJCL_EXISTENCECHECK***，检查物料是否存在分类视图
-
 - ***BAPI_OBJCL_GETDETAIL***，获取物料分类特征值
 
 <details>
-<summary>物料分类视图维护</summary>
+<summary>示例代码</summary>
 
 ```ABAP
 
@@ -693,7 +687,7 @@ ENDFORM.
 SAP系统间迁移或同步物料，推荐使用IDOC实现，下面讲述实现过程。
 
 <details>
-<summary>IDOC同步物料</summary>
+<summary>示例代码</summary>
 
 ```ABAP
 

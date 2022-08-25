@@ -5,7 +5,7 @@
 > 上面类通过封装 ***CRAP_WORKCENTER_CREATE*** 实现，并多了返回信息
 
 <details>
-  <summary>工作中心导入</summary>
+  <summary>示例代码</summary>
 
     ```ABAP
 
@@ -91,11 +91,11 @@
 
       CLEAR ls_crhd_api02.
       ls_crhd_api02-planv = '009'.
-      ls_crhd_api02-veran = 'DF'.
-      ls_crhd_api02-vgwts = 'DFDL'.
+      ls_crhd_api02-veran = 'ZZ'.
+      ls_crhd_api02-vgwts = 'ZZZZ'.
 
       CLEAR ls_crhd_api03.
-      ls_crhd_api03-steus = 'DF01'.
+      ls_crhd_api03-steus = 'ZZ01'.
       ls_crhd_api03-vge01 = 'STD'. " h - 内码
       ls_crhd_api03-vge02 = 'STD'. " h - 内码
       ls_crhd_api03-vge03 = 'STD'. " h - 内码
@@ -105,7 +105,7 @@
 
       CLEAR ls_crhd_api05.
       ls_crhd_api05-kapart = '001'.
-      ls_crhd_api05-fort2 = 'DF_PP'.
+      ls_crhd_api05-fort2 = 'ZZ_PP'.
 
       CLEAR lt_kapa_api01.
       CLEAR ls_kapa_api01.
@@ -122,7 +122,7 @@
       CLEAR lt_kapa_api02.
       CLEAR ls_kapa_api02.
       ls_kapa_api02-canum = '1'.
-      ls_kapa_api02-planr = 'DF'.
+      ls_kapa_api02-planr = 'ZZ'.
       ls_kapa_api02-kalid = ls_t001w-fabkl.
       ls_kapa_api02-meins = 'STD'. " h - 内码
       ls_kapa_api02-begzt = '000000'.
@@ -134,7 +134,7 @@
       CLEAR lt_crhd_api04.
       CLEAR ls_crhd_api04.
       ls_crhd_api04-canum = '1'.
-      ls_crhd_api04-fork2 = 'DF_PP'.
+      ls_crhd_api04-fork2 = 'ZZ_PP'.
       INSERT ls_crhd_api04 INTO TABLE lt_crhd_api04.
 
       CLEAR lt_crco_api01.
@@ -147,32 +147,32 @@
         ls_crco_api01-lstar1 = '1000'.
         ls_crco_api01-lstar_ref1 = 'X'.
         ls_crco_api01-leinh1 = 'STD'. " h - 内码
-        ls_crco_api01-forml1 = 'DF_CO1'.
+        ls_crco_api01-forml1 = 'ZZ_CO1'.
 
         ls_crco_api01-lstar2 = '2000'.
         ls_crco_api01-lstar_ref2 = 'X'.
         ls_crco_api01-leinh2 = 'STD'. " h - 内码
-        ls_crco_api01-forml2 = 'DF_CO2'.
+        ls_crco_api01-forml2 = 'ZZ_CO2'.
 
         ls_crco_api01-lstar3 = '3000'.
         ls_crco_api01-lstar_ref3 = 'X'.
         ls_crco_api01-leinh3 = 'STD'. " h - 内码
-        ls_crco_api01-forml3 = 'DF_CO3'.
+        ls_crco_api01-forml3 = 'ZZ_CO3'.
 
         ls_crco_api01-lstar4 = '4000'.
         ls_crco_api01-lstar_ref4 = 'X'.
         ls_crco_api01-leinh4 = 'KG'. " kg - 内码
-        ls_crco_api01-forml4 = 'DF_CO4'.
+        ls_crco_api01-forml4 = 'ZZ_CO4'.
 
         ls_crco_api01-lstar5 = '5000'.
         ls_crco_api01-lstar_ref5 = 'X'.
         ls_crco_api01-leinh5 = 'STD'. " h - 内码
-        ls_crco_api01-forml5 = 'DF_CO5'.
+        ls_crco_api01-forml5 = 'ZZ_CO5'.
 
         ls_crco_api01-lstar6 = '6000'.
         ls_crco_api01-lstar_ref6 = 'X'.
         ls_crco_api01-leinh6 = 'KG'. " kg - 内码
-        ls_crco_api01-forml6 = 'DF_CO6'.
+        ls_crco_api01-forml6 = 'ZZ_CO6'.
 
         INSERT ls_crco_api01 INTO TABLE lt_crco_api01.
       ENDLOOP.

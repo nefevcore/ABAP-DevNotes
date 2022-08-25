@@ -1,6 +1,6 @@
 # ALV
 
-整理下ALV用到的两种方法，以及可能遇到的问题
+整理下ALV用到的几种方法。
 
 ## LVC
 
@@ -195,6 +195,8 @@ ENDFORM.
 </details>
 
 ## ALV GRID
+
+OOALV可定制的功能更完善，适合复杂的报表开发。
 
 <details>
     <summary>INCLUDE_ALV_GRID</summary>
@@ -556,6 +558,78 @@ MODULE user_command_9000 INPUT.
     CLEAR sy-ucomm.
 
 ENDMODULE.
+
+```
+
+</details>
+
+## SALV
+
+SALV最大问题在于不可编辑。尽管可以解决，但相当麻烦，不建议在复杂的开发场景中使用SALV。
+
+> SALV实际上也是ALV GRID，所以只要获取到核心的GRID对象，即可解决上述问题。但……都这样了，为什么不直接用ALV GRID开发？
+
+<details>
+  <summary>示例代码</summary>
+
+```ABAP
+
+TYPES:
+  BEGIN OF ty_detail,
+    field1 TYPE string,
+    field2 TYPE string,
+  END OF ty_detail.
+DATA gt_detail TYPE STANDARD TABLE OF ty_detail.
+DATA go_salv TYPE REF TO cl_salv_table.
+
+IF go_salv IS BOUND.
+  go_salv->refresh( ).
+  RETURN.
+ENDIF.
+
+TRY.
+    cl_salv_table=>factory(
+      IMPORTING
+        r_salv_table = go_salv
+      CHANGING
+        t_table      = gt_detail ).
+  CATCH cx_salv_msg.
+    RETURN.
+ENDTRY.
+
+DATA(lo_setting) = go_salv->get_display_settings( ).
+lo_setting->set_list_header( '标题' ).
+
+DATA(lo_columns) = go_salv->get_columns( ).
+lo_columns->set_optimize( abap_true ).
+TRY.
+    DATA lo_column TYPE REF TO cl_salv_column_table.
+    DEFINE _set_savl_column.
+      lo_column ?= lo_columns->get_column( &1 ).
+      lo_column->set_long_text( &2 ).
+      lo_column->set_medium_text( &2 ).
+      lo_column->set_short_text( &2 ).
+    END-OF-DEFINITION.
+
+    _set_savl_column 'ZFIELD1' '字段1'.
+    _set_savl_column 'ZFIELD2' '字段2'.
+
+  CATCH cx_salv_not_found.
+ENDTRY.
+
+" 设置工具栏按钮
+DATA(lo_functions) = go_salv->get_functions( ).
+lo_functions->set_all( abap_true ).
+
+" 弹窗模式，不弹窗的话，注释即可
+go_salv->set_screen_popup(
+  start_column = 30
+  end_column   = 150
+  start_line   = 2
+  end_line     = 15 ).
+
+" 展示SALV报表
+go_salv->display( ).
 
 ```
 

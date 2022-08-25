@@ -2,12 +2,12 @@
 
 ## 示例代码
 
-使用 ***BAPI_PRODORDCONF_GET_TT_PROP*** 查询工单信息，使用 ***BAPI_PRODORDCONF_CREATE_TT*** 创建或维护报工。
+***BAPI_PRODORDCONF_GET_TT_PROP***：查询工单信息
 
-### 新建
+***BAPI_PRODORDCONF_CREATE_TT***：创建或维护报工
 
 <details>
-<summary>新建生产报工</summary>
+<summary>示例代码：创建</summary>
 
 ```ABAP
 
@@ -55,10 +55,8 @@ ENDIF.
 
 </details>
 
-### 修改
-
 <details>
-<summary>修改生产报工</summary>
+<summary>示例代码：维护</summary>
 
 ```ABAP
 
