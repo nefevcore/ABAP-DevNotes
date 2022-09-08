@@ -236,7 +236,9 @@ TYPES:
     prctr  TYPE acdoca-prctr, " 利润中心
     rstgr  TYPE acdoca-rstgr, " RSTGR
     rfarea TYPE acdoca-rfarea, " 功能范围
-    budat  TYPE acdoca-budat,
+    rbusa  TYPE acdoca-rbusa, " 业务范围
+    budat  TYPE acdoca-budat, " 过账日期
+    shkzg  TYPE shkzg, " 借贷
     hsl    TYPE acdoca-hsl,
   END OF ty_detail.
 TYPES tt_detail TYPE STANDARD TABLE OF ty_detail WITH EMPTY KEY.
@@ -285,16 +287,18 @@ TYPES:
 TYPES ty_config_key TYPE n LENGTH 3.
 TYPES:
   BEGIN OF ty_config,
-    bukrs       TYPE bukrs, " 公司
-    zitem       TYPE ty_config_key, " 项目
-    zitem_sub   TYPE ty_config_key, " 子项目
-    ztext       TYPE string, " 描述
-    reverse     TYPE xfeld, " 反向标记，汇总或计算的时候使用
-    fi_data     TYPE ty_fi_data,
-    t_racct_opt TYPE RANGE OF racct, " 科目作为财务数据首要筛选维度
-    t_filter    TYPE STANDARD TABLE OF ty_filter WITH EMPTY KEY, " 筛选项
-    t_collect   TYPE STANDARD TABLE OF ty_config_key WITH EMPTY KEY, " 引用汇总其他项目结果
-    processed   TYPE char01, " 处理标识，未处理[空]，处理中[P]，已处理[X]，用于死循环检查和跳过冗余计算
+    bukrs            TYPE bukrs, " 公司
+    zitem            TYPE ty_config_key, " 项目
+    zitem_sub        TYPE ty_config_key, " 子项目
+    ztext            TYPE string, " 描述
+    reverse          TYPE xfeld, " 反向标记，汇总或计算的时候使用
+    fi_data          TYPE ty_fi_data,
+    t_racct_opt      TYPE RANGE OF racct, " 科目作为财务数据首要筛选维度
+    t_filter         TYPE STANDARD TABLE OF ty_filter WITH EMPTY KEY, " 筛选项
+    t_collect        TYPE STANDARD TABLE OF ty_config_key WITH EMPTY KEY, " 引用汇总其他项目结果
+    processed        TYPE char01, " 处理标识，未处理[空]，处理中[P]，已处理[X]，用于死循环检查和跳过冗余计算
+    callback_program TYPE programm, " 对于特殊配置，通过回调方法进行处理
+    callback_from    TYPE char30, " 对于特殊配置，通过回调方法进行处理
   END OF ty_config.
 TYPES tt_config TYPE STANDARD TABLE OF ty_config WITH EMPTY KEY.
 
@@ -363,10 +367,18 @@ CLASS lcl_fi_report IMPLEMENTATION.
       ) INTO DATA(ls_config_grp).
 
       DATA ls_fi_data TYPE ty_fi_data.
+      CLEAR ls_fi_data.
       ls_fi_data-bukrs = ls_config_grp-bukrs.
       ls_fi_data-year = m_year.
       ls_fi_data-period = m_period.
       ls_fi_data-zitem = ls_config_grp-zitem.
+
+      LOOP AT GROUP ls_config_grp REFERENCE INTO lr_config. " 文本任取一行有值的
+        IF lr_config->ztext IS NOT INITIAL.
+          ls_fi_data-ztext = lr_config->ztext.
+          EXIT.
+        ENDIF.
+      ENDLOOP.
 
       LOOP AT GROUP ls_config_grp REFERENCE INTO lr_config.
         ls_fi_data-year_begin = ls_fi_data-year_begi + lr_config->fi_data-year_begin. " 年初余额
@@ -391,15 +403,15 @@ CLASS lcl_fi_report IMPLEMENTATION.
 
       ls_fi_data-year_end = ls_fi_data-year_begin.
       DO 16 TIMES.
+        DATA l_period TYPE ty_fi_data-period.
+        l_period = sy-index.
         ASSIGN COMPONENT |PERIOD_{ sy-index ALIGN = RIGHT WIDTH = 2 PAD = '0' }| OF STRUCTURE ls_fi_data TO FIELD-SYMBOL(<fs_period>).
         IF <fs_period> IS ASSIGNED.
           ls_fi_data-year_end = ls_fi_data-year_end + <fs_period>. " 年末余额
-          " 截止本月末累计金额
-          IF ls_fi_data-period <= sy-index.
+          IF ls_fi_data-period >= l_period. " 截止本月末累计金额
             ls_fi_data-period_total = ls_fi_data-period_total + <fs_period>.
           ENDIF.
-          " 本月金额
-          IF ls_fi_data-period = sy-index.
+          IF ls_fi_data-period = l_period. " 本月金额
             ls_fi_data-period_current = <fs_period>.
           ENDIF.
         ENDIF.
@@ -445,10 +457,13 @@ CLASS lcl_fi_report IMPLEMENTATION.
         prctr, " 利润中心
         rstgr, " 原因代码
         rfarea, " 功能范围
+        rbusa, " 业务范围
         budat,
+        CASE WHEN hsl > 0 THEN 'S' ELSE 'H' END AS shkzg, " 借贷标识
         hsl
         FROM acdoca
-        WHERE rbukrs = @ls_config_grp-bukrs
+        WHERE rldnr = '0L' " 主账目表，应该不会变吧？
+          AND rbukrs = @ls_config_grp-bukrs
           AND ryear = @m_year
           AND racct IN @lt_racct_opt
         APPENDING TABLE @mt_detail.
@@ -464,8 +479,8 @@ CLASS lcl_fi_report IMPLEMENTATION.
   METHOD get_fi_data.
 
     IF i_depth > 10 " 迭代层级，防止栈溢出
-    OR ir_config IS BOUND " 空值检查
-    OR ir_config->processed IS INITIAL " 处理标记检查，防止死循环，以及跳过冗余计算
+    OR ir_config IS NOT BOUND " 空值检查
+    OR ir_config->processed IS NOT INITIAL " 处理标记检查，防止死循环，以及跳过冗余计算
     .
       RETURN.
     ENDIF.
@@ -491,6 +506,12 @@ CLASS lcl_fi_report IMPLEMENTATION.
           ENDTRY.
         ENDIF.
       ENDLOOP.
+    ENDIF.
+
+    " 特殊处理
+    IF ir_config->callback_program IS NOT INITIAL
+    AND ir_config->callback_from IS NOT INITIAL.
+      PERFORM (ir_config->callback_from) IN PROGRAM (ir_config->callback_program) IF FOUND TABLES lt_detail.
     ENDIF.
 
     " 汇总财务数据
@@ -531,45 +552,62 @@ CLASS lcl_fi_report IMPLEMENTATION.
 
     " 汇总其他项的财务数据
     LOOP AT ir_config->t_collect INTO DATA(l_other_zitem).
-      READ TABLE mt_config REFERENCE INTO DATA(lr_config) WITH KEY
+      READ TABLE mt_config TRANSPORTING NO FIELDS WITH KEY " 嵌套循环优化
       bukrs = ir_config->bukrs
       zitem = l_other_zitem
       BINARY SEARCH.
-      IF sy-subrc <> 0.
-        CONTINUE.
-      ENDIF.
+        IF sy-subrc = 0.
+          LOOP AT mt_config REFERENCE INTO DATA(lr_config) FROM sy-tabix.
+            IF lr_config->bukrs <> ir_config->bukrs
+            OR lr_config->zitem <> l_other_zitem.
+              EXIT.
+            ENDIF.
 
-      " 递归取值
-      get_fi_data( ir_config = lr_config
-                   i_depth = i_depth + 1 ).
+            " 递归取值
+            get_fi_data( ir_config = lr_config i_depth = i_depth + 1 ). " 递归取值
 
-      " 反向标记
-      DATA l_factor TYPE i.
-      IF lr_config->reverse IS INITIAL.
-        l_factor = 1.
-      ELSE.
-        l_factor = -1.
-      ENDIF.
-
-      ir_config->fi_data-year_begin = ir_config->fi_data-year_begin + lr_config->fi_data-year_begin * l_factor. " 年初余额
-      ir_config->fi_data-period_01 = ir_config->fi_data-period_01 + lr_config->fi_data-period_01 * l_factor. " 01月余额
-      ir_config->fi_data-period_02 = ir_config->fi_data-period_02 + lr_config->fi_data-period_02 * l_factor. " 02月余额
-      ir_config->fi_data-period_03 = ir_config->fi_data-period_03 + lr_config->fi_data-period_03 * l_factor. " 03月余额
-      ir_config->fi_data-period_04 = ir_config->fi_data-period_04 + lr_config->fi_data-period_04 * l_factor. " 04月余额
-      ir_config->fi_data-period_05 = ir_config->fi_data-period_05 + lr_config->fi_data-period_05 * l_factor. " 05月余额
-      ir_config->fi_data-period_06 = ir_config->fi_data-period_06 + lr_config->fi_data-period_06 * l_factor. " 06月余额
-      ir_config->fi_data-period_07 = ir_config->fi_data-period_07 + lr_config->fi_data-period_07 * l_factor. " 07月余额
-      ir_config->fi_data-period_08 = ir_config->fi_data-period_08 + lr_config->fi_data-period_08 * l_factor. " 08月余额
-      ir_config->fi_data-period_09 = ir_config->fi_data-period_09 + lr_config->fi_data-period_09 * l_factor. " 09月余额
-      ir_config->fi_data-period_10 = ir_config->fi_data-period_10 + lr_config->fi_data-period_10 * l_factor. " 10月余额
-      ir_config->fi_data-period_11 = ir_config->fi_data-period_11 + lr_config->fi_data-period_11 * l_factor. " 11月余额
-      ir_config->fi_data-period_12 = ir_config->fi_data-period_12 + lr_config->fi_data-period_12 * l_factor. " 12月余额
-      ir_config->fi_data-period_13 = ir_config->fi_data-period_13 + lr_config->fi_data-period_13 * l_factor. " 13月余额
-      ir_config->fi_data-period_14 = ir_config->fi_data-period_14 + lr_config->fi_data-period_14 * l_factor. " 14月余额
-      ir_config->fi_data-period_15 = ir_config->fi_data-period_15 + lr_config->fi_data-period_15 * l_factor. " 15月余额
-      ir_config->fi_data-period_16 = ir_config->fi_data-period_16 + lr_config->fi_data-period_16 * l_factor. " 16月余额
-      INSERT LINES OF lr_config->fi_data-t_detail_key INTO TABLE ir_config->fi_data-t_detail_key. " 明细数据
+            ir_config->fi_data-year_begin = ir_config->fi_data-year_begin + lr_config->fi_data-year_begin * l_factor. " 年初余额
+            ir_config->fi_data-period_01 = ir_config->fi_data-period_01 + lr_config->fi_data-period_01 * l_factor. " 01月余额
+            ir_config->fi_data-period_02 = ir_config->fi_data-period_02 + lr_config->fi_data-period_02 * l_factor. " 02月余额
+            ir_config->fi_data-period_03 = ir_config->fi_data-period_03 + lr_config->fi_data-period_03 * l_factor. " 03月余额
+            ir_config->fi_data-period_04 = ir_config->fi_data-period_04 + lr_config->fi_data-period_04 * l_factor. " 04月余额
+            ir_config->fi_data-period_05 = ir_config->fi_data-period_05 + lr_config->fi_data-period_05 * l_factor. " 05月余额
+            ir_config->fi_data-period_06 = ir_config->fi_data-period_06 + lr_config->fi_data-period_06 * l_factor. " 06月余额
+            ir_config->fi_data-period_07 = ir_config->fi_data-period_07 + lr_config->fi_data-period_07 * l_factor. " 07月余额
+            ir_config->fi_data-period_08 = ir_config->fi_data-period_08 + lr_config->fi_data-period_08 * l_factor. " 08月余额
+            ir_config->fi_data-period_09 = ir_config->fi_data-period_09 + lr_config->fi_data-period_09 * l_factor. " 09月余额
+            ir_config->fi_data-period_10 = ir_config->fi_data-period_10 + lr_config->fi_data-period_10 * l_factor. " 10月余额
+            ir_config->fi_data-period_11 = ir_config->fi_data-period_11 + lr_config->fi_data-period_11 * l_factor. " 11月余额
+            ir_config->fi_data-period_12 = ir_config->fi_data-period_12 + lr_config->fi_data-period_12 * l_factor. " 12月余额
+            ir_config->fi_data-period_13 = ir_config->fi_data-period_13 + lr_config->fi_data-period_13 * l_factor. " 13月余额
+            ir_config->fi_data-period_14 = ir_config->fi_data-period_14 + lr_config->fi_data-period_14 * l_factor. " 14月余额
+            ir_config->fi_data-period_15 = ir_config->fi_data-period_15 + lr_config->fi_data-period_15 * l_factor. " 15月余额
+            ir_config->fi_data-period_16 = ir_config->fi_data-period_16 + lr_config->fi_data-period_16 * l_factor. " 16月余额
+            INSERT LINES OF lr_config->fi_data-t_detail_key INTO TABLE ir_config->fi_data-t_detail_key. " 明细数据
+          ENDLOOP.
+        ENDIF.
     ENDLOOP.
+
+    " 反向标记
+    IF ir_config->reverse IS NOT INITIAL.
+      ir_config->fi_data-year_begin *= -1. " 年初余额
+      ir_config->fi_data-period_01  *= -1. " 01月余额
+      ir_config->fi_data-period_02  *= -1. " 02月余额
+      ir_config->fi_data-period_03  *= -1. " 03月余额
+      ir_config->fi_data-period_04  *= -1. " 04月余额
+      ir_config->fi_data-period_05  *= -1. " 05月余额
+      ir_config->fi_data-period_06  *= -1. " 06月余额
+      ir_config->fi_data-period_07  *= -1. " 07月余额
+      ir_config->fi_data-period_08  *= -1. " 08月余额
+      ir_config->fi_data-period_09  *= -1. " 09月余额
+      ir_config->fi_data-period_10  *= -1. " 10月余额
+      ir_config->fi_data-period_11  *= -1. " 11月余额
+      ir_config->fi_data-period_12  *= -1. " 12月余额
+      ir_config->fi_data-period_13  *= -1. " 13月余额
+      ir_config->fi_data-period_14  *= -1. " 14月余额
+      ir_config->fi_data-period_15  *= -1. " 15月余额
+      ir_config->fi_data-period_16  *= -1. " 16月余额
+    ENDIF.
 
     ir_config->processed = 'X'. " 处理完成
 
@@ -678,7 +716,6 @@ CLASS lcl_fi_report IMPLEMENTATION.
   ENDMETHOD.
 
 ENDCLASS.
-
 
 ```
 
