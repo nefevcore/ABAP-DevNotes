@@ -38,15 +38,16 @@ nav:
     - 工单关闭: pp/pp_order_close.md
   - FICO: 
     - FICO模块概述: fico/index.md
+    - 会计凭证: fico/acc_document.md
+    - 发票校验: fico/invoice_check.md
+    - 发票预制: fico/invoice_park.md
+    - 发票过账: fico/invoice_post.md
     - 三大报表:
       - 通用取值模块: fico/fi_report.md
       - 配置表参考: fico/fi_report_config.md
       - 资产负债表: fico/fi_report_bs.md
       - 利润表: fico/fi_report_pl.md
       - 现金流量表: fico/fi_report_cf.md
-    - 发票校验: fico/invoice_check.md
-    - 发票预制: fico/invoice_park.md
-    - 发票过账: fico/invoice_post.md
   - 常见报表: 
     - 报表概述: report/index.md
     - 库存报表: report/stock.md
@@ -58,6 +59,7 @@ nav:
     - Excel上传下载: others/xlsx_io.md
     - 文本取值工具: others/zcl_text.md
     - SMARTFORMS相关: others/smartforms.md
+    - 中文大写: others/number_to_chinese.md
   - 结语: about.md
   - 附录: 
     - MarkDown语法: ex/mdnote.md

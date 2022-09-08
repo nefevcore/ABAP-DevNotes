@@ -2,7 +2,7 @@
 
 报表部分字段需要取文本，这里将频率较高的字段整理出来，以后就不用重复写SQL查表了。
 
-> ECC酌情使用，程序每字段取值就通过\[SELECT SINGLE\]访问数据库，性能远不如直接批量查询。
+> ECC酌情使用，程序每次取值就通过\[SELECT SINGLE\]访问数据库，性能远不如直接批量查询。
 >
 > HANA性能有巨大提升，可以忽略这部分损失
 
@@ -10,174 +10,302 @@
 <summary>ZCL_TEXT</summary>
 
 ``` abap
+"! <p class="shorttext synchronized">文本取值工具</p>
+class ZCL_TEXT definition
+  public
+  final
+  create private .
 
-CLASS zcl_text DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PRIVATE .
+public section.
 
-  PUBLIC SECTION.
+    "! <p class="shorttext synchronized">文本工具类</p>
+  constants MC_CLASS_NAME type SEOCLSNAME value 'ZCL_TEXT' ##NO_TEXT.
+    "! <p class="shorttext synchronized">空值</p>
+  constants MC_NONE type STRING value SPACE ##NO_TEXT.
+    "! <p class="shorttext synchronized">自定义方法前缀</p>
+  constants MC_CUSTOM_METHOD_PREFIX type STRING value '_' ##NO_TEXT.
+    "! <p class="shorttext synchronized">动态SQL查询方法名</p>
+  constants MC_METHOD_DYNAMIC_QUERY type ABAP_METHNAME value 'DYNAMIC_QUERY' ##NO_TEXT.
+    "! <p class="shorttext synchronized">有效的空对象，防止程序运行错误</p>
+  class-data NOT_FOUND type ref to ZCL_TEXT read-only .
 
-    CLASS-DATA bukrs TYPE REF TO zcl_text READ-ONLY .
-    CLASS-DATA bp TYPE REF TO zcl_text READ-ONLY .
-    CLASS-DATA matnr TYPE REF TO zcl_text READ-ONLY .
-    CLASS-DATA werks TYPE REF TO zcl_text READ-ONLY .
-    CLASS-DATA user TYPE REF TO zcl_text .
-
-    CLASS-METHODS class_constructor .
-    CLASS-METHODS create
-      IMPORTING
-        !i_name        TYPE string
-      RETURNING
-        VALUE(ro_text) TYPE REF TO zcl_text .
-    CLASS-METHODS domain
-      IMPORTING
-        !i_domname     TYPE domname
-      RETURNING
-        VALUE(ro_text) TYPE REF TO zcl_text .
-    CLASS-METHODS create_ausp
-      IMPORTING
-        !i_objectkey   TYPE bapi1003_key-object
-        !i_objecttable TYPE bapi1003_key-objecttable OPTIONAL
-        !i_classnum    TYPE bapi1003_key-classnum OPTIONAL
-        !i_classtype   TYPE bapi1003_key-classtype OPTIONAL
-      RETURNING
-        VALUE(ro_text) TYPE REF TO zcl_text .
-    METHODS get
-      IMPORTING
-        !i_key         TYPE data
-      RETURNING
-        VALUE(r_value) TYPE string .
-    CLASS-METHODS long_text
-      IMPORTING
-        !i_id          TYPE thead-tdid
-        !i_language    TYPE thead-tdspras DEFAULT '1'
-        !i_name        TYPE thead-tdname
-        !i_object      TYPE thead-tdobject
-      EXPORTING
-        !et_tline      TYPE tline_t
-        !e_value       TYPE string
-      RETURNING
-        VALUE(r_value) TYPE string .
+  class-methods CLASS_CONSTRUCTOR .
+    "! <p class="shorttext synchronized">设置取文本时所用语言</p>
+  class-methods SET_LANGUAGE
+    importing
+      !I_LANGU type SY-LANGU .
+    "! <p class="shorttext synchronized">创建自定义对象</p>
+  class-methods CREATE_CUSTOM
+    importing
+      !I_NAME type STRING
+    returning
+      value(RO_TEXT) type ref to ZCL_TEXT .
+    "! <p class="shorttext synchronized">创建动态SQL对象</p>
+  class-methods CREATE_QUERY
+    importing
+      !I_NAME type STRING
+      !I_TABNAME type TABNAME optional
+      !I_SPRAS type FIELDNAME optional
+      !I_KEY type FIELDNAME optional
+      !I_TEXT type FIELDNAME optional
+    returning
+      value(RO_TEXT) type ref to ZCL_TEXT .
+    "! <p class="shorttext synchronized">创建域值对象</p>
+  class-methods CREATE_DOMAIN
+    importing
+      !I_DOMNAME type STRING
+    returning
+      value(RO_TEXT) type ref to ZCL_TEXT .
+    "! <p class="shorttext synchronized">创建特征值对象</p>
+  class-methods CREATE_OBJCL
+    importing
+      !I_OBJECTKEY type BAPI1003_KEY-OBJECT
+      !I_OBJECTTABLE type BAPI1003_KEY-OBJECTTABLE optional
+      !I_CLASSNUM type BAPI1003_KEY-CLASSNUM optional
+      !I_CLASSTYPE type BAPI1003_KEY-CLASSTYPE optional
+      !I_AUTO_COMPLETE type XFELD default ABAP_TRUE
+    returning
+      value(RO_TEXT) type ref to ZCL_TEXT .
+    "! <p class="shorttext synchronized">长文本读取</p>
+  class-methods LONG_TEXT
+    importing
+      !I_ID type THEAD-TDID
+      !I_LANGUAGE type THEAD-TDSPRAS default SY-LANGU
+      !I_NAME type THEAD-TDNAME
+      !I_OBJECT type THEAD-TDOBJECT
+    exporting
+      !ET_TLINE type TLINETAB
+      !E_VALUE type STRING
+    returning
+      value(R_VALUE) type STRING .
+    "! <p class="shorttext synchronized">根据传入值自动获取文本（要求字段存在值表和文本表，否则会失败）</p>
+  class-methods AUTO
+    importing
+      !I_KEY type DATA
+    returning
+      value(R_VALUE) type STRING .
+    "! <p class="shorttext synchronized">获取文本</p>
+  methods GET
+    importing
+      !I_KEY type DATA
+    returning
+      value(R_VALUE) type STRING .
   PROTECTED SECTION.
-  PRIVATE SECTION.
+private section.
 
-    TYPES:
-      BEGIN OF ty_text,
+  types:
+    BEGIN OF ty_text,
         key   TYPE string,
         value TYPE string,
       END OF ty_text .
-    TYPES:
-      tt_text TYPE SORTED TABLE OF ty_text WITH NON-UNIQUE KEY key .
-    TYPES:
-      BEGIN OF ty_text_instance,
+  types:
+    tt_text TYPE SORTED TABLE OF ty_text WITH NON-UNIQUE KEY key .
+  types:
+    BEGIN OF ty_instance,
         name   TYPE string,
-        o_text TYPE REF TO zcl_text,
-      END OF ty_text_instance .
-    TYPES:
-      tt_text_instance TYPE SORTED TABLE OF ty_text_instance WITH NON-UNIQUE KEY name .
-    TYPES:
-      BEGIN OF ty_domains,
-        domname TYPE domname,
-        o_text  TYPE REF TO zcl_text,
-      END OF ty_domains .
-    TYPES:
-      tt_domnames TYPE SORTED TABLE OF ty_domains WITH NON-UNIQUE KEY domname .
-    TYPES:
-      BEGIN OF ty_ausp,
-        objectkey   TYPE bapi1003_key-object,
+        o_text TYPE REF TO ZCL_TEXT,
+      END OF ty_instance .
+  types:
+    tt_instance TYPE SORTED TABLE OF ty_instance WITH NON-UNIQUE KEY name .
+  types:
+    BEGIN OF ty_objcl_instance,
+        objectkey   TYPE bapi1003_key-object_long,
         objecttable TYPE bapi1003_key-objecttable,
         classnum    TYPE bapi1003_key-classnum,
         classtype   TYPE bapi1003_key-classtype,
-        o_text      TYPE REF TO zcl_text,
-      END OF ty_ausp .
-    TYPES:
-      tt_ausp TYPE SORTED TABLE OF ty_ausp WITH NON-UNIQUE KEY objectkey objecttable classnum classtype .
+        o_text      TYPE REF TO ZCL_TEXT,
+      END OF ty_objcl_instance .
+  types:
+    tt_objcl_instance TYPE SORTED TABLE OF ty_objcl_instance WITH NON-UNIQUE KEY objectkey objecttable classnum classtype .
+  types:
+    BEGIN OF ty_custom_query,
+        name    TYPE string,
+        tabname TYPE tabname,
+        spras   TYPE fieldname,
+        key     TYPE fieldname,
+        text    TYPE fieldname,
+      END OF ty_custom_query .
+  types:
+    tt_custom_query TYPE SORTED TABLE OF ty_custom_query WITH NON-UNIQUE KEY name .
 
-    DATA mt_text TYPE tt_text .
-    DATA m_name TYPE string .
-    DATA m_method TYPE abap_methname .
-    CLASS-DATA mt_text_instance TYPE tt_text_instance .
-    CLASS-DATA mt_domains TYPE tt_domnames .
-    CLASS-DATA mt_ausp TYPE tt_ausp .
-    CLASS-DATA mo_objectdescr TYPE REF TO cl_abap_objectdescr .
+    "! <p class="shorttext synchronized">AUTO对象缓存</p>
+  class-data MT_AUTO type TT_INSTANCE .
+    "! <p class="shorttext synchronized">自定义对象缓存</p>
+  class-data MT_CUSTOM type TT_INSTANCE .
+    "! <p class="shorttext synchronized">域值对象缓存</p>
+  class-data MT_DOMAIN type TT_INSTANCE .
+    "! <p class="shorttext synchronized">动态SQL对象缓存</p>
+  class-data MT_QUERY type TT_INSTANCE .
+    "! <p class="shorttext synchronized">特征值对象缓存</p>
+  class-data MT_OBJCL type TT_OBJCL_INSTANCE .
+    "! <p class="shorttext synchronized">自定义动态查询参数</p>
+  class-data MT_CUSTOM_QUERY type TT_CUSTOM_QUERY .
+    "! <p class="shorttext synchronized">文本工具类描述对象</p>
+  class-data MO_OBJECTDESCR type ref to CL_ABAP_OBJECTDESCR .
+    "! <p class="shorttext synchronized">对象名称</p>
+  data M_NAME type STRING .
+    "! <p class="shorttext synchronized">取值缓存清单</p>
+  data MT_TEXT type TT_TEXT .
+    "! <p class="shorttext synchronized">自定义处理方法</p>
+  data M_CUSTOM_METHOD type ABAP_METHNAME .
+  data:
+      "! <p class="shorttext synchronized">动态SQL参数</p>
+    BEGIN OF ms_param,
+        table TYPE tabname,
+        spras TYPE fieldname,
+        key   TYPE fieldname,
+        text  TYPE fieldname,
+      END OF ms_param .
 
-    METHODS constructor
-      IMPORTING
-        !i_name TYPE string .
-    METHODS _bukrs
-      IMPORTING
-        !i_key         TYPE data
-      RETURNING
-        VALUE(r_value) TYPE string .
-    METHODS _bp
-      IMPORTING
-        !i_key         TYPE data
-      RETURNING
-        VALUE(r_value) TYPE string .
-    METHODS _matnr
-      IMPORTING
-        !i_key         TYPE data
-      RETURNING
-        VALUE(r_value) TYPE string .
-    METHODS _werks
-      IMPORTING
-        !i_key         TYPE data
-      RETURNING
-        VALUE(r_value) TYPE string .
-    METHODS _lgort
-      IMPORTING
-        !i_key         TYPE data
-      RETURNING
-        VALUE(r_value) TYPE string .
-    METHODS _prctr
-      IMPORTING
-        !i_key         TYPE data
-      RETURNING
-        VALUE(r_value) TYPE string .
-    METHODS _waers
-      IMPORTING
-        !i_key         TYPE data
-      RETURNING
-        VALUE(r_value) TYPE string .
-    METHODS _domain
-      IMPORTING
-        !i_key         TYPE data
-      RETURNING
-        VALUE(r_value) TYPE string .
-    METHODS _ausp
-      IMPORTING
-        !i_key         TYPE data
-      RETURNING
-        VALUE(r_value) TYPE string .
-    METHODS _user
-      IMPORTING
-        !i_key         TYPE data
-      RETURNING
-        VALUE(r_value) TYPE string .
-    METHODS _not_found
-      IMPORTING
-        !i_key         TYPE data
-      RETURNING
-        VALUE(r_value) TYPE string .
+    "! <p class="shorttext synchronized">自定义动态查询参数</p>
+  class-methods CREATE_CUSTOM_QUERY .
+    "! <p class="shorttext synchronized">CONSTRUCTOR</p>
+  methods CONSTRUCTOR
+    importing
+      !I_NAME type STRING .
+    "! <p class="shorttext synchronized">动态SQL查询</p>
+  methods DYNAMIC_QUERY
+    importing
+      !I_KEY type DATA
+    returning
+      value(R_VALUE) type STRING .
+    "! <p class="shorttext synchronized">获取用户名称</p>
+  methods _SYST_UNAME
+    importing
+      !I_KEY type DATA
+    returning
+      value(R_VALUE) type STRING .
 ENDCLASS.
 
 
 
-CLASS zcl_text IMPLEMENTATION.
+CLASS ZCL_TEXT IMPLEMENTATION.
+
+
+  METHOD auto.
+
+    " 获取字段描述
+    DATA(lo_typedescr) = cl_abap_typedescr=>describe_by_data( i_key ).
+    IF lo_typedescr->kind <> cl_abap_typedescr=>kind_elem. " 只对数据元素进行处理
+      RETURN.
+    ENDIF.
+
+    " 获取字段类型名称
+    DATA l_rollname TYPE string.
+    l_rollname = CAST cl_abap_elemdescr( lo_typedescr )->get_ddic_field( )-rollname.
+    IF l_rollname IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    " 缓存检查
+    READ TABLE mt_auto REFERENCE INTO DATA(lr_auto) WITH KEY name = l_rollname BINARY SEARCH.
+    IF sy-subrc = 0.
+      r_value = lr_auto->o_text->get( i_key ).
+      RETURN.
+    ELSE.
+      INSERT VALUE #(
+        name = l_rollname
+        o_text = not_found
+        ) INTO TABLE mt_auto REFERENCE INTO lr_auto.
+    ENDIF.
+
+    " 检查是否存在自定义处理方法
+    lr_auto->o_text = create_custom( l_rollname ).
+    IF lr_auto->o_text <> not_found.
+      r_value = lr_auto->o_text->get( i_key ).
+      RETURN.
+    ENDIF.
+
+    " 获取数据元素对应域和值表
+    SELECT SINGLE
+      rollname,
+      domname,
+      entitytab
+      FROM dd04l
+      WHERE rollname = @l_rollname
+      INTO @DATA(ls_dd04l).
+    IF sy-subrc <> 0.
+      RETURN.
+    ENDIF.
+
+    " 检查是否存在域值
+    lr_auto->o_text = create_domain( CONV #( ls_dd04l-domname ) ).
+    IF lr_auto->o_text <> not_found.
+      r_value = lr_auto->o_text->get( i_key ).
+      RETURN.
+    ENDIF.
+
+    " 检查是否存在值表
+    IF ls_dd04l-entitytab IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    " 获取值表对应文本表
+    SELECT SINGLE tabname FROM dd08l
+      WHERE checktable = @ls_dd04l-entitytab
+        AND frkart = 'TEXT'
+      INTO @DATA(l_texttab).
+    IF sy-subrc <> 0.
+      RETURN.
+    ENDIF.
+
+    " 获取值表结构
+    SELECT
+      position,
+      fieldname,
+      keyflag,
+      rollname
+      FROM dd03l
+      WHERE tabname = @l_texttab
+      INTO TABLE @DATA(lt_field).
+    IF sy-subrc <> 0.
+      RETURN.
+    ENDIF.
+
+    " 获取动态SQL查询所需参数
+    DATA l_field_spras TYPE fieldname.
+    DATA l_field_key TYPE fieldname.
+    DATA l_field_text TYPE fieldname.
+    SORT lt_field BY position.
+    LOOP AT lt_field INTO DATA(ls_field).
+      IF ls_field-keyflag = 'X'.
+        " 获取关键字段中的键值字段
+        IF ls_field-rollname = l_rollname.
+          l_field_key = ls_field-fieldname.
+        ENDIF.
+        " 获取关键字段中的语言字段
+        IF ls_field-rollname = 'SPRAS'.
+          l_field_spras = ls_field-fieldname.
+        ENDIF.
+      ELSE.
+        " 获取非键值的第一个字段作为文本字段
+        l_field_text = ls_field-fieldname.
+      ENDIF.
+    ENDLOOP.
+    IF l_field_key IS INITIAL OR l_field_text IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    " 创建动态查询
+    lr_auto->o_text = create_query(
+      i_name = l_rollname
+      i_tabname = l_texttab
+      i_spras = l_field_spras
+      i_key = l_field_key
+      i_text = l_field_text
+    ).
+
+    r_value = lr_auto->o_text->get( i_key ). " 返回查询结果
+
+  ENDMETHOD.
 
 
   METHOD class_constructor.
 
-    " 分析自身，获取可以提供的文本处理方法
-    mo_objectdescr ?= cl_abap_typedescr=>describe_by_name( 'ZCL_TEXT' ).
-
-    " 设置几个常用的
-    bukrs = create( 'BUKRS' ).
-    bp = create( 'BP' ).
-    matnr = create( 'MATNR' ).
-    werks = create( 'WERKS' ).
-    user = create( 'USER' ).
+    " 分析自身，获取可以提供的特殊文本处理方法
+    mo_objectdescr ?= cl_abap_typedescr=>describe_by_name( mc_class_name ).
+    " 创建有效的空值对象，防止程序运行错误
+    not_found = NEW #( mc_none ).
 
   ENDMETHOD.
 
@@ -185,104 +313,167 @@ CLASS zcl_text IMPLEMENTATION.
   METHOD constructor.
 
     m_name = i_name.
-    m_method = |_{ m_name }|.
 
   ENDMETHOD.
 
 
-  METHOD create.
+  METHOD create_custom.
 
-    " V3，相比之前，精简为单文件，方便搬运
-    DATA(l_name) = to_upper( i_name ).
-
-    " 检查缓存记录
-    READ TABLE mt_text_instance INTO DATA(ls_text_instance) WITH KEY name = l_name BINARY SEARCH.
+    READ TABLE mt_custom REFERENCE INTO DATA(lr_custom) WITH KEY name = i_name BINARY SEARCH.
     IF sy-subrc <> 0.
-      " 没有就新建一条记录缓存
-      CLEAR ls_text_instance.
-      ls_text_instance-name = l_name.
-
-      " 检查是否存在相应处理方法
+      INSERT VALUE #(
+        name = i_name
+      ) INTO TABLE mt_custom REFERENCE INTO lr_custom.
+      " 约定自定义处理方法为【前缀+名称】，外部调用时，传入名称即可
       DATA l_method TYPE abap_methname.
-      l_method = |_{ l_name }|.
+      l_method = |{ mc_custom_method_prefix }{ i_name CASE = UPPER }|.
       READ TABLE mo_objectdescr->methods TRANSPORTING NO FIELDS WITH KEY name = l_method BINARY SEARCH.
-      IF sy-subrc <> 0.
-        l_name = 'NOT_FOUND'.
+      IF sy-subrc = 0.
+        lr_custom->o_text = NEW #( i_name ).
+        lr_custom->o_text->m_custom_method = l_method.
+      ELSE.
+        " 第一次调用先获取配置数据
+        IF mt_custom_query IS INITIAL.
+          create_custom_query( ).
+        ENDIF.
+        " 检查配置是否有定义查询
+        READ TABLE mt_custom_query REFERENCE INTO DATA(lr_custom_query) WITH KEY name = i_name BINARY SEARCH.
+        IF sy-subrc = 0.
+          lr_custom->o_text = create_query(
+            i_name    = lr_custom_query->name
+            i_tabname = lr_custom_query->tabname
+            i_spras   = lr_custom_query->spras
+            i_key     = lr_custom_query->key
+            i_text    = lr_custom_query->text
+          ).
+        ELSE.
+          " 都没有，返回查询失败
+          lr_custom->o_text = not_found.
+        ENDIF.
       ENDIF.
-      ls_text_instance-o_text = NEW zcl_text( l_name ).
-
-      INSERT ls_text_instance INTO TABLE mt_text_instance.
     ENDIF.
-
-    ro_text = ls_text_instance-o_text.
+    ro_text = lr_custom->o_text.
 
   ENDMETHOD.
 
 
-  METHOD create_ausp.
-  
-    DATA l_object_key TYPE ausp-objek.
+  METHOD create_custom_query.
 
-    READ TABLE mt_ausp INTO DATA(ls_ausp) WITH KEY
+    " 可以弄配置表，我这边为了方便迁移，直接写死
+    mt_custom_query = VALUE #(
+      ( name = 'BUKRS'   tabname = 'T001'   key = 'BUKRS'   text = 'BUTXT' ) " 公司
+      ( name = 'MATNR'   tabname = 'MAKT'   key = 'MATNR'   text = 'MAKTX' spras = 'SPRAS' ) " 物料
+      ( name = 'MATKL'   tabname = 'T023T'  key = 'MATKL'   text = 'WGBEZ' spras = 'SPRAS' ) " 物料组
+      ( name = 'PARTNER' tabname = 'BUT000' key = 'PARTNER' text = 'CONCAT( NAME_ORG1, NAME_ORG2 )' ) " 业务伙伴
+      ( name = 'KUNNR'   tabname = 'KNA1'   key = 'KUNNR'   text = 'CONCAT( NAME1, NAME2 )' ) " 业务伙伴
+      ( name = 'LIFNR'   tabname = 'LFA1'   key = 'LIFNR'   text = 'CONCAT( NAME1, NAME2 )' ) " 供应商
+      ( name = 'WERKS'   tabname = 'T001W'  key = 'WERKS'   text = 'NAME1' ) " 工厂
+      ( name = 'LGORT'   tabname = 'T001L'  key = 'LGORT'   text = 'LGOBE' ) " 库位
+      ( name = 'PRCTR'   tabname = 'CEPCT'  key = 'PRCTR'   text = 'LTEXT' spras = 'SPRAS' ) " 利润中心
+      ( name = 'WAERS'   tabname = 'TCURT'  key = 'WAERS'   text = 'LTEXT' spras = 'SPRAS' ) " 货币
+    ).
+
+  ENDMETHOD.
+
+
+  METHOD create_domain.
+
+    READ TABLE mt_domain REFERENCE INTO DATA(lr_domain) WITH KEY name = i_domname BINARY SEARCH.
+    IF sy-subrc <> 0.
+      INSERT VALUE #(
+        name = i_domname
+      ) INTO TABLE mt_domain REFERENCE INTO lr_domain.
+      DATA lt_text TYPE tt_text.
+      SELECT
+        domvalue_l AS key,
+        ddtext AS value
+        FROM dd07t
+        WHERE domname = @i_domname
+          AND ddlanguage = @sy-langu
+          AND as4local = 'A'
+        INTO TABLE @lt_text.
+      IF sy-subrc = 0.
+        lr_domain->o_text = NEW #( i_domname ).
+        lr_domain->o_text->mt_text = lt_text.
+      ELSE.
+        lr_domain->o_text = not_found.
+      ENDIF.
+    ENDIF.
+    ro_text = lr_domain->o_text.
+
+  ENDMETHOD.
+
+
+  METHOD create_objcl.
+
+    READ TABLE mt_objcl REFERENCE INTO DATA(lr_objcl) WITH KEY
     objectkey   = i_objectkey
     objecttable = i_objecttable
     classnum    = i_classnum
     classtype   = i_classtype
     BINARY SEARCH.
     IF sy-subrc <> 0.
-      CLEAR ls_ausp.
-      ls_ausp-objectkey   = i_objectkey  .
-      ls_ausp-objecttable = i_objecttable.
-      ls_ausp-classnum    = i_classnum   .
-      ls_ausp-classtype   = i_classtype  .
-      ls_ausp-o_text = NEW zcl_text( 'AUSP' ).
+      INSERT VALUE #(
+        objectkey   = i_objectkey
+        objecttable = i_objecttable
+        classnum    = i_classnum
+        classtype   = i_classtype
+        o_text      = NEW #( CONV #( i_objectkey ) )
+      ) INTO TABLE mt_objcl REFERENCE INTO lr_objcl.
 
-*      " 特征取值相关表：
-*      " AUSP，特征值表
-*      " KSSK，KSSK-OBJEK = AUSP-OBJEK，简单理解为单对象分类，根据对象号关联特征
-*      " INOB，INOB-CUOBJ = AUSP-OBJEK，多对象分类，根据内部对象号关联特征
+      DATA ls_objcl_key TYPE bapi1003_key.
+      ls_objcl_key-object_long = lr_objcl->objectkey.
+      ls_objcl_key-objecttable = lr_objcl->objecttable.
+      ls_objcl_key-classnum = lr_objcl->classnum.
+      ls_objcl_key-classtype = lr_objcl->classtype.
 
-*      " 存在键值重复的情况，无法对全部情况进行推导
-*      " 一个键值可能对应不同业务，强行推导会让问题排查变得困难
-*      " 如果觉得无所谓，倒是可以启用这段推导逻辑
-*      IF ls_ausp-objecttable IS INITIAL
-*      OR ls_ausp-classnum IS INITIAL
-*      OR ls_ausp-classtype IS INITIAL.
-*        " 先根据对象号推导
-*        SELECT SINGLE
-*          tcla~obtab AS objecttable,
-*          klah~class AS classnum,
-*          kssk~klart AS classtype
-*          FROM kssk
-*          JOIN tcla ON kssk~klart = tcla~klart
-*          JOIN klah ON kssk~clint = klah~clint
-*          WHERE kssk~objek = @ls_ausp-objectkey
-*          INTO @DATA(ls_object_key).
-*        IF sy-subrc <> 0.
-*          " 再根据内部对象号推导
-*          SELECT SINGLE
-*            inob~obtab AS objecttable,
-*            klah~class AS classnum,
-*            inob~klart AS classtype
-*            FROM inob
-*            JOIN kssk ON inob~cuobj = kssk~objek
-*            JOIN klah ON kssk~clint = klah~clint
-*            WHERE inob~objek = @ls_ausp-objectkey
-*            INTO @ls_object_key.
-*        ENDIF.
-*
-*        IF ls_ausp-objecttable IS INITIAL.
-*          ls_ausp-objecttable = ls_object_key-objecttable.
-*        ENDIF.
-*
-*        IF ls_ausp-classnum IS INITIAL.
-*          ls_ausp-classnum = ls_object_key-classnum.
-*        ENDIF.
-*
-*        IF ls_ausp-classtype IS INITIAL.
-*          ls_ausp-classtype = ls_object_key-classtype.
-*        ENDIF.
-*      ENDIF.
+      " 存在键值重复的情况，无法对全部情况进行推导
+      " 一个键值可能对应不同业务，强行推导会让问题排查变得困难
+      " 如果觉得无所谓，倒是可以启用这段推导逻辑
+      IF i_auto_complete = abap_true.
+        " 特征取值相关表：
+        " AUSP，特征值表
+        " KSSK，KSSK-OBJEK = AUSP-OBJEK，简单理解为单对象分类，根据对象号关联特征
+        " INOB，INOB-CUOBJ = AUSP-OBJEK，多对象分类，根据内部对象号关联特征
+        IF ls_objcl_key-objecttable IS INITIAL
+        OR ls_objcl_key-classnum IS INITIAL
+        OR ls_objcl_key-classtype IS INITIAL.
+          " 先根据对象号推导
+          SELECT SINGLE
+            tcla~obtab AS objecttable,
+            klah~class AS classnum,
+            kssk~klart AS classtype
+            FROM kssk
+            JOIN tcla ON kssk~klart = tcla~klart
+            JOIN klah ON kssk~clint = klah~clint
+            WHERE kssk~objek = @ls_objcl_key-object_long
+            INTO @DATA(ls_object_key).
+          IF sy-subrc <> 0.
+            " 再根据内部对象号推导
+            SELECT SINGLE
+              inob~obtab AS objecttable,
+              klah~class AS classnum,
+              inob~klart AS classtype
+              FROM inob
+              JOIN kssk ON inob~cuobj = kssk~objek
+              JOIN klah ON kssk~clint = klah~clint
+              WHERE inob~objek = @ls_objcl_key-object_long
+              INTO @ls_object_key.
+          ENDIF.
+
+          IF ls_objcl_key-objecttable IS INITIAL.
+            ls_objcl_key-objecttable = ls_object_key-objecttable.
+          ENDIF.
+
+          IF ls_objcl_key-classnum IS INITIAL.
+            ls_objcl_key-classnum = ls_object_key-classnum.
+          ENDIF.
+
+          IF ls_objcl_key-classtype IS INITIAL.
+            ls_objcl_key-classtype = ls_object_key-classtype.
+          ENDIF.
+        ENDIF.
+      ENDIF.
 
       DATA:
         lt_allocvaluesnum  TYPE STANDARD TABLE OF bapi1003_alloc_values_num,
@@ -292,10 +483,10 @@ CLASS zcl_text IMPLEMENTATION.
 
       CALL FUNCTION 'BAPI_OBJCL_GETDETAIL'
         EXPORTING
-          objectkey_long  = ls_ausp-objectkey
-          objecttable     = ls_ausp-objecttable
-          classnum        = ls_ausp-classnum
-          classtype       = ls_ausp-classtype
+          objectkey_long  = ls_objcl_key-object_long
+          objecttable     = ls_objcl_key-objecttable
+          classnum        = ls_objcl_key-classnum
+          classtype       = ls_objcl_key-classtype
         TABLES
           allocvaluesnum  = lt_allocvaluesnum
           allocvalueschar = lt_allocvalueschar
@@ -308,7 +499,7 @@ CLASS zcl_text IMPLEMENTATION.
         INSERT VALUE #(
           key = ls_allocvaluesnum-charact
           value = |{ ls_allocvaluesnum-value_from NUMBER = RAW }|
-        ) INTO TABLE ls_ausp-o_text->mt_text.
+        ) INTO TABLE lr_objcl->o_text->mt_text.
       ENDLOOP.
 
       " CHAR(字符)
@@ -316,7 +507,7 @@ CLASS zcl_text IMPLEMENTATION.
         INSERT VALUE #(
           key = ls_allocvalueschar-charact
           value = ls_allocvalueschar-value_char_long
-        ) INTO TABLE ls_ausp-o_text->mt_text.
+        ) INTO TABLE lr_objcl->o_text->mt_text.
       ENDLOOP.
 
       " CURR(金额)
@@ -326,38 +517,47 @@ CLASS zcl_text IMPLEMENTATION.
         INSERT VALUE #(
           key = ls_allocvaluescurr-charact
           value = |{ ls_allocvaluesnum-value_from NUMBER = RAW }|
-*          value = |{ ls_allocvaluesnum-value_from NUMBER = RAW CURRENCY = ls_allocvaluesnum-unit_from }|
-        ) INTO TABLE ls_ausp-o_text->mt_text.
+        ) INTO TABLE lr_objcl->o_text->mt_text.
       ENDLOOP.
-
-      INSERT ls_ausp INTO TABLE mt_ausp.
     ENDIF.
 
-    ro_text = ls_ausp-o_text.
+    ro_text = lr_objcl->o_text.
 
   ENDMETHOD.
 
 
-  METHOD domain.
+  METHOD create_query.
 
-    READ TABLE mt_domains INTO DATA(ls_domain) WITH KEY domname = i_domname BINARY SEARCH.
+    READ TABLE mt_query REFERENCE INTO DATA(lr_query) WITH KEY name = i_name BINARY SEARCH.
     IF sy-subrc <> 0.
-      CLEAR ls_domain.
-      ls_domain-domname = i_domname.
-      ls_domain-o_text = NEW zcl_text( 'DOMAIN' ).
-
-      SELECT
-        domvalue_l AS key,
-        ddtext AS value
-        FROM dd07t
-        WHERE domname = @i_domname
-          AND ddlanguage = '1'
-          AND as4local = 'A'
-        INTO TABLE @ls_domain-o_text->mt_text.
-
-      INSERT ls_domain INTO TABLE mt_domains.
+      INSERT VALUE #(
+        name = i_name
+        o_text = NEW #( i_name )
+      ) INTO TABLE mt_query REFERENCE INTO lr_query.
+      lr_query->o_text->m_custom_method = mc_method_dynamic_query.
+      lr_query->o_text->ms_param-table = i_tabname.
+      lr_query->o_text->ms_param-spras = i_spras.
+      lr_query->o_text->ms_param-key = i_key.
+      lr_query->o_text->ms_param-text = i_text.
     ENDIF.
-    ro_text = ls_domain-o_text.
+    ro_text = lr_query->o_text.
+
+  ENDMETHOD.
+
+
+  METHOD dynamic_query.
+
+    CHECK ms_param IS NOT INITIAL.
+    DATA l_where TYPE string.
+    l_where = |{ ms_param-key } = @I_KEY|. " 拼接查询条件
+    IF ms_param-spras IS NOT INITIAL. " 如果有语言条件也加上
+      l_where = |{ ms_param-spras } = @SY-LANGU AND { l_where }|.
+    ENDIF.
+    TRY.
+        SELECT SINGLE (ms_param-text) FROM (ms_param-table) WHERE (l_where) INTO @r_value.
+      CATCH cx_root.
+        CLEAR ms_param. " 查询失败，不允许继续查询
+    ENDTRY.
 
   ENDMETHOD.
 
@@ -365,30 +565,31 @@ CLASS zcl_text IMPLEMENTATION.
   METHOD get.
 
     CHECK i_key IS NOT INITIAL.
-    CHECK m_name <> 'NOT_FOUND'.
-
-    " 检查缓存
-    READ TABLE mt_text INTO DATA(ls_text) WITH KEY key = i_key.
+    " 缓存检查
+    READ TABLE mt_text REFERENCE INTO DATA(lr_text) WITH KEY key = i_key.
     IF sy-subrc = 0.
-      r_value = ls_text-value.
+      r_value = lr_text->value.
       RETURN.
     ENDIF.
 
-    TRY.
-        " 跳转到对应方法处理
-        CALL METHOD me->(m_method)
-          EXPORTING
-            i_key   = i_key
-          RECEIVING
-            r_value = r_value.
-      CATCH cx_root.
-    ENDTRY.
+    " 检查并调用特殊处理方法
+    IF m_custom_method IS NOT INITIAL.
+      TRY.
+          CALL METHOD me->(m_custom_method)
+            EXPORTING
+              i_key   = i_key
+            RECEIVING
+              r_value = r_value.
+        CATCH cx_root.
+          m_custom_method = mc_none. " 报错后不允许继续使用
+          RETURN.
+      ENDTRY.
 
-    " 缓存记录
-    CLEAR ls_text.
-    ls_text-key = i_key.
-    ls_text-value = r_value.
-    INSERT ls_text INTO TABLE mt_text.
+      INSERT VALUE #( " 缓存记录
+        key = i_key
+        value = r_value
+      ) INTO TABLE mt_text.
+    ENDIF.
 
   ENDMETHOD.
 
@@ -426,58 +627,18 @@ CLASS zcl_text IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD _ausp.
-  ENDMETHOD.
+  METHOD set_language.
 
-
-  METHOD _bp.
-
-    SELECT SINGLE
-      concat( name_org1, name_org2 ) AS name
-      FROM but000
-      WHERE partner = @i_key
-      INTO @r_value.
+    TRY.
+        SET LOCALE LANGUAGE i_langu.
+      CATCH cx_sy_localization_error INTO DATA(lx_sy_localization_error).
+        MESSAGE lx_sy_localization_error->get_text( ) TYPE 'S' DISPLAY LIKE 'E'.
+    ENDTRY.
 
   ENDMETHOD.
 
 
-  METHOD _bukrs.
-
-    SELECT SINGLE butxt FROM t001 WHERE bukrs = @i_key INTO @r_value.
-
-  ENDMETHOD.
-
-
-  METHOD _domain.
-  ENDMETHOD.
-
-
-  METHOD _lgort.
-
-    SELECT SINGLE lgobe FROM t001l WHERE lgort = @i_key INTO @r_value.
-
-  ENDMETHOD.
-
-
-  METHOD _matnr.
-
-    SELECT SINGLE maktx FROM makt WHERE matnr = @i_key AND spras = '1' INTO @r_value.
-
-  ENDMETHOD.
-
-
-  METHOD _not_found.
-  ENDMETHOD.
-
-
-  METHOD _prctr.
-
-    SELECT SINGLE ltext FROM cepct WHERE spras = '1' AND prctr = @i_key INTO @r_value.
-
-  ENDMETHOD.
-
-
-  METHOD _user.
+  METHOD _syst_uname.
 
     SELECT SINGLE concat( adrp~name_first, adrp~name_last )
       FROM usr21
@@ -489,21 +650,8 @@ CLASS zcl_text IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
-
-
-  METHOD _waers.
-
-    SELECT SINGLE ltext FROM tcurt WHERE spras = '1' AND waers = @i_key INTO @r_value.
-
-  ENDMETHOD.
-
-
-  METHOD _werks.
-
-    SELECT SINGLE name1 FROM t001w WHERE werks = @i_key INTO @r_value.
-
-  ENDMETHOD.
 ENDCLASS.
+
 ```
   
 </details>
@@ -513,29 +661,22 @@ ENDCLASS.
 
 ```ABAP
 
-DATA l_value TYPE string.
+" 根据传入值推理
+DATA(l_text)  = ycl_text=>auto( abap_true ). " 基础类型，推导失败，返回空值
+DATA(l_text1) = ycl_text=>auto( CONV xfeld( 'X' ) ). " 域值
+DATA(l_text2) = ycl_text=>auto( CONV blart( 'RV' ) ). " 数据元素-值表-文本表
+DATA(l_text3) = ycl_text=>auto( sy-uname ). " 自定义查询1
+DATA(l_text4) = ycl_text=>auto( CONV bukrs( '0001' ) ). " 自定义查询2
 
-" 示例1，取预留项
-l_value = zcl_text=>bukrs->get( '0001' ).
-
-" 示例2，通常取值
-l_value = zcl_text=>create( 'WERKS' )->get( '0001' ).
-
-" 示例3，取域值
-l_value = zcl_text=>domain( 'XFELD' )->get( 'X' ).
-
-" 示例4，取长文本
-l_value = zcl_text=>long_text( i_id = 'Z001' i_name = '0010012345' i_object = 'VBBK' ).
-
-" 示例5，取特征值
-DATA ls_mara TYPE mara.
-DATA(lo_ausp) = zcl_text=>create_ausp(
-      i_objectkey   = |{ ls_mara-matnr }|
-      i_objecttable = 'MARA'
-*      i_classnum    = '' " 不填的话自动推导
-      i_classtype   = '001' ). " 物料分类
-l_value = lo_ausp->get( 'A0001' ).
-l_value = lo_ausp->get( 'A0002' ).
+" 如果传入基础类型数据，或者传入值没有域值、值表、文本表、自定义查询等
+" AUTO不能生效，此时可以直接指定查询
+DATA(l_text5) = ycl_text=>create_domain( 'XFELD' )->get( 'X' ). " 域值
+DATA(l_text6) = ycl_text=>create_query( " 自定义查询3
+                  i_name    = 'DEMO_QUERY'
+                  i_tabname = 'T001'
+                  i_key     = 'BUKRS'
+                  i_text    = 'BUTXT' )->get( '0001' ).
+DATA(l_text7) = ycl_text=>create_custom( 'BUKRS' )->get( '0001' ). " 自定义查询4
 
 ```
 
