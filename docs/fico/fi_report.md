@@ -369,23 +369,23 @@ CLASS lcl_fi_report IMPLEMENTATION.
       ls_fi_data-zitem = ls_config_grp-zitem.
 
       LOOP AT GROUP ls_config_grp REFERENCE INTO lr_config.
-        ls_fi_data-year_begin += lr_config->fi_data-year_begin. " 年初余额
-        ls_fi_data-period_01  += lr_config->fi_data-period_01 . " 01月余额
-        ls_fi_data-period_02  += lr_config->fi_data-period_02 . " 02月余额
-        ls_fi_data-period_03  += lr_config->fi_data-period_03 . " 03月余额
-        ls_fi_data-period_04  += lr_config->fi_data-period_04 . " 04月余额
-        ls_fi_data-period_05  += lr_config->fi_data-period_05 . " 05月余额
-        ls_fi_data-period_06  += lr_config->fi_data-period_06 . " 06月余额
-        ls_fi_data-period_07  += lr_config->fi_data-period_07 . " 07月余额
-        ls_fi_data-period_08  += lr_config->fi_data-period_08 . " 08月余额
-        ls_fi_data-period_09  += lr_config->fi_data-period_09 . " 09月余额
-        ls_fi_data-period_10  += lr_config->fi_data-period_10 . " 10月余额
-        ls_fi_data-period_11  += lr_config->fi_data-period_11 . " 11月余额
-        ls_fi_data-period_12  += lr_config->fi_data-period_12 . " 12月余额
-        ls_fi_data-period_13  += lr_config->fi_data-period_13 . " 13月余额
-        ls_fi_data-period_14  += lr_config->fi_data-period_14 . " 14月余额
-        ls_fi_data-period_15  += lr_config->fi_data-period_15 . " 15月余额
-        ls_fi_data-period_16  += lr_config->fi_data-period_16 . " 16月余额
+        ls_fi_data-year_begin = ls_fi_data-year_begi + lr_config->fi_data-year_begin. " 年初余额
+        ls_fi_data-period_01  = ls_fi_data-period_01 + lr_config->fi_data-period_01 . " 01月余额
+        ls_fi_data-period_02  = ls_fi_data-period_02 + lr_config->fi_data-period_02 . " 02月余额
+        ls_fi_data-period_03  = ls_fi_data-period_03 + lr_config->fi_data-period_03 . " 03月余额
+        ls_fi_data-period_04  = ls_fi_data-period_04 + lr_config->fi_data-period_04 . " 04月余额
+        ls_fi_data-period_05  = ls_fi_data-period_05 + lr_config->fi_data-period_05 . " 05月余额
+        ls_fi_data-period_06  = ls_fi_data-period_06 + lr_config->fi_data-period_06 . " 06月余额
+        ls_fi_data-period_07  = ls_fi_data-period_07 + lr_config->fi_data-period_07 . " 07月余额
+        ls_fi_data-period_08  = ls_fi_data-period_08 + lr_config->fi_data-period_08 . " 08月余额
+        ls_fi_data-period_09  = ls_fi_data-period_09 + lr_config->fi_data-period_09 . " 09月余额
+        ls_fi_data-period_10  = ls_fi_data-period_10 + lr_config->fi_data-period_10 . " 10月余额
+        ls_fi_data-period_11  = ls_fi_data-period_11 + lr_config->fi_data-period_11 . " 11月余额
+        ls_fi_data-period_12  = ls_fi_data-period_12 + lr_config->fi_data-period_12 . " 12月余额
+        ls_fi_data-period_13  = ls_fi_data-period_13 + lr_config->fi_data-period_13 . " 13月余额
+        ls_fi_data-period_14  = ls_fi_data-period_14 + lr_config->fi_data-period_14 . " 14月余额
+        ls_fi_data-period_15  = ls_fi_data-period_15 + lr_config->fi_data-period_15 . " 15月余额
+        ls_fi_data-period_16  = ls_fi_data-period_16 + lr_config->fi_data-period_16 . " 16月余额
         INSERT LINES OF lr_config->fi_data-t_detail_key INTO TABLE ls_fi_data-t_detail_key. " 明细数据键值
       ENDLOOP.
 
@@ -393,10 +393,10 @@ CLASS lcl_fi_report IMPLEMENTATION.
       DO 16 TIMES.
         ASSIGN COMPONENT |PERIOD_{ sy-index ALIGN = RIGHT WIDTH = 2 PAD = '0' }| OF STRUCTURE ls_fi_data TO FIELD-SYMBOL(<fs_period>).
         IF <fs_period> IS ASSIGNED.
-          ls_fi_data-year_end += <fs_period>. " 年末余额
+          ls_fi_data-year_end = ls_fi_data-year_end + <fs_period>. " 年末余额
           " 截止本月末累计金额
           IF ls_fi_data-period <= sy-index.
-            ls_fi_data-period_total += <fs_period>.
+            ls_fi_data-period_total = ls_fi_data-period_total + <fs_period>.
           ENDIF.
           " 本月金额
           IF ls_fi_data-period = sy-index.
@@ -496,23 +496,23 @@ CLASS lcl_fi_report IMPLEMENTATION.
     " 汇总财务数据
     LOOP AT lt_detail INTO DATA(ls_detail).
       CASE ls_detail-poper.
-        WHEN  0. ir_config->fi_data-year_begin += ls_detail-hsl.
-        WHEN  1. ir_config->fi_data-period_01 += ls_detail-hsl.
-        WHEN  2. ir_config->fi_data-period_02 += ls_detail-hsl.
-        WHEN  3. ir_config->fi_data-period_03 += ls_detail-hsl.
-        WHEN  4. ir_config->fi_data-period_04 += ls_detail-hsl.
-        WHEN  5. ir_config->fi_data-period_05 += ls_detail-hsl.
-        WHEN  6. ir_config->fi_data-period_06 += ls_detail-hsl.
-        WHEN  7. ir_config->fi_data-period_07 += ls_detail-hsl.
-        WHEN  8. ir_config->fi_data-period_08 += ls_detail-hsl.
-        WHEN  9. ir_config->fi_data-period_09 += ls_detail-hsl.
-        WHEN 10. ir_config->fi_data-period_10 += ls_detail-hsl.
-        WHEN 11. ir_config->fi_data-period_11 += ls_detail-hsl.
-        WHEN 12. ir_config->fi_data-period_12 += ls_detail-hsl.
-        WHEN 13. ir_config->fi_data-period_13 += ls_detail-hsl.
-        WHEN 14. ir_config->fi_data-period_14 += ls_detail-hsl.
-        WHEN 15. ir_config->fi_data-period_15 += ls_detail-hsl.
-        WHEN 16. ir_config->fi_data-period_16 += ls_detail-hsl.
+        WHEN  0. ir_config->fi_data-year_begin = ir_config->fi_data-year_begin + ls_detail-hsl.
+        WHEN  1. ir_config->fi_data-period_01 = ir_config->fi_data-period_01 + ls_detail-hsl.
+        WHEN  2. ir_config->fi_data-period_02 = ir_config->fi_data-period_02 + ls_detail-hsl.
+        WHEN  3. ir_config->fi_data-period_03 = ir_config->fi_data-period_03 + ls_detail-hsl.
+        WHEN  4. ir_config->fi_data-period_04 = ir_config->fi_data-period_04 + ls_detail-hsl.
+        WHEN  5. ir_config->fi_data-period_05 = ir_config->fi_data-period_05 + ls_detail-hsl.
+        WHEN  6. ir_config->fi_data-period_06 = ir_config->fi_data-period_06 + ls_detail-hsl.
+        WHEN  7. ir_config->fi_data-period_07 = ir_config->fi_data-period_07 + ls_detail-hsl.
+        WHEN  8. ir_config->fi_data-period_08 = ir_config->fi_data-period_08 + ls_detail-hsl.
+        WHEN  9. ir_config->fi_data-period_09 = ir_config->fi_data-period_09 + ls_detail-hsl.
+        WHEN 10. ir_config->fi_data-period_10 = ir_config->fi_data-period_10 + ls_detail-hsl.
+        WHEN 11. ir_config->fi_data-period_11 = ir_config->fi_data-period_11 + ls_detail-hsl.
+        WHEN 12. ir_config->fi_data-period_12 = ir_config->fi_data-period_12 + ls_detail-hsl.
+        WHEN 13. ir_config->fi_data-period_13 = ir_config->fi_data-period_13 + ls_detail-hsl.
+        WHEN 14. ir_config->fi_data-period_14 = ir_config->fi_data-period_14 + ls_detail-hsl.
+        WHEN 15. ir_config->fi_data-period_15 = ir_config->fi_data-period_15 + ls_detail-hsl.
+        WHEN 16. ir_config->fi_data-period_16 = ir_config->fi_data-period_16 + ls_detail-hsl.
         WHEN OTHERS.
       ENDCASE.
 
@@ -551,23 +551,23 @@ CLASS lcl_fi_report IMPLEMENTATION.
         l_factor = -1.
       ENDIF.
 
-      ir_config->fi_data-year_begin += lr_config->fi_data-year_begin * l_factor. " 年初余额
-      ir_config->fi_data-period_01  += lr_config->fi_data-period_01  * l_factor. " 01月余额
-      ir_config->fi_data-period_02  += lr_config->fi_data-period_02  * l_factor. " 02月余额
-      ir_config->fi_data-period_03  += lr_config->fi_data-period_03  * l_factor. " 03月余额
-      ir_config->fi_data-period_04  += lr_config->fi_data-period_04  * l_factor. " 04月余额
-      ir_config->fi_data-period_05  += lr_config->fi_data-period_05  * l_factor. " 05月余额
-      ir_config->fi_data-period_06  += lr_config->fi_data-period_06  * l_factor. " 06月余额
-      ir_config->fi_data-period_07  += lr_config->fi_data-period_07  * l_factor. " 07月余额
-      ir_config->fi_data-period_08  += lr_config->fi_data-period_08  * l_factor. " 08月余额
-      ir_config->fi_data-period_09  += lr_config->fi_data-period_09  * l_factor. " 09月余额
-      ir_config->fi_data-period_10  += lr_config->fi_data-period_10  * l_factor. " 10月余额
-      ir_config->fi_data-period_11  += lr_config->fi_data-period_11  * l_factor. " 11月余额
-      ir_config->fi_data-period_12  += lr_config->fi_data-period_12  * l_factor. " 12月余额
-      ir_config->fi_data-period_13  += lr_config->fi_data-period_13  * l_factor. " 13月余额
-      ir_config->fi_data-period_14  += lr_config->fi_data-period_14  * l_factor. " 14月余额
-      ir_config->fi_data-period_15  += lr_config->fi_data-period_15  * l_factor. " 15月余额
-      ir_config->fi_data-period_16  += lr_config->fi_data-period_16  * l_factor. " 16月余额
+      ir_config->fi_data-year_begin = ir_config->fi_data-year_begin + lr_config->fi_data-year_begin * l_factor. " 年初余额
+      ir_config->fi_data-period_01 = ir_config->fi_data-period_01 + lr_config->fi_data-period_01 * l_factor. " 01月余额
+      ir_config->fi_data-period_02 = ir_config->fi_data-period_02 + lr_config->fi_data-period_02 * l_factor. " 02月余额
+      ir_config->fi_data-period_03 = ir_config->fi_data-period_03 + lr_config->fi_data-period_03 * l_factor. " 03月余额
+      ir_config->fi_data-period_04 = ir_config->fi_data-period_04 + lr_config->fi_data-period_04 * l_factor. " 04月余额
+      ir_config->fi_data-period_05 = ir_config->fi_data-period_05 + lr_config->fi_data-period_05 * l_factor. " 05月余额
+      ir_config->fi_data-period_06 = ir_config->fi_data-period_06 + lr_config->fi_data-period_06 * l_factor. " 06月余额
+      ir_config->fi_data-period_07 = ir_config->fi_data-period_07 + lr_config->fi_data-period_07 * l_factor. " 07月余额
+      ir_config->fi_data-period_08 = ir_config->fi_data-period_08 + lr_config->fi_data-period_08 * l_factor. " 08月余额
+      ir_config->fi_data-period_09 = ir_config->fi_data-period_09 + lr_config->fi_data-period_09 * l_factor. " 09月余额
+      ir_config->fi_data-period_10 = ir_config->fi_data-period_10 + lr_config->fi_data-period_10 * l_factor. " 10月余额
+      ir_config->fi_data-period_11 = ir_config->fi_data-period_11 + lr_config->fi_data-period_11 * l_factor. " 11月余额
+      ir_config->fi_data-period_12 = ir_config->fi_data-period_12 + lr_config->fi_data-period_12 * l_factor. " 12月余额
+      ir_config->fi_data-period_13 = ir_config->fi_data-period_13 + lr_config->fi_data-period_13 * l_factor. " 13月余额
+      ir_config->fi_data-period_14 = ir_config->fi_data-period_14 + lr_config->fi_data-period_14 * l_factor. " 14月余额
+      ir_config->fi_data-period_15 = ir_config->fi_data-period_15 + lr_config->fi_data-period_15 * l_factor. " 15月余额
+      ir_config->fi_data-period_16 = ir_config->fi_data-period_16 + lr_config->fi_data-period_16 * l_factor. " 16月余额
       INSERT LINES OF lr_config->fi_data-t_detail_key INTO TABLE ir_config->fi_data-t_detail_key. " 明细数据
     ENDLOOP.
 

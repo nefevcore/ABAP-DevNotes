@@ -11,7 +11,7 @@
 我收集并分析了几份代码，将主要功能整理到下面代码，可以根据自己需要进行扩展：
 
 <details>
-  <summary>示例代码</summary>
+  <summary>LCL_CLEARING_ACCOUNT</summary>
 
 ```ABAP
 *&---------------------------------------------------------------------*
@@ -344,7 +344,7 @@ CLASS lcl_clearing_account IMPLEMENTATION.
     CHECK ms_result-mtype <> 'E'.
 
     " 写入清账凭证行并计算差额
-    DATA l_amount_diff TYPE ty_amount. " 差额
+    DATA l_amount_diff TYPE p LENGTH 16 DECIMALS 2. " 差额，P类型最大值
     LOOP AT mt_bseg REFERENCE INTO DATA(lr_bseg).
       " 对项目清账
       DATA(l_selfd) = 'BELNR'.
@@ -352,9 +352,9 @@ CLASS lcl_clearing_account IMPLEMENTATION.
       _ftclear l_selfd l_selval.
       " 汇总金额，获取清算差值
       IF lr_bseg->shkzg = 'S'.
-        l_amount_diff += lr_bseg->wrbtr.
+        l_amount_diff = l_amount_diff + lr_bseg->wrbtr.
       ELSE.
-        l_amount_diff -= lr_bseg->wrbtr.
+        l_amount_diff = l_amount_diff - lr_bseg->wrbtr.
       ENDIF.
     ENDLOOP.
 
@@ -513,9 +513,10 @@ ENDCLASS.
 DATA lt_clearing_line TYPE lcl_clearing_account=>tt_clearing_line.
 DATA ls_result TYPE lcl_clearing_account=>ty_result.
 
+" 就是BSEG主键值
 lt_clearing_line = VALUE #(
-  ( belnr = '90000001' gjahr = '2022' buzei = '001' )
-  ( belnr = '90000001' gjahr = '2022' buzei = '003' )
+  ( bukrs = '1000' belnr = '90000001' gjahr = '2022' buzei = '001' )
+  ( bukrs = '1000' belnr = '90000001' gjahr = '2022' buzei = '003' )
 ).
 
 " 客户清账
@@ -531,15 +532,16 @@ ls_result = lcl_clearing_account=>post_f_32(
 DATA lt_clearing_line TYPE lcl_clearing_account=>tt_clearing_line.
 DATA ls_result TYPE lcl_clearing_account=>ty_result.
 
+" 就是BSEG主键值
 lt_clearing_line = VALUE #(
-  ( belnr = '90000002' gjahr = '2022' buzei = '002' )
-  ( belnr = '90000002' gjahr = '2022' buzei = '004' )
+  ( bukrs = '1000' belnr = '90000002' gjahr = '2022' buzei = '002' )
+  ( bukrs = '1000' belnr = '90000002' gjahr = '2022' buzei = '004' )
 ).
 
 " 供应商清账
 ls_result = lcl_clearing_account=>post_f_44(
               i_bukrs          = '1000'
-              i_kunnr          = '8000001'
+              i_lifnr          = '8000001'
               it_clearing_line = lt_clearing_line ).
 
 ```
