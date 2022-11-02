@@ -22,8 +22,9 @@ nav:
   - SD: 
     - SD模块概述: sd/index.md
     - 销售订单: sd/sale_document.md
-    - （外向）交货单: sd/outbound_delivery.md
+    - 外向交货单: sd/outbound_delivery.md
     - 发货过账: sd/outbound_delivery_post.md
+    - 销售屏幕增强: sd/sale_doc_screen_enhancement.md
   - PP: 
     - PP模块概述: pp/index.md
     - 工艺路线: pp/pp_routing.md
@@ -49,24 +50,30 @@ nav:
       - 资产负债表: fico/fi_report_bs.md
       - 利润表: fico/fi_report_pl.md
       - 现金流量表: fico/fi_report_cf.md
-  - 常见报表: 
-    - 报表概述: report/index.md
-    - 库存报表: report/stock.md
-  - 其他: 
-    - 其他概述: others/index.md
+    - 固定资产明细报表: fico/fixed_assets_report.md
+    - 批量WBS成本核算: fico/ckw1.md
+  - 多模块复用: 
     - MIGO: others/migo.md
     - 定价: others/pricing.md
+    - 发票增强: others/billing_enhancement.md
+  - 报表: 
+    - 报表概述: report/index.md
+    - 库存报表: report/stock.md
+    - 日志查询报表: report/zlogreport.md
+  - 其他: 
+    - 其他概述: others/index.md
     - ALV相关: others/alv.md
     - Excel上传下载: others/xlsx_io.md
     - 文本取值工具: others/zcl_text.md
     - SMARTFORMS相关: others/smartforms.md
     - 中文大写: others/number_to_chinese.md
+    - 嵌套循环: others/nest_loop.md
+    - 邮件发送: others/send_mail.md
+    - CMOD增强: others/cmod.md
+    - 导表程序: others/zdataimport.md
   - 结语: about.md
   - 附录: 
     - MarkDown语法: ex/mdnote.md
-    - 嵌套循环: ex/nest_loop.md
-    - 邮件发送: ex/send_mail.md
-    - CMOD增强: ex/cmod.md
 theme: 
   name: material
 markdown_extensions:

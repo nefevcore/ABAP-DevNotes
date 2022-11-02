@@ -283,22 +283,29 @@ TYPES:
     t_range_opt TYPE RANGE OF char40,
   END OF ty_filter.
 
+" 对于特殊配置，通过回调方法进行处理
+TYPES:
+  BEGIN OF ty_callback,
+    cb_program TYPE programm,
+    cb_from    TYPE char30,
+  END OF ty_callback.
+TYPES tt_callback TYPE STANDARD TABLE OF ty_callback WITH EMPTY KEY.
+
 " 配置数据
 TYPES ty_config_key TYPE n LENGTH 3.
 TYPES:
   BEGIN OF ty_config,
-    bukrs            TYPE bukrs, " 公司
-    zitem            TYPE ty_config_key, " 项目
-    zitem_sub        TYPE ty_config_key, " 子项目
-    ztext            TYPE string, " 描述
-    reverse          TYPE xfeld, " 反向标记，汇总或计算的时候使用
-    fi_data          TYPE ty_fi_data,
-    t_racct_opt      TYPE RANGE OF racct, " 科目作为财务数据首要筛选维度
-    t_filter         TYPE STANDARD TABLE OF ty_filter WITH EMPTY KEY, " 筛选项
-    t_collect        TYPE STANDARD TABLE OF ty_config_key WITH EMPTY KEY, " 引用汇总其他项目结果
-    processed        TYPE char01, " 处理标识，未处理[空]，处理中[P]，已处理[X]，用于死循环检查和跳过冗余计算
-    callback_program TYPE programm, " 对于特殊配置，通过回调方法进行处理
-    callback_from    TYPE char30, " 对于特殊配置，通过回调方法进行处理
+    bukrs       TYPE bukrs, " 公司
+    zitem       TYPE ty_config_key, " 项目
+    zitem_sub   TYPE ty_config_key, " 子项目
+    ztext       TYPE string, " 描述
+    reverse     TYPE xfeld, " 反向标记，汇总或计算的时候使用
+    fi_data     TYPE ty_fi_data,
+    t_racct_opt TYPE RANGE OF racct, " 科目作为财务数据首要筛选维度
+    t_filter    TYPE STANDARD TABLE OF ty_filter WITH EMPTY KEY, " 筛选项
+    t_collect   TYPE STANDARD TABLE OF ty_config_key WITH EMPTY KEY, " 引用汇总其他项目结果
+    processed   TYPE char01, " 处理标识，未处理[空]，处理中[P]，已处理[X]，用于死循环检查和跳过冗余计算
+    t_callback  TYPE tt_callback,
   END OF ty_config.
 TYPES tt_config TYPE STANDARD TABLE OF ty_config WITH EMPTY KEY.
 
@@ -320,6 +327,9 @@ CLASS lcl_fi_report DEFINITION.
                                    i_period         TYPE monat
                                    it_config        TYPE tt_config
                          RETURNING VALUE(ro_result) TYPE REF TO lcl_fi_report.
+    CLASS-METHODS add_hsl IMPORTING ir_config TYPE REF TO ty_config
+                                    i_poper   TYPE ty_detail-poper
+                                    i_hsl     TYPE ty_detail-hsl.
     METHODS execute RETURNING VALUE(rt_fi_data) TYPE tt_fi_data.
   PRIVATE SECTION.
     METHODS get_detail.
@@ -407,9 +417,9 @@ CLASS lcl_fi_report IMPLEMENTATION.
         l_period = sy-index.
         ASSIGN COMPONENT |PERIOD_{ sy-index ALIGN = RIGHT WIDTH = 2 PAD = '0' }| OF STRUCTURE ls_fi_data TO FIELD-SYMBOL(<fs_period>).
         IF <fs_period> IS ASSIGNED.
-          ls_fi_data-year_end = ls_fi_data-year_end + <fs_period>. " 年末余额
+          ls_fi_data-year_end += <fs_period>. " 年末余额
           IF ls_fi_data-period >= l_period. " 截止本月末累计金额
-            ls_fi_data-period_total = ls_fi_data-period_total + <fs_period>.
+            ls_fi_data-period_total += <fs_period>.
           ENDIF.
           IF ls_fi_data-period = l_period. " 本月金额
             ls_fi_data-period_current = <fs_period>.
@@ -485,18 +495,34 @@ CLASS lcl_fi_report IMPLEMENTATION.
       RETURN.
     ENDIF.
 
+    " 进度展示
+    DATA l_text TYPE string.
+    l_text = |正在处理项目[{ ir_config->zitem }]: { ir_config->ztext }|.
+    CALL FUNCTION 'SAPGUI_PROGRESS_INDICATOR'
+      EXPORTING
+        text = l_text.
+
     ir_config->processed = 'P'. " 处理中
 
-    " 对于文本项，并不需要筛选
-    IF ir_config->t_racct_opt IS NOT INITIAL
-    OR ir_config->t_filter IS NOT INITIAL.
-      " 获取当前配置行的有效数据
+    " 获取当前配置行的有效数据
+    DATA lt_detail TYPE tt_detail.
+    IF ir_config->t_racct_opt IS NOT INITIAL.
       SELECT * FROM @mt_detail AS ds
         WHERE rbukrs = @ir_config->bukrs
           AND racct IN @ir_config->t_racct_opt " 科目
-        INTO TABLE @DATA(lt_detail).
+        INTO TABLE @lt_detail.
+    ENDIF.
 
-      " 除科目外，其他筛选项动态处理
+    " 特殊处理
+    LOOP AT ir_config->t_callback INTO DATA(ls_callback).
+      " 参考：
+      " FORM frm_config TABLES ct_detail TYPE tt_detail USING cr_config TYPE REF TO ty_config.
+      PERFORM (ls_callback-cb_from) IN PROGRAM (ls_callback-cb_program) IF FOUND
+      TABLES lt_detail USING ir_config.
+    ENDLOOP.
+
+    " 除科目外，其他筛选项动态处理
+    IF ir_config->t_filter IS NOT INITIAL.
       LOOP AT ir_config->t_filter INTO DATA(ls_filter) WHERE t_range_opt IS NOT INITIAL.
         IF lt_detail IS NOT INITIAL.
           DATA(l_condition) = |{ ls_filter-name } IN @LS_FILTER-T_RANGE_OPT|.
@@ -508,34 +534,11 @@ CLASS lcl_fi_report IMPLEMENTATION.
       ENDLOOP.
     ENDIF.
 
-    " 特殊处理
-    IF ir_config->callback_program IS NOT INITIAL
-    AND ir_config->callback_from IS NOT INITIAL.
-      PERFORM (ir_config->callback_from) IN PROGRAM (ir_config->callback_program) IF FOUND TABLES lt_detail.
-    ENDIF.
-
     " 汇总财务数据
     LOOP AT lt_detail INTO DATA(ls_detail).
-      CASE ls_detail-poper.
-        WHEN  0. ir_config->fi_data-year_begin = ir_config->fi_data-year_begin + ls_detail-hsl.
-        WHEN  1. ir_config->fi_data-period_01 = ir_config->fi_data-period_01 + ls_detail-hsl.
-        WHEN  2. ir_config->fi_data-period_02 = ir_config->fi_data-period_02 + ls_detail-hsl.
-        WHEN  3. ir_config->fi_data-period_03 = ir_config->fi_data-period_03 + ls_detail-hsl.
-        WHEN  4. ir_config->fi_data-period_04 = ir_config->fi_data-period_04 + ls_detail-hsl.
-        WHEN  5. ir_config->fi_data-period_05 = ir_config->fi_data-period_05 + ls_detail-hsl.
-        WHEN  6. ir_config->fi_data-period_06 = ir_config->fi_data-period_06 + ls_detail-hsl.
-        WHEN  7. ir_config->fi_data-period_07 = ir_config->fi_data-period_07 + ls_detail-hsl.
-        WHEN  8. ir_config->fi_data-period_08 = ir_config->fi_data-period_08 + ls_detail-hsl.
-        WHEN  9. ir_config->fi_data-period_09 = ir_config->fi_data-period_09 + ls_detail-hsl.
-        WHEN 10. ir_config->fi_data-period_10 = ir_config->fi_data-period_10 + ls_detail-hsl.
-        WHEN 11. ir_config->fi_data-period_11 = ir_config->fi_data-period_11 + ls_detail-hsl.
-        WHEN 12. ir_config->fi_data-period_12 = ir_config->fi_data-period_12 + ls_detail-hsl.
-        WHEN 13. ir_config->fi_data-period_13 = ir_config->fi_data-period_13 + ls_detail-hsl.
-        WHEN 14. ir_config->fi_data-period_14 = ir_config->fi_data-period_14 + ls_detail-hsl.
-        WHEN 15. ir_config->fi_data-period_15 = ir_config->fi_data-period_15 + ls_detail-hsl.
-        WHEN 16. ir_config->fi_data-period_16 = ir_config->fi_data-period_16 + ls_detail-hsl.
-        WHEN OTHERS.
-      ENDCASE.
+      add_hsl( ir_config = ir_config
+               i_poper = ls_detail-poper
+               i_hsl = ls_detail-hsl ).
 
       " 写入到明细清单中
       READ TABLE mt_detail TRANSPORTING NO FIELDS WITH KEY
@@ -556,57 +559,56 @@ CLASS lcl_fi_report IMPLEMENTATION.
       bukrs = ir_config->bukrs
       zitem = l_other_zitem
       BINARY SEARCH.
-        IF sy-subrc = 0.
-          LOOP AT mt_config REFERENCE INTO DATA(lr_config) FROM sy-tabix.
-            IF lr_config->bukrs <> ir_config->bukrs
-            OR lr_config->zitem <> l_other_zitem.
-              EXIT.
-            ENDIF.
+      IF sy-subrc = 0.
+        LOOP AT mt_config REFERENCE INTO DATA(lr_config) FROM sy-tabix.
+          IF lr_config->bukrs <> ir_config->bukrs
+          OR lr_config->zitem <> l_other_zitem.
+            EXIT.
+          ENDIF.
 
-            " 递归取值
-            get_fi_data( ir_config = lr_config i_depth = i_depth + 1 ). " 递归取值
+          get_fi_data( ir_config = lr_config i_depth = i_depth + 1 ). " 递归取值
 
-            ir_config->fi_data-year_begin = ir_config->fi_data-year_begin + lr_config->fi_data-year_begin * l_factor. " 年初余额
-            ir_config->fi_data-period_01 = ir_config->fi_data-period_01 + lr_config->fi_data-period_01 * l_factor. " 01月余额
-            ir_config->fi_data-period_02 = ir_config->fi_data-period_02 + lr_config->fi_data-period_02 * l_factor. " 02月余额
-            ir_config->fi_data-period_03 = ir_config->fi_data-period_03 + lr_config->fi_data-period_03 * l_factor. " 03月余额
-            ir_config->fi_data-period_04 = ir_config->fi_data-period_04 + lr_config->fi_data-period_04 * l_factor. " 04月余额
-            ir_config->fi_data-period_05 = ir_config->fi_data-period_05 + lr_config->fi_data-period_05 * l_factor. " 05月余额
-            ir_config->fi_data-period_06 = ir_config->fi_data-period_06 + lr_config->fi_data-period_06 * l_factor. " 06月余额
-            ir_config->fi_data-period_07 = ir_config->fi_data-period_07 + lr_config->fi_data-period_07 * l_factor. " 07月余额
-            ir_config->fi_data-period_08 = ir_config->fi_data-period_08 + lr_config->fi_data-period_08 * l_factor. " 08月余额
-            ir_config->fi_data-period_09 = ir_config->fi_data-period_09 + lr_config->fi_data-period_09 * l_factor. " 09月余额
-            ir_config->fi_data-period_10 = ir_config->fi_data-period_10 + lr_config->fi_data-period_10 * l_factor. " 10月余额
-            ir_config->fi_data-period_11 = ir_config->fi_data-period_11 + lr_config->fi_data-period_11 * l_factor. " 11月余额
-            ir_config->fi_data-period_12 = ir_config->fi_data-period_12 + lr_config->fi_data-period_12 * l_factor. " 12月余额
-            ir_config->fi_data-period_13 = ir_config->fi_data-period_13 + lr_config->fi_data-period_13 * l_factor. " 13月余额
-            ir_config->fi_data-period_14 = ir_config->fi_data-period_14 + lr_config->fi_data-period_14 * l_factor. " 14月余额
-            ir_config->fi_data-period_15 = ir_config->fi_data-period_15 + lr_config->fi_data-period_15 * l_factor. " 15月余额
-            ir_config->fi_data-period_16 = ir_config->fi_data-period_16 + lr_config->fi_data-period_16 * l_factor. " 16月余额
-            INSERT LINES OF lr_config->fi_data-t_detail_key INTO TABLE ir_config->fi_data-t_detail_key. " 明细数据
-          ENDLOOP.
-        ENDIF.
+          ir_config->fi_data-year_begin = ir_config->fi_data-year_begin + lr_config->fi_data-year_begin. " 年初余额
+          ir_config->fi_data-period_01 = ir_config->fi_data-period_01 + lr_config->fi_data-period_01. " 01月余额
+          ir_config->fi_data-period_02 = ir_config->fi_data-period_02 + lr_config->fi_data-period_02. " 02月余额
+          ir_config->fi_data-period_03 = ir_config->fi_data-period_03 + lr_config->fi_data-period_03. " 03月余额
+          ir_config->fi_data-period_04 = ir_config->fi_data-period_04 + lr_config->fi_data-period_04. " 04月余额
+          ir_config->fi_data-period_05 = ir_config->fi_data-period_05 + lr_config->fi_data-period_05. " 05月余额
+          ir_config->fi_data-period_06 = ir_config->fi_data-period_06 + lr_config->fi_data-period_06. " 06月余额
+          ir_config->fi_data-period_07 = ir_config->fi_data-period_07 + lr_config->fi_data-period_07. " 07月余额
+          ir_config->fi_data-period_08 = ir_config->fi_data-period_08 + lr_config->fi_data-period_08. " 08月余额
+          ir_config->fi_data-period_09 = ir_config->fi_data-period_09 + lr_config->fi_data-period_09. " 09月余额
+          ir_config->fi_data-period_10 = ir_config->fi_data-period_10 + lr_config->fi_data-period_10. " 10月余额
+          ir_config->fi_data-period_11 = ir_config->fi_data-period_11 + lr_config->fi_data-period_11. " 11月余额
+          ir_config->fi_data-period_12 = ir_config->fi_data-period_12 + lr_config->fi_data-period_12. " 12月余额
+          ir_config->fi_data-period_13 = ir_config->fi_data-period_13 + lr_config->fi_data-period_13. " 13月余额
+          ir_config->fi_data-period_14 = ir_config->fi_data-period_14 + lr_config->fi_data-period_14. " 14月余额
+          ir_config->fi_data-period_15 = ir_config->fi_data-period_15 + lr_config->fi_data-period_15. " 15月余额
+          ir_config->fi_data-period_16 = ir_config->fi_data-period_16 + lr_config->fi_data-period_16. " 16月余额
+          INSERT LINES OF lr_config->fi_data-t_detail_key INTO TABLE ir_config->fi_data-t_detail_key. " 明细数据
+        ENDLOOP.
+      ENDIF.
     ENDLOOP.
 
     " 反向标记
     IF ir_config->reverse IS NOT INITIAL.
-      ir_config->fi_data-year_begin *= -1. " 年初余额
-      ir_config->fi_data-period_01  *= -1. " 01月余额
-      ir_config->fi_data-period_02  *= -1. " 02月余额
-      ir_config->fi_data-period_03  *= -1. " 03月余额
-      ir_config->fi_data-period_04  *= -1. " 04月余额
-      ir_config->fi_data-period_05  *= -1. " 05月余额
-      ir_config->fi_data-period_06  *= -1. " 06月余额
-      ir_config->fi_data-period_07  *= -1. " 07月余额
-      ir_config->fi_data-period_08  *= -1. " 08月余额
-      ir_config->fi_data-period_09  *= -1. " 09月余额
-      ir_config->fi_data-period_10  *= -1. " 10月余额
-      ir_config->fi_data-period_11  *= -1. " 11月余额
-      ir_config->fi_data-period_12  *= -1. " 12月余额
-      ir_config->fi_data-period_13  *= -1. " 13月余额
-      ir_config->fi_data-period_14  *= -1. " 14月余额
-      ir_config->fi_data-period_15  *= -1. " 15月余额
-      ir_config->fi_data-period_16  *= -1. " 16月余额
+      ir_config->fi_data-year_begin = 0 - ir_config->fi_data-year_begin. " 年初余额
+      ir_config->fi_data-period_01  = 0 - ir_config->fi_data-period_01 . " 01月余额
+      ir_config->fi_data-period_02  = 0 - ir_config->fi_data-period_02 . " 02月余额
+      ir_config->fi_data-period_03  = 0 - ir_config->fi_data-period_03 . " 03月余额
+      ir_config->fi_data-period_04  = 0 - ir_config->fi_data-period_04 . " 04月余额
+      ir_config->fi_data-period_05  = 0 - ir_config->fi_data-period_05 . " 05月余额
+      ir_config->fi_data-period_06  = 0 - ir_config->fi_data-period_06 . " 06月余额
+      ir_config->fi_data-period_07  = 0 - ir_config->fi_data-period_07 . " 07月余额
+      ir_config->fi_data-period_08  = 0 - ir_config->fi_data-period_08 . " 08月余额
+      ir_config->fi_data-period_09  = 0 - ir_config->fi_data-period_09 . " 09月余额
+      ir_config->fi_data-period_10  = 0 - ir_config->fi_data-period_10 . " 10月余额
+      ir_config->fi_data-period_11  = 0 - ir_config->fi_data-period_11 . " 11月余额
+      ir_config->fi_data-period_12  = 0 - ir_config->fi_data-period_12 . " 12月余额
+      ir_config->fi_data-period_13  = 0 - ir_config->fi_data-period_13 . " 13月余额
+      ir_config->fi_data-period_14  = 0 - ir_config->fi_data-period_14 . " 14月余额
+      ir_config->fi_data-period_15  = 0 - ir_config->fi_data-period_15 . " 15月余额
+      ir_config->fi_data-period_16  = 0 - ir_config->fi_data-period_16 . " 16月余额
     ENDIF.
 
     ir_config->processed = 'X'. " 处理完成
@@ -715,7 +717,43 @@ CLASS lcl_fi_report IMPLEMENTATION.
 
   ENDMETHOD.
 
+*&---------------------------------------------------------------------*
+*& 添加金额到对应期间
+*&---------------------------------------------------------------------*
+  METHOD add_hsl.
+
+    CASE i_poper.
+      WHEN  0. ir_config->fi_data-year_begin += i_hsl.
+      WHEN  1. ir_config->fi_data-period_01 += i_hsl.
+      WHEN  2. ir_config->fi_data-period_02 += i_hsl.
+      WHEN  3. ir_config->fi_data-period_03 += i_hsl.
+      WHEN  4. ir_config->fi_data-period_04 += i_hsl.
+      WHEN  5. ir_config->fi_data-period_05 += i_hsl.
+      WHEN  6. ir_config->fi_data-period_06 += i_hsl.
+      WHEN  7. ir_config->fi_data-period_07 += i_hsl.
+      WHEN  8. ir_config->fi_data-period_08 += i_hsl.
+      WHEN  9. ir_config->fi_data-period_09 += i_hsl.
+      WHEN 10. ir_config->fi_data-period_10 += i_hsl.
+      WHEN 11. ir_config->fi_data-period_11 += i_hsl.
+      WHEN 12. ir_config->fi_data-period_12 += i_hsl.
+      WHEN 13. ir_config->fi_data-period_13 += i_hsl.
+      WHEN 14. ir_config->fi_data-period_14 += i_hsl.
+      WHEN 15. ir_config->fi_data-period_15 += i_hsl.
+      WHEN 16. ir_config->fi_data-period_16 += i_hsl.
+      WHEN OTHERS.
+    ENDCASE.
+
+  ENDMETHOD.
+
 ENDCLASS.
+*&---------------------------------------------------------------------*
+*& 回调参考方法
+*&---------------------------------------------------------------------*
+FORM frm_config_sample
+  TABLES ct_detail TYPE tt_detail
+  USING cr_config TYPE REF TO ty_config.
+
+ENDFORM.
 
 ```
 

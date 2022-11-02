@@ -796,6 +796,8 @@ ENDTRY.
 
 第三方工具，通过解析XLSX中的XML文件，实现高速读取数据。相比CL_EHFND_XLSX，提供了更齐全的样式设置。
 
+> <https://github.com/abap2xlsx/abap2xlsx/releases>
+
 ## XLSX WORKBANCH
 
 第三方工具，类似SMARTFORMS，预先设置好EXCEL模板与输入参数，随后可在程序中直接调用获取，适合导出特定格式的需求。

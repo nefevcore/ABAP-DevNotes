@@ -177,12 +177,8 @@ ls_goodsmvt_item-stge_loc = ls_input-lgort.
 ls_goodsmvt_item-batch = ls_input-charg.
 ls_goodsmvt_item-spec_stock = ls_input-sobkz. " 特殊库存标识
 ls_goodsmvt_item-entry_qnt = ls_input-menge. " 数量
-
-" 撤销标记
 ls_goodsmvt_item-move_type = '261'.
-IF ls_input-zcancel IS NOT INITIAL.
-  ls_goodsmvt_item-move_type = '262'.
-ENDIF.
+ls_goodsmvt_item-xstob = ls_input-zcancel. " 262的话，填撤销标记即可，不用改移动类型
 
 " WBS元素
 IF ls_input-pspnr IS NOT INITIAL.

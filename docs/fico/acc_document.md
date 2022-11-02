@@ -113,18 +113,22 @@ FORM frm_post USING i_test TYPE xfeld.
         WHEN 'D'. " 客户
           " 总帐科目
           CLEAR l_gl_acount.
-          SELECT SINGLE akont FROM knb1
-            WHERE kunnr = @ls_data-kunnr
-              AND bukrs = @ls_data-bukrs
-            INTO @l_gl_acount.
-          " 特别总账
-          IF ls_data-umskz IS NOT INITIAL.
-            SELECT SINGLE skont FROM t074
-              WHERE ktopl = ''
-                AND koart = @ls_bschl-koart
-                AND umskz = @ls_data-umskz
-                AND hkont = @l_gl_acount
+          IF ls_data-hkont IS NOT INITIAL.
+            l_gl_acount = ls_data-hkont.
+          ELSE.
+            SELECT SINGLE akont FROM knb1
+              WHERE kunnr = @ls_data-kunnr
+                AND bukrs = @ls_data-bukrs
               INTO @l_gl_acount.
+            " 特别总账
+            IF ls_data-umskz IS NOT INITIAL.
+              SELECT SINGLE skont FROM t074
+                WHERE ktopl = @l_ktopl
+                  AND koart = @ls_bschl-koart
+                  AND umskz = @ls_data-umskz
+                  AND hkont = @l_gl_acount
+                INTO @l_gl_acount.
+            ENDIF.
           ENDIF.
 
           ls_accountreceivable-itemno_acc = l_itemno_acc . " 会计凭证行项目编号
@@ -133,25 +137,32 @@ FORM frm_post USING i_test TYPE xfeld.
           ls_accountreceivable-sp_gl_ind  = ls_data-umskz. " 特殊总账标识
           ls_accountreceivable-tax_code   = ls_data-mwskz. " 税码
           ls_accountreceivable-item_text  = ls_data-sgtxt. " 项目文本
-          ls_accountpayable-alloc_nmbr    = ls_data-zuonr. " 分配
+          ls_accountreceivable-alloc_nmbr = ls_data-zuonr. " 分配
           ls_accountreceivable-profit_ctr = ls_data-prctr. " 利润中心
+          ls_accountreceivable-pmnttrms   = ls_data-zterm. " 付款条件
+          ls_accountreceivable-bline_date = ls_data-zfbdt. " 付款起算日期
+          ls_accountreceivable-bus_area   = ls_data-gsber. " 业务范围
           INSERT ls_accountreceivable INTO TABLE lt_accountreceivable.
 
         WHEN 'K'. " 供应商
           " 总帐科目
           CLEAR l_gl_acount.
-          SELECT SINGLE akont FROM lfb1
-            WHERE lifnr = @ls_data-lifnr
-              AND bukrs = @ls_data-bukrs
-            INTO @l_gl_acount.
-          " 特别总账
-          IF ls_data-umskz IS NOT INITIAL.
-            SELECT SINGLE skont FROM t074
-              WHERE ktopl = ''
-                AND koart = @ls_bschl-koart
-                AND umskz = @ls_data-umskz
-                AND hkont = @l_gl_acount
+          IF ls_data-hkont IS NOT INITIAL.
+            l_gl_acount = ls_data-hkont.
+          ELSE.
+            SELECT SINGLE akont FROM lfb1
+              WHERE lifnr = @ls_data-lifnr
+                AND bukrs = @ls_data-bukrs
               INTO @l_gl_acount.
+            " 特别总账
+            IF ls_data-umskz IS NOT INITIAL.
+              SELECT SINGLE skont FROM t074
+                WHERE ktopl = @l_ktopl
+                  AND koart = @ls_bschl-koart
+                  AND umskz = @ls_data-umskz
+                  AND hkont = @l_gl_acount
+                INTO @l_gl_acount.
+            ENDIF.
           ENDIF.
 
           ls_accountpayable-itemno_acc = l_itemno_acc. " 会计凭证行项目编号
@@ -162,12 +173,17 @@ FORM frm_post USING i_test TYPE xfeld.
           ls_accountpayable-alloc_nmbr = ls_data-zuonr. " 分配
           ls_accountpayable-profit_ctr = ls_data-prctr. " 利润中心
           ls_accountpayable-tax_code = ls_data-mwskz. " 税码
+          ls_accountpayable-pmnttrms = ls_data-zterm. " 付款条件
+          ls_accountpayable-bline_date = ls_data-zfbdt. " 付款起算日期
+          ls_accountpayable-bus_area   = ls_data-gsber. " 业务范围
           INSERT ls_accountpayable INTO TABLE lt_accountpayable.
 
         WHEN 'S'. " 总分类帐科目
+          l_gl_acount = ls_data-hkont.
+
           ls_accountgl-itemno_acc = l_itemno_acc. " 会计凭证行项目编号
           ls_accountgl-item_text  = ls_data-sgtxt. " 项目文本
-          ls_accountgl-gl_account = ls_data-hkont. " 总分类帐帐目
+          ls_accountgl-gl_account = l_gl_acount. " 总分类帐帐目
           ls_accountgl-costcenter = ls_data-kostl. " 成本中心
           ls_accountgl-alloc_nmbr = ls_data-zuonr. " 分配编号
           ls_accountgl-orderid    = ls_data-aufnr. " 内部订单号
@@ -179,6 +195,40 @@ FORM frm_post USING i_test TYPE xfeld.
           INSERT ls_accountgl INTO TABLE lt_accountgl.
 
         WHEN 'A'. " 资产
+          " 资产统御科目
+          CLEAR l_gl_acount.
+          IF ls_data-hkont IS NOT INITIAL.
+            l_gl_acount = ls_data-hkont.
+          ELSE.
+            SELECT SINGLE ktogr FROM anla
+              WHERE bukrs = @ls_data-bukrs
+                AND anln1 = @ls_data-anln1
+              INTO @l_gl_acount.
+            IF sy-subrc = 0.
+              SELECT SINGLE ktansw FROM t095
+                WHERE ktopl = @l_ktopl
+                  AND ktogr = @l_gl_acount
+                INTO @l_gl_acount.
+            ENDIF.
+          ENDIF.
+
+          ls_accountgl-itemno_acc = l_itemno_acc. " 会计凭证行项目编号
+          ls_accountgl-item_text  = ls_data-sgtxt. " 项目文本
+          ls_accountgl-gl_account = l_gl_acount. " 统御科目
+          ls_accountgl-acct_type  = ls_bschl-koart. " 业务类型
+          ls_accountgl-asset_no   = ls_data-anln1. " 主资产号
+          ls_accountgl-sub_number = '0000'. "次资产号
+          ls_accountgl-costcenter = ls_data-kostl. " 成本中心
+          ls_accountgl-alloc_nmbr = ls_data-zuonr. " 分配编号
+          ls_accountgl-orderid    = ls_data-aufnr. " 内部订单号
+          ls_accountgl-tax_code   = ls_data-mwskz. " 税号
+          ls_accountgl-po_number  = ls_data-ebeln. " 采购凭证号
+          ls_accountgl-po_item    = ls_data-ebelp. " 采购凭证行项目号
+          ls_accountgl-profit_ctr = ls_data-prctr. " 利润中心
+          ls_accountgl-material_long = ls_data-matnr. " 物料
+          ls_accountgl-bus_area   = ls_data-gsber. " 业务范围
+          INSERT ls_accountgl INTO TABLE lt_accountgl.
+          
         WHEN 'M'. " 物料
 
         WHEN OTHERS.

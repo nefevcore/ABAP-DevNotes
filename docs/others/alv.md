@@ -330,12 +330,14 @@ FORM frm_display TABLES ct_data TYPE STANDARD TABLE.
 
     " 展示
     CALL METHOD go_alv_grid->set_table_for_first_display
-        EXPORTING
+      EXPORTING
         is_layout                     = ls_layout
-        CHANGING
+        i_default                     = 'X'
+        i_save                        = 'A'
+      CHANGING
         it_outtab                     = ct_data[]
         it_fieldcatalog               = lt_fieldcat
-        EXCEPTIONS
+      EXCEPTIONS
         invalid_parameter_combination = 1
         program_error                 = 2
         too_many_lines                = 3
