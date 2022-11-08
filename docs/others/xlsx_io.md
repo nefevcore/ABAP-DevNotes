@@ -60,6 +60,41 @@ ENDWHILE.
 
 </details>
 
+### 多文本格式处理
+
+有时上传会出现单元格内容丢失的情况，这可能是由于多文本格式引起。SAP标准方法，基本都不支持多文本格式，因此需要增强处理。
+
+> 下面增强只针对CL_EHFND_XLSX，如果是SAP其他标准类（比如CL_FDT_XL_SPREADSHEET），需要自己另外查找增强点
+
+<details>
+  <summary>类CL_EHFND_EXP_XLSX_STRING_UTIL，方法GET_STRING_AT_INDEX</summary>
+
+```ABAP
+
+...
+
+* Check if index is in bounds of internal table and return it if found
+  IF lv_index LE lines( mt_strings ).
+    READ TABLE mt_strings INDEX lv_index REFERENCE INTO lr_s_string.
+*{   REPLACE        S4DKXXXXXX                                        1
+*/    rv_string = lr_s_string->string.
+    IF lr_s_string->r IS NOT INITIAL.
+      " 拼接多格式文本
+      LOOP AT lr_s_string->r REFERENCE INTO DATA(LR_R).
+        CONCATENATE rv_string lr_r->string INTO rv_string.
+      ENDLOOP.
+    ELSE.
+      rv_string = lr_s_string->string.
+    ENDIF.
+*}   REPLACE
+  ENDIF.
+
+...
+
+```
+
+</details>
+
 ### 封装简化
 
 CL_EHFND_XLSX使用上比其他方法都显得繁琐，不妨写些工具代码来简化。

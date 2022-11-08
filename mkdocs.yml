@@ -53,15 +53,15 @@ nav:
     - 固定资产明细报表: fico/fixed_assets_report.md
     - 批量WBS成本核算: fico/ckw1.md
   - 多模块复用: 
-    - MIGO: others/migo.md
-    - 定价: others/pricing.md
-    - 发票增强: others/billing_enhancement.md
+    - MIGO: cross/migo.md
+    - 定价: cross/pricing.md
+    - 发票增强: cross/billing_enhancement.md
+    - MR21: cross/mr21.md
   - 报表: 
     - 报表概述: report/index.md
     - 库存报表: report/stock.md
     - 日志查询报表: report/zlogreport.md
   - 其他: 
-    - 其他概述: others/index.md
     - ALV相关: others/alv.md
     - Excel上传下载: others/xlsx_io.md
     - 文本取值工具: others/zcl_text.md

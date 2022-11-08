@@ -2,6 +2,28 @@
 
 整理下ALV用到的几种方法。
 
+<details>
+  <summary>参考数据类型</summary>
+
+```ABAP
+
+TYPES:
+  BEGIN OF ty_data,
+    zsel         TYPE xfeld, " 勾选项
+    mtype        TYPE bapi_mtype, " 处理结果
+    msg          TYPE bapi_msg, " 处理文本
+    rcol         TYPE char04, " 行颜色
+    t_scol       TYPE lvc_t_scol, " 单元格颜色
+    t_styl       TYPE lvc_t_styl, " 单元格样式
+  END OF ty_data.
+TYPES tt_data TYPE STANDARD TABLE OF ty_data WITH EMPTY KEY.
+
+DATA gt_data TYPE tt_data.
+
+```
+
+</details>
+
 ## LVC
 
 LVC好在不用画屏幕，直接调用即可。
@@ -14,10 +36,7 @@ LVC好在不用画屏幕，直接调用即可。
 *&---------------------------------------------------------------------*
 *& Form frm_display
 *&---------------------------------------------------------------------*
-*& text
-*&---------------------------------------------------------------------*
-*& -->  p1        text
-*& <--  p2        text
+*& ALV展示
 *&---------------------------------------------------------------------*
 FORM frm_display TABLES ct_data TYPE STANDARD TABLE.
 
@@ -26,6 +45,8 @@ FORM frm_display TABLES ct_data TYPE STANDARD TABLE.
 
     PERFORM frm_set_layout CHANGING ls_layout.
     PERFORM frm_set_fieldcat TABLES lt_fieldcat.
+    PERFORM frm_set_style.
+    PERFORM frm_set_color.
 
     CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY_LVC'
         EXPORTING
@@ -58,8 +79,8 @@ FORM frm_set_layout CHANGING cs_layout TYPE lvc_s_layo.
     cs_layout-zebra = abap_true. " 斑马线
     cs_layout-cwidth_opt = abap_true. " 自动调整ALVL列宽
     cs_layout-sel_mode = 'A'. " 选择模式
-    *  CS_LAYOUT-box_fname  = 'CHECKBOX'. " 选择框
-    *  CS_LAYOUT-ctab_fname = 'COLTAB'. " 单元格颜色设置
+    cs_layout-ctab_fname = 'T_SCOL'. " 单元格颜色设置
+    cs_layout-stylefname = 'T_STYL'. " 单元格控制
 
 ENDFORM.
 *&---------------------------------------------------------------------*
@@ -86,23 +107,78 @@ FORM frm_set_fieldcat TABLES ct_fieldcat TYPE lvc_t_fcat.
     END-OF-DEFINITION.
 
     _init_fieldcat 'ZSEL' '选择项' '' ''.
-
-    _init_fieldcat 'MTYPE  ' '处理状态' '' ''.
-    _init_fieldcat 'MSG    ' '处理消息' '' ''.
+    _init_fieldcat 'MTYPE' '处理状态' '' ''.
+    _init_fieldcat 'MSG' '处理消息' '' ''.
 
     " 个性化自己输出数据格式
     LOOP AT ct_fieldcat REFERENCE INTO DATA(lr_fieldcat).
-        " 字段显示属性设置
-        CASE lr_fieldcat->fieldname .
-        WHEN 'ZSEL'.
-            lr_fieldcat->checkbox = abap_true.
-            lr_fieldcat->edit = abap_true.
-            lr_fieldcat->hotspot = abap_true.
-        WHEN 'MENGE'.
-            lr_fieldcat->qfieldname = 'MEINS'.
-        WHEN OTHERS.
-        ENDCASE.
+        IF lr_fieldcat->fieldname = 'ZSEL'.
+        lr_fieldcat->checkbox = abap_true.
+        lr_fieldcat->edit = abap_true.
+        ENDIF.
     ENDLOOP.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form frm_set_style
+*&---------------------------------------------------------------------*
+*& 字段样式设置
+*&---------------------------------------------------------------------*
+FORM frm_set_style.
+
+  DATA ls_styl TYPE lvc_s_styl.
+
+  LOOP AT gt_data REFERENCE INTO DATA(lr_data).
+    CLEAR lr_data->t_styl.
+
+    " 设置ALV字段或行的状态
+    " 常用有禁止编辑CL_GUI_ALV_GRID=>MC_STYLE_DISABLED
+    " 禁止删除行CL_GUI_ALV_GRID=>MC_STYLE_NO_DELETE_ROW
+
+  ENDLOOP.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form frm_set_color
+*&---------------------------------------------------------------------*
+*& 字段颜色设置
+*&---------------------------------------------------------------------*
+FORM frm_set_color.
+
+  STATICS:
+    BEGIN OF color,
+      r_light   TYPE char04,
+      r_success TYPE char04,
+      r_error   TYPE char04,
+      light     TYPE lvc_s_scol-color,
+      success   TYPE lvc_s_scol-color,
+      error     TYPE lvc_s_scol-color,
+    END OF color.
+  IF color IS INITIAL.
+    color-r_light = 'C300'.
+    color-r_success = 'C500'.
+    color-r_error = 'C600'.
+    color-light = VALUE #( col = 3 ).
+    color-success = VALUE #( col = 5 ).
+    color-error = VALUE #( col = 6 ).
+  ENDIF.
+
+  DATA ls_scol TYPE lvc_s_scol.
+
+  LOOP AT gt_data REFERENCE INTO DATA(lr_data).
+    CLEAR lr_data->t_scol.
+
+    IF lr_data->zsel = abap_true.
+      lr_data->rcol = color-r_light.
+    ENDIF.
+
+    IF lr_data->mtype = 'E'.
+      lr_data->t_scol = VALUE #( BASE lr_data->t_scol color = color-error
+        ( fname = 'MTYPE' )
+        ( fname = 'MSG' )
+      ).
+    ENDIF.
+  ENDLOOP.
 
 ENDFORM.
 *&---------------------------------------------------------------------*
@@ -138,6 +214,8 @@ FORM frm_user_command USING cv_ucomm LIKE sy-ucomm
         WHEN OTHERS.
     ENDCASE.
 
+*  PERFORM frm_reset_data_selection.
+
     " 刷新ALV 显示值
     cs_selfield-refresh = abap_true .
     cs_selfield-row_stable = abap_true .
@@ -147,10 +225,7 @@ ENDFORM.
 *&---------------------------------------------------------------------*
 *& Form frm_get_data_selection
 *&---------------------------------------------------------------------*
-*& text
-*&---------------------------------------------------------------------*
-*& -->  p1        text
-*& <--  p2        text
+*& 将侧边栏选择也传递到ZSEL字段上
 *&---------------------------------------------------------------------*
 FORM frm_get_data_selection.
 
@@ -177,10 +252,7 @@ ENDFORM.
 *&---------------------------------------------------------------------*
 *& Form frm_reset_data_selection
 *&---------------------------------------------------------------------*
-*& text
-*&---------------------------------------------------------------------*
-*& -->  p1        text
-*& <--  p2        text
+*& 重置勾选项
 *&---------------------------------------------------------------------*
 FORM frm_reset_data_selection.
 
@@ -300,10 +372,7 @@ ENDCLASS.
 *&---------------------------------------------------------------------*
 *& Form frm_display
 *&---------------------------------------------------------------------*
-*& text
-*&---------------------------------------------------------------------*
-*& -->  p1        text
-*& <--  p2        text
+*& ALV展示
 *&---------------------------------------------------------------------*
 FORM frm_display TABLES ct_data TYPE STANDARD TABLE.
 
@@ -347,10 +416,7 @@ ENDFORM.
 *&---------------------------------------------------------------------*
 *& Form frm_display
 *&---------------------------------------------------------------------*
-*& text
-*&---------------------------------------------------------------------*
-*& -->  p1        text
-*& <--  p2        text
+*& 刷新ALV
 *&---------------------------------------------------------------------*
 FORM frm_refresh_display.
 
@@ -371,6 +437,7 @@ FORM frm_set_layout CHANGING cs_layout TYPE lvc_s_layo.
     cs_layout-zebra = abap_true. " 斑马线
     cs_layout-cwidth_opt = abap_true. " 自动调整ALVL列宽
     cs_layout-sel_mode = 'A'. " 选择模式
+    cs_layout-info_fname = 'RCOL'. " 行颜色
     cs_layout-ctab_fname = 'T_SCOL'. " 单元格颜色设置
     cs_layout-stylefname = 'T_STYL'. " 单元格控制
 
@@ -398,20 +465,16 @@ FORM frm_set_fieldcat TABLES ct_fieldcat TYPE lvc_t_fcat.
         INSERT ls_fieldcat INTO TABLE ct_fieldcat.
     END-OF-DEFINITION.
 
+    _init_fieldcat 'ZSEL' '选择项' '' ''.
     _init_fieldcat 'MTYPE' '检查状态' '' ''.
     _init_fieldcat 'MSG  ' '检查消息' '' ''.
 
     " 个性化自己输出数据格式
     LOOP AT ct_fieldcat REFERENCE INTO DATA(lr_fieldcat).
-        " 编辑状态，默认可编辑
+        IF lr_fieldcat->fieldname = 'ZSEL'.
+        lr_fieldcat->checkbox = abap_true.
         lr_fieldcat->edit = abap_true.
-        CASE lr_fieldcat->fieldname .
-        WHEN 'MTYPE'
-            OR 'MSG'
-            .
-            lr_fieldcat->edit = abap_false.
-        WHEN OTHERS.
-        ENDCASE.
+        ENDIF.
     ENDLOOP.
 
 ENDFORM.
@@ -440,10 +503,7 @@ ENDFORM.
 *&---------------------------------------------------------------------*
 *& Form frm_set_style
 *&---------------------------------------------------------------------*
-*& text
-*&---------------------------------------------------------------------*
-*& -->  p1        text
-*& <--  p2        text
+*& 字段样式设置
 *&---------------------------------------------------------------------*
 FORM frm_set_style.
 
@@ -462,40 +522,50 @@ ENDFORM.
 *&---------------------------------------------------------------------*
 *& Form frm_set_color
 *&---------------------------------------------------------------------*
-*& text
-*&---------------------------------------------------------------------*
-*& -->  p1        text
-*& <--  p2        text
+*& 字段颜色设置
 *&---------------------------------------------------------------------*
 FORM frm_set_color.
+
+    STATICS:
+        BEGIN OF color,
+            r_light   TYPE char04,
+            r_success TYPE char04,
+            r_error   TYPE char04,
+            light     TYPE lvc_s_scol-color,
+            success   TYPE lvc_s_scol-color,
+            error     TYPE lvc_s_scol-color,
+        END OF color.
+    IF color IS INITIAL.
+        color-r_light = 'C300'.
+        color-r_success = 'C500'.
+        color-r_error = 'C600'.
+        color-light = VALUE #( col = 3 ).
+        color-success = VALUE #( col = 5 ).
+        color-error = VALUE #( col = 6 ).
+    ENDIF.
 
     DATA ls_scol TYPE lvc_s_scol.
 
     LOOP AT gt_data REFERENCE INTO DATA(lr_data).
         CLEAR lr_data->t_scol.
 
-        IF lr_data->mtype = 'E'.
-        CLEAR ls_scol.
-        ls_scol-fname = 'MTYPE'.
-        ls_scol-color = VALUE #( col = '6' ).
-        INSERT ls_scol INTO TABLE lr_data->t_scol.
-
-        CLEAR ls_scol.
-        ls_scol-fname = 'MSG'.
-        ls_scol-color = VALUE #( col = '6' ).
-        INSERT ls_scol INTO TABLE lr_data->t_scol.
+        IF lr_data->zsel = abap_true.
+            lr_data->rcol = color-r_light.
         ENDIF.
 
+        IF lr_data->mtype = 'E'.
+            lr_data->t_scol = VALUE #( BASE lr_data->t_scol color = color-error
+                ( fname = 'MTYPE' )
+                ( fname = 'MSG' )
+            ).
+        ENDIF.
     ENDLOOP.
 
 ENDFORM.
 *&---------------------------------------------------------------------*
 *& Form frm_get_data_selection
 *&---------------------------------------------------------------------*
-*& text
-*&---------------------------------------------------------------------*
-*& -->  p1        text
-*& <--  p2        text
+*& 将侧边栏选择也传递到ZSEL字段上
 *&---------------------------------------------------------------------*
 FORM frm_get_data_selection.
 
@@ -518,10 +588,7 @@ ENDFORM.
 *&---------------------------------------------------------------------*
 *& Form frm_reset_data_selection
 *&---------------------------------------------------------------------*
-*& text
-*&---------------------------------------------------------------------*
-*& -->  p1        text
-*& <--  p2        text
+*& 重置勾选项
 *&---------------------------------------------------------------------*
 FORM frm_reset_data_selection.
 

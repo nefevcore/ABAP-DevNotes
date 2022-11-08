@@ -19,19 +19,23 @@
 FORM frm_pir_delete USING p_matnr TYPE pbim-matnr
                           p_werks TYPE pbim-werks
                           p_versb TYPE pbim-versb.
+
   DATA lt_bdcdata TYPE STANDARD TABLE OF bdcdata WITH EMPTY KEY.
+  DATA ls_bdcdata TYPE bdcdata .
+
   DEFINE _bdc_dynpro.
-    APPEND VALUE #(
-      program = &1
-      dynpro = &2
-      dynbegin = 'X'
-    ) TO lt_bdcdata.
+    CLEAR ls_bdcdata.
+    ls_bdcdata-program = &1.
+    ls_bdcdata-dynpro = &2.
+    ls_bdcdata-dynbegin = 'X'.
+    INSERT ls_bdcdata INTO TABLE lt_bdcdata.
   END-OF-DEFINITION.
+
   DEFINE _bdc_field.
-    APPEND VALUE #(
-      fnam = &1
-      fval = &2
-    ) TO lt_bdcdata.
+    CLEAR ls_bdcdata.
+    ls_bdcdata-fnam = &1.
+    ls_bdcdata-fval = &2.
+    INSERT ls_bdcdata INTO TABLE lt_bdcdata.
   END-OF-DEFINITION.
 
   " MD62筛选页面
