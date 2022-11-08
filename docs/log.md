@@ -1,5 +1,11 @@
 # 更新日志
 
+## 20221108
+
+新增[MR21修改价格](/cross/mr21/)
+
+更新[ALV模板](/others/alv/)
+
 ## 20221102
 
 更新[财务清账](/fico/fi_clearing_account/)，新增增强处理
