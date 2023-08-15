@@ -77,8 +77,9 @@ FORM frm_set_layout CHANGING cs_layout TYPE lvc_s_layo.
 
     CLEAR cs_layout.
     cs_layout-zebra = abap_true. " 斑马线
-    cs_layout-cwidth_opt = abap_true. " 自动调整ALVL列宽
+    cs_layout-cwidth_opt = abap_true. " 自动调整ALV列宽
     cs_layout-sel_mode = 'A'. " 选择模式
+    cs_layout-info_fname = 'RCOL'. " 行颜色设置
     cs_layout-ctab_fname = 'T_SCOL'. " 单元格颜色设置
     cs_layout-stylefname = 'T_STYL'. " 单元格控制
 
@@ -95,12 +96,12 @@ FORM frm_set_fieldcat TABLES ct_fieldcat TYPE lvc_t_fcat.
     DEFINE _init_fieldcat.
         CLEAR ls_fieldcat.
         ls_fieldcat-fieldname = &1.
+        ls_fieldcat-scrtext_s = 
+        ls_fieldcat-scrtext_m =
+        ls_fieldcat-scrtext_l =
         ls_fieldcat-tooltip =
         ls_fieldcat-coltext =
-        ls_fieldcat-seltext =
-        ls_fieldcat-scrtext_l =
-        ls_fieldcat-scrtext_m =
-        ls_fieldcat-scrtext_s = &2.
+        ls_fieldcat-seltext = &2.
         ls_fieldcat-ref_table = &3.
         ls_fieldcat-ref_field = &4.
         INSERT ls_fieldcat INTO TABLE ct_fieldcat.
@@ -241,7 +242,17 @@ FORM frm_get_data_selection.
         IMPORTING
         et_index_rows = lt_rows.
 
+    " 获取已过滤行
+    DATA lt_filter TYPE lvc_t_fidx.
+    CALL METHOD lo_grid->get_filtered_entries
+      IMPORTING
+        et_filtered_entries = lt_filter.
+
     LOOP AT lt_rows INTO DATA(ls_row).
+        READ TABLE lt_filter TRANSPORTING NO FIELDS WITH KEY table_line = ls_row-index.
+        IF sy-subrc = 0.
+          CONTINUE.
+        ENDIF.
         READ TABLE gt_data REFERENCE INTO DATA(lr_data) INDEX ls_row-index.
         IF sy-subrc = 0.
         lr_data->zsel = abap_true.
@@ -256,7 +267,22 @@ ENDFORM.
 *&---------------------------------------------------------------------*
 FORM frm_reset_data_selection.
 
+    DATA: lo_grid TYPE REF TO cl_gui_alv_grid.
+    CALL FUNCTION 'GET_GLOBALS_FROM_SLVC_FULLSCR'
+      IMPORTING
+        e_grid = lo_grid.
+        
+    " 获取已过滤行
+    DATA lt_filter TYPE lvc_t_fidx.
+    CALL METHOD lo_grid->get_filtered_entries
+      IMPORTING
+        et_filtered_entries = lt_filter.
+    
     LOOP AT gt_data REFERENCE INTO DATA(lr_data).
+        READ TABLE lt_filter TRANSPORTING NO FIELDS WITH KEY table_line = sy-tabix.
+        IF sy-subrc = 0.
+          CONTINUE.
+        ENDIF.
         CLEAR lr_data->zsel.
     ENDLOOP.
 
@@ -435,7 +461,7 @@ FORM frm_set_layout CHANGING cs_layout TYPE lvc_s_layo.
 
     CLEAR cs_layout.
     cs_layout-zebra = abap_true. " 斑马线
-    cs_layout-cwidth_opt = abap_true. " 自动调整ALVL列宽
+    cs_layout-cwidth_opt = abap_true. " 自动调整ALV列宽
     cs_layout-sel_mode = 'A'. " 选择模式
     cs_layout-info_fname = 'RCOL'. " 行颜色
     cs_layout-ctab_fname = 'T_SCOL'. " 单元格颜色设置
@@ -454,12 +480,12 @@ FORM frm_set_fieldcat TABLES ct_fieldcat TYPE lvc_t_fcat.
     DEFINE _init_fieldcat.
         CLEAR ls_fieldcat.
         ls_fieldcat-fieldname = &1.
+        ls_fieldcat-scrtext_s = 
+        ls_fieldcat-scrtext_m =
+        ls_fieldcat-scrtext_l =
         ls_fieldcat-tooltip =
         ls_fieldcat-coltext =
-        ls_fieldcat-seltext =
-        ls_fieldcat-scrtext_l =
-        ls_fieldcat-scrtext_m =
-        ls_fieldcat-scrtext_s = &2.
+        ls_fieldcat-seltext = &2.
         ls_fieldcat-ref_table = &3.
         ls_fieldcat-ref_field = &4.
         INSERT ls_fieldcat INTO TABLE ct_fieldcat.
@@ -577,7 +603,17 @@ FORM frm_get_data_selection.
     IMPORTING
       et_index_rows = lt_rows.
 
+  " 获取已过滤行
+  DATA lt_filter TYPE lvc_t_fidx.
+  CALL METHOD lo_grid->get_filtered_entries
+    IMPORTING
+      et_filtered_entries = lt_filter.
+
   LOOP AT lt_rows INTO DATA(ls_row).
+    READ TABLE lt_filter TRANSPORTING NO FIELDS WITH KEY table_line = ls_row-index.
+    IF sy-subrc = 0.
+      CONTINUE.
+    ENDIF.
     READ TABLE gt_data REFERENCE INTO DATA(lr_data) INDEX ls_row-index.
     IF sy-subrc = 0.
       lr_data->zsel = abap_true.
@@ -592,7 +628,22 @@ ENDFORM.
 *&---------------------------------------------------------------------*
 FORM frm_reset_data_selection.
 
+  DATA: lo_grid TYPE REF TO cl_gui_alv_grid.
+  CALL FUNCTION 'GET_GLOBALS_FROM_SLVC_FULLSCR'
+    IMPORTING
+      e_grid = lo_grid.
+
+  " 获取已过滤行
+  DATA lt_filter TYPE lvc_t_fidx.
+  CALL METHOD lo_grid->get_filtered_entries
+    IMPORTING
+      et_filtered_entries = lt_filter.
+
   LOOP AT gt_data REFERENCE INTO DATA(lr_data).
+    READ TABLE lt_filter TRANSPORTING NO FIELDS WITH KEY table_line = sy-tabix.
+    IF sy-subrc = 0.
+      CONTINUE.
+    ENDIF.
     CLEAR lr_data->zsel.
   ENDLOOP.
 
@@ -699,6 +750,98 @@ go_salv->set_screen_popup(
 
 " 展示SALV报表
 go_salv->display( ).
+
+```
+
+</details>
+
+## 选择屏幕
+
+感觉选择屏幕的这段代码也挺好用的，放上来分享下
+
+<details>
+  <summary>示例代码</summary>
+
+```ABAP
+
+*&---------------------------------------------------------------------*
+*& INITIALIZATION
+*&---------------------------------------------------------------------*
+INITIALIZATION.
+  PERFORM frm_sel_scr_init.
+
+*&---------------------------------------------------------------------*
+*& PBO
+*&---------------------------------------------------------------------*
+AT SELECTION-SCREEN OUTPUT.
+  PERFORM frm_sel_scr_pbo.
+
+*&---------------------------------------------------------------------*
+*& PAI
+*&---------------------------------------------------------------------*
+AT SELECTION-SCREEN.
+  PERFORM frm_sel_scr_pai.
+
+*&---------------------------------------------------------------------*
+*& Form frm_sel_scr_init
+*&---------------------------------------------------------------------*
+*& 屏幕初始化
+*&---------------------------------------------------------------------*
+FORM frm_sel_scr_init .
+
+  b900 = '选择条件'.
+  %_s_werks_%_app_%-text = '工厂'.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form frm_sel_scr_pbo
+*&---------------------------------------------------------------------*
+*& 屏幕PBO
+*&---------------------------------------------------------------------*
+FORM frm_sel_scr_pbo .
+
+  " 关闭全部分组项目，未分组会展示
+  LOOP AT SCREEN.
+    IF screen-group1 IS NOT INITIAL.
+      screen-input = '0'.
+      screen-invisible = '1'.
+      MODIFY SCREEN.
+    ENDIF.
+  ENDLOOP.
+
+  " 显示分组
+  DEFINE _active_grp.
+    LOOP AT SCREEN.
+      IF screen-group1 = &1.
+        screen-input = '1'.
+        screen-invisible = '0'.
+        MODIFY SCREEN.
+      ENDIF.
+    ENDLOOP.
+  END-OF-DEFINITION.
+
+  " 隐藏分组
+  DEFINE _inactive_grp.
+    LOOP AT SCREEN.
+      IF screen-group1 = &1.
+        screen-input = '0'.
+        screen-invisible = '1'.
+        MODIFY SCREEN.
+      ENDIF.
+    ENDLOOP.
+  END-OF-DEFINITION.
+
+  _active_grp 'M01'.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form frm_sel_scr_pai
+*&---------------------------------------------------------------------*
+*& 屏幕PAI
+*&---------------------------------------------------------------------*
+FORM frm_sel_scr_pai .
+
+ENDFORM.
 
 ```
 

@@ -37,6 +37,8 @@ class ZCL_FI_CLEARING definition
   create private .
 
 public section.
+  types:
+    ty_amount type p length 16 decimals 2.
 
   types:
     BEGIN OF ty_clearing_line,
@@ -108,8 +110,12 @@ PRIVATE SECTION.
       diff_amount_proc TYPE CHAR01,
       program TYPE bdcdata-program,
       dynpro  TYPE bdcdata-dynpro,
+      profit_loss TYPE xfeld, " 损益标识
       FTPOST TYPE STANDARD TABLE OF ftpost WITH EMPTY KEY,
     END OF ms_extra.
+  data m_WAERS type WAERS .
+  data m_WAERS_LOC type WAERS .
+  data m_WAERS_GRP type WAERS .
   DATA m_bukrs TYPE bukrs .
   DATA m_koart TYPE koart .
   DATA m_agums TYPE agums .
@@ -136,6 +142,13 @@ PRIVATE SECTION.
   METHODS get_bseg
     IMPORTING
       !it_clearing_line TYPE tt_clearing_line .
+  methods GET_WAERS .
+  methods GET_WRBTR_DIFF
+    returning
+      value(R_WRBTR_DIFF) type ty_amount .
+  methods GET_PROFIT_LOSS
+    returning
+      value(R_PROFIT_LOSS) type XFELD .
   METHODS posting_before .
   METHODS posting_interface .
 ENDCLASS.
@@ -184,7 +197,9 @@ CLASS ZCL_FI_CLEARING IMPLEMENTATION.
 
 
     " 先处理未清项，再处理差异行
-    CHECK ms_extra-diff_amount_proc = 'A'. 
+    " 差异行也走这段逻辑
+    CHECK ms_extra-diff_amount_proc = 'A'
+       OR ms_extra-profit_loss = abap_true.
 
     DATA ls_bdcdata TYPE bdcdata.
 
@@ -206,6 +221,9 @@ CLASS ZCL_FI_CLEARING IMPLEMENTATION.
     " _bdc_begin 'SAPMF05A' '0733'. " 该增强位置是在保存前，原本的BDC代码只缺少命令
     _bdc_data 'BDC_OKCODE' 'PA'. " 处理未清项
 
+    " _bdc_begin 'SAPMF05A' '0733'. " 该增强位置是在保存前，原本的BDC代码只缺少命令
+    _bdc_data 'SAPMF05A' 'PA'. " 处理未清项
+
     " MAIN - 标准
     " PART - 部分支付
     " REST - 剩余项目
@@ -219,30 +237,50 @@ CLASS ZCL_FI_CLEARING IMPLEMENTATION.
     _bdc_begin 'SAPDF05X' '3100'.
     _bdc_data 'BDC_OKCODE' 'BS'. " BS - 模拟
 
-    IF ( ms_extra-program IS INITIAL OR ms_extra-dynpro IS INITIAL ) " 没有下一步的屏幕
-    OR ms_extra-ftpost IS INITIAL. " 没有特殊处理
-      " 没有需要补充的，直接保存
-      _bdc_begin 'SAPMF05A' '0301'. " 补充一个屏幕
-      " _bdc_data 'BDC_OKCODE' '/11'. " 后续的标准代码最后会手工添加一行命令保存
-    ELSE.
-*      " 正常情况，由于行项目必填，会跳到主界面报错
-*      _bdc_begin 'SAPMF05A' '0700'.
-*      _bdc_data 'BDC_OKCODE' 'NK'. " NK - 补充，跳转到需要补充数据的界面
+    IF ms_extra-diff_amount_proc = 'A'.
+      IF ( ms_extra-program IS INITIAL OR ms_extra-dynpro IS INITIAL ) " 没有下一步的屏幕
+      OR ms_extra-ftpost IS INITIAL. " 没有特殊处理
+        " 没有需要补充的，直接保存
+        _bdc_begin 'SAPMF05A' '0301'. " 补充一个屏幕
+        " _bdc_data 'BDC_OKCODE' '/11'. " 后续的标准代码最后会手工添加一行命令保存
+      ELSE.
+        " 正常情况，由于行项目必填，会跳到主界面报错
+*        _bdc_begin 'SAPMF05A' '0700'.
+*        _bdc_data 'BDC_OKCODE' 'PI'. " 选择凭证行
+*
+*        _bdc_begin 'SAPMF05A' '0610'.
+*        _bdc_data '*BSEG-BUZEI' '001'. " 默认选第一行
+*        _bdc_data 'BDC_OKCODE' 'ENTR'. " 确认
 
-      _bdc_begin 'SAPMF05A' '0700'.
-      _bdc_data 'BDC_OKCODE' 'PI'. " 选择凭证行
+        _bdc_begin 'SAPMF05A' '0700'.
+        _bdc_data 'BDC_OKCODE' 'NK'. " NK - 补充，跳转到需要补充数据的界面
 
-      _bdc_begin 'SAPMF05A' '0610'.
-      _bdc_data '*BSEG-BUZEI' '001'. " 默认选第一行
-      _bdc_data 'BDC_OKCODE' 'ENTR'. " 确认
-
-      " 按项目需求，填写需要手工处理的信息
-      _bdc_begin ms_extra-program ms_extra-dynpro.
-      LOOP AT ms_extra-ftpost INTO DATA(ls_ftpost).
-        _bdc_data ls_ftpost-fnam ls_ftpost-fval.
-      ENDLOOP.
+        " 按项目需求，填写需要手工处理的信息
+        _bdc_begin ms_extra-program ms_extra-dynpro.
+        LOOP AT ms_extra-ftpost INTO DATA(ls_ftpost).
+          _bdc_data ls_ftpost-fnam ls_ftpost-fval.
+        ENDLOOP.
+      ENDIF.
     ENDIF.
 
+    " 对于外币清账，如果汇率有差异，还需要考虑损益行
+    IF gs_extra-profit_loss = abap_true.
+      _bdc_begin 'SAPMF05A' '0700'.
+      _bdc_data 'BDC_OKCODE' 'NK'. " 跳转到未完成行，在这里就是损益行
+
+      " 输入行文本并回到预览界面
+      _bdc_begin 'SAPMF05A' '0300'.
+      _bdc_data 'BDC_OKCODE' 'AB'.
+      _bdc_data 'BSEG-SGTXT' 'Clearing Profit & Loss'(004).
+
+      " 弹窗确认
+      " 我这项目的损益行输入后还会弹个CODING BLOCK输入框，自行调整
+      _bdc_begin 'SAPLKACB' '0002'.
+      _bdc_data 'BDC_OKCODE' 'ENTE'. " 确认
+
+      " 设置一个界面
+      _bdc_begin 'SAPMF05A' '0700'.
+    ENDIF.
 
   ENDMETHOD.
 
@@ -259,6 +297,11 @@ CLASS ZCL_FI_CLEARING IMPLEMENTATION.
     SELECT SINGLE * FROM t041a WHERE auglv = 'UMBUCHNG' INTO @ms_t041a.
     SELECT * FROM tbsl INTO TABLE @mt_tbsl.
 
+    " 集团
+    SELECT SINGLE * FROM t000 WHERE mandt = @sy-mandt INTO @ms_t000.
+    IF sy-subrc <> 0.
+      CLEAR ms_t000.
+    ENDIF.
 
   endmethod.
 
@@ -337,7 +380,10 @@ CLASS ZCL_FI_CLEARING IMPLEMENTATION.
       bseg~shkzg,
       bseg~dmbtr,
       bseg~wrbtr,
-      bkpf~waers
+      bseg~h_budat, " 过账日期,
+      bseg~h_waers,
+      bseg~zuonr,
+      bseg~sgtxt
       FROM bseg
       JOIN bkpf ON bseg~bukrs = bkpf~bukrs
                AND bseg~belnr = bkpf~belnr
@@ -375,7 +421,10 @@ CLASS ZCL_FI_CLEARING IMPLEMENTATION.
       shkzg,
       dmbtr,
       wrbtr,
-      waers
+      budat AS h_budat, " 过账日期
+      waers AS h_waers,
+      zuonr,
+      sgtxt
       FROM bsid
       FOR ALL ENTRIES IN @it_clearing_line[]
       WHERE bukrs = @it_clearing_line-bukrs
@@ -409,7 +458,10 @@ CLASS ZCL_FI_CLEARING IMPLEMENTATION.
       shkzg,
       dmbtr,
       wrbtr,
-      waers
+      budat AS h_budat, " 过账日期
+      waers AS h_waers,
+      zuonr,
+      sgtxt
       FROM bsik
       FOR ALL ENTRIES IN @it_clearing_line[]
       WHERE bukrs = @it_clearing_line-bukrs
@@ -508,22 +560,18 @@ CLASS ZCL_FI_CLEARING IMPLEMENTATION.
     CLEAR ms_result.
     posting_before( ).
     CHECK ms_result-mtype <> 'E'.
+    
+    " 读取凭证的三种货币
+    get_waers( ).
+
+    " 汇总金额，获取清账差异金额
+    DATA(l_wrbtr_diff) = get_wrbtr_diff( ).
 
     " 未清项目
     LOOP AT mt_bseg REFERENCE INTO DATA(lr_bseg).
       DATA(l_selfd) = 'BELNR'.
       DATA(l_selval) = |{ lr_bseg->belnr }{ lr_bseg->gjahr }{ lr_bseg->buzei }|.
       _ftclear lt_ftclear l_selfd l_selval.
-    ENDLOOP.
-
-    " 汇总金额，获取清账差异金额
-    DATA l_amount_diff TYPE p LENGTH 16 DECIMALS 2. " 差额，P类型最大值
-    LOOP AT mt_bseg REFERENCE INTO lr_bseg.
-      IF lr_bseg->shkzg = 'S'.
-        l_amount_diff = l_amount_diff + lr_bseg->dmbtr.
-      ELSE.
-        l_amount_diff = l_amount_diff - lr_bseg->dmbtr.
-      ENDIF.
     ENDLOOP.
 
     " 获取其他辅助参数
@@ -631,10 +679,14 @@ CLASS ZCL_FI_CLEARING IMPLEMENTATION.
           _ftpost lt_ftpost 'P' 1 'BSEG-WRBTR' l_dmbtr. " 汇总后的差额
           _ftpost lt_ftpost 'P' 1 'BSEG-ZFBDT' l_zfbdt. " 付款清算日期
           _ftpost lt_ftpost 'P' 1 'BSEG-SGTXT' l_sgtxt. " 行项目文本必填
-          
+          _ftpost lt_ftpost 'P' 1 'BSEG-ZUONR' lr_clearing_ref->zuonr. " 分配字段，一般都需要
+
       ENDCASE.
 
     ENDIF. " IF l_amount_diff <> 0.
+    
+    " 检查是否有损益
+    get_profit_loss( ).
 
     SORT lt_ftpost BY stype count fnam fval.
     DELETE ADJACENT DUPLICATES FROM lt_ftpost COMPARING stype count fnam.
@@ -846,6 +898,125 @@ CLASS ZCL_FI_CLEARING IMPLEMENTATION.
 
 
   ENDMETHOD.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Private Method ZCL_ACC_CLEARING->GET_PROFIT_LOSS
+* +-------------------------------------------------------------------------------------------------+
+* | [<-()] R_PROFIT_LOSS                  TYPE        XFELD
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD get_profit_loss.
+
+    CLEAR gs_extra-profit_loss.
+
+    DATA ls_rate TYPE bapi1093_0.
+    DATA ls_bapiret1 TYPE bapiret1.
+    DATA l_amount TYPE ty_amount.
+
+    IF m_waers <> m_waers_loc.
+      " 过账日期的凭证货币兑本币汇率
+      CLEAR ls_rate.
+      CLEAR ls_bapiret1.
+      CALL FUNCTION 'BAPI_EXCHANGERATE_GETDETAIL'
+        EXPORTING
+          rate_type  = 'M'
+          from_curr  = m_waers_loc
+          to_currncy = m_waers
+          date       = m_budat
+        IMPORTING
+          exch_rate  = ls_rate
+          return     = ls_bapiret1.
+      IF sy-subrc <> 0.
+        CLEAR ls_rate.
+      ENDIF.
+
+      " 累计损益
+      DATA l_dmbtr_diff TYPE ty_amount.
+      LOOP AT gt_bseg REFERENCE INTO DATA(lr_bseg).
+        " 计算当日汇率下的本币金额
+*        l_amount = lr_bseg->wrbtr / ( ls_rate-exch_rate * ( ls_rate-to_factor / ls_rate-from_factor ) ).
+        l_amount = ( lr_bseg->wrbtr * ls_rate-from_factor ) / ( ls_rate-exch_rate * ls_rate-to_factor ). " 换种写法
+        " 累计差异
+        l_dmbtr_diff = l_dmbtr_diff + l_amount - lr_bseg->dmbtr.
+      ENDLOOP.
+
+      " 累计的差异即为损益
+      IF l_dmbtr_diff <> 0.
+        gs_extra-profit_loss = abap_true.
+        RETURN.
+      ENDIF.
+    ENDIF.
+
+    IF m_waers <> m_waers_grp.
+      " 过账日期的凭证货币兑集团货币汇率
+      CLEAR ls_rate.
+      CLEAR ls_bapiret1.
+      CALL FUNCTION 'BAPI_EXCHANGERATE_GETDETAIL'
+        EXPORTING
+          rate_type  = 'M'
+          from_curr  = m_waers_grp
+          to_currncy = m_waers
+          date       = m_budat
+        IMPORTING
+          exch_rate  = ls_rate
+          return     = ls_bapiret1.
+      IF sy-subrc <> 0.
+        CLEAR ls_rate.
+      ENDIF.
+
+      " 累计损益
+      DATA l_dmbe2_diff TYPE ty_amount.
+      LOOP AT gt_bseg REFERENCE INTO lr_bseg.
+        " 计算当日汇率下的本币金额
+*        l_amount = lr_bseg->wrbtr / ( ls_rate-exch_rate * ( ls_rate-to_factor / ls_rate-from_factor ) ).
+        l_amount = ( lr_bseg->wrbtr * ls_rate-from_factor ) / ( ls_rate-exch_rate * ls_rate-to_factor ). " 换种写法
+        " 累计差异
+        l_dmbe2_diff = l_dmbe2_diff + l_amount - lr_bseg->dmbe2.
+      ENDLOOP.
+
+      " 累计的差异即为损益
+      IF l_dmbe2_diff <> 0.
+        gs_extra-profit_loss = abap_true.
+        RETURN.
+      ENDIF.
+    ENDIF.
+
+  ENDMETHOD.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Private Method ZCL_ACC_CLEARING->GET_WAERS
+* +-------------------------------------------------------------------------------------------------+
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD get_waers.
+
+    CLEAR m_waers.
+
+    " 凭证货币
+    READ TABLE mt_bseg REFERENCE INTO DATA(lr_bseg) INDEX 1.
+    IF sy-subrc = 0.
+      m_waers = lr_bseg->h_waers.
+    ENDIF.
+
+    " 公司本币
+    SELECT SINGLE waers FROM t001 WHERE bukrs = @m_bukrs INTO @m_waers_loc.
+    IF sy-subrc <> 0.
+      m_waers_loc = m_waers.
+    ENDIF.
+
+    " 集团货币
+*    SELECT SINGLE mwaer FROM t000 WHERE mandt = @sy-mandt INTO @m_waers_grp.
+*    IF sy-subrc <> 0.
+*      m_waers_grp = m_waers.
+*    ENDIF.
+    " 免得多次查询
+    m_waers_grp = ms_t000-mwaer.
+    IF m_waers_grp IS INITIAL.
+      m_waers_grp = m_waers.
+    ENDIF.
+
+  ENDMETHOD.
+
 ENDCLASS.
 
 ```
@@ -972,9 +1143,17 @@ DATA(ls_result) = zcl_fi_clearing=>post_customer(
                     i_bukrs          = '1000'
                     i_kunnr          = '1001'
                     it_clearing_line = lt_clearing_line
-                    i_porc           = 'A' 
+                    i_porc           = 'A'
                     it_ftpost        = lt_ftpost ).
 
 ```
 
 </details>
+
+## 关于清账后是否有凭证行的说明
+
+> 参考文章https://zhuanlan.zhihu.com/p/108487028
+
+按文章说法，应该是清账的行项目，部分字段（比如功能范围，成本中心，WBS之类的）不一致，所以就会生成行项目。如果一致就不会生成行项目。
+
+如果有强烈的要求，可以到MF05AFA0_AUSGLEICH_KONTAB_FUEL中通过增强调整控制。

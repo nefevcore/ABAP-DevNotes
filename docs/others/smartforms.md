@@ -5,7 +5,108 @@
 
 ```ABAP
 
+*&---------------------------------------------------------------------*
+*& Form frm_pinrt
+*&---------------------------------------------------------------------*
+*& 打印
+*&---------------------------------------------------------------------*
+FORM frm_pinrt .
 
+  DATA l_formname TYPE tdsfname VALUE 'ZNAME'.
+  DATA l_fm_name TYPE rs38l_fnam.
+
+  " 获取打印函数
+  CALL FUNCTION 'SSF_FUNCTION_MODULE_NAME'
+    EXPORTING
+      formname           = l_formname
+    IMPORTING
+      fm_name            = l_fm_name
+    EXCEPTIONS
+      no_form            = 1
+      no_function_module = 2
+      OTHERS             = 3.
+  IF sy-subrc <> 0.
+    MESSAGE ID sy-msgid TYPE 'S' NUMBER sy-msgno DISPLAY LIKE 'E'
+        WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+    RETURN.
+  ENDIF.
+
+  " 设置控制参数
+  DATA ls_control_parameters TYPE ssfctrlop.
+  DATA ls_output_options TYPE ssfcompop.
+
+  CLEAR ls_control_parameters.
+  CLEAR ls_output_options.
+
+  ls_control_parameters-no_open = abap_true.
+  ls_control_parameters-no_close = abap_true.
+
+  " 准备打印
+  CALL FUNCTION 'SSF_OPEN'
+    EXPORTING
+      output_options     = ls_output_options
+      control_parameters = ls_control_parameters
+    EXCEPTIONS
+      formatting_error   = 1
+      internal_error     = 2
+      send_error         = 3
+      user_canceled      = 4
+      OTHERS             = 5.
+  IF sy-subrc <> 0.
+    MESSAGE ID sy-msgid TYPE 'S' NUMBER sy-msgno DISPLAY LIKE 'E'
+        WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+    RETURN.
+  ENDIF.
+
+  " 分组打印
+  LOOP AT gt_data INTO DATA(ls_data) WHERE zsel = abap_true
+    GROUP BY (
+      zkey = ls_data-zkey
+    ) INTO DATA(ls_data_grp).
+
+    DATA ls_print TYPE zprint.
+    CLEAR ls_print.
+
+    " 补空行
+    DATA l_line_per_page TYPE i VALUE 10.
+    WHILE ( lines( ls_print-t_item ) MOD l_line_per_page ) <> 0.
+      INSERT INITIAL LINE INTO TABLE ls_print-t_item.
+    ENDWHILE.
+
+    " 打印
+    CALL FUNCTION l_fm_name
+      EXPORTING
+        control_parameters = ls_control_parameters
+        output_options     = ls_output_options
+        i_data             = ls_print
+      EXCEPTIONS
+        formatting_error   = 1
+        internal_error     = 2
+        send_error         = 3
+        user_canceled      = 4
+        OTHERS             = 5.
+    IF sy-subrc <> 0.
+      MESSAGE ID sy-msgid TYPE 'S' NUMBER sy-msgno DISPLAY LIKE 'E'
+          WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+      RETURN.
+    ENDIF.
+
+  ENDLOOP.
+
+  " 关闭打印
+  CALL FUNCTION 'SSF_CLOSE'
+    EXCEPTIONS
+      formatting_error = 1
+      internal_error   = 2
+      send_error       = 3
+      OTHERS           = 4.
+  IF sy-subrc <> 0.
+    MESSAGE ID sy-msgid TYPE 'S' NUMBER sy-msgno DISPLAY LIKE 'E'
+        WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+    RETURN.
+  ENDIF.
+
+ENDFORM.
 
 ```
 

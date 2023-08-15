@@ -60,11 +60,14 @@ nav:
   - 报表: 
     - 报表概述: report/index.md
     - 库存报表: report/stock.md
+    - 销售交货开票报表: report/sd_report.md
     - 日志查询报表: report/zlogreport.md
   - 其他: 
     - ALV相关: others/alv.md
+    - 获取报表数据: others/get_report.md
     - Excel上传下载: others/xlsx_io.md
     - 文本取值工具: others/zcl_text.md
+    - 进度条工具: others/progress.md
     - SMARTFORMS相关: others/smartforms.md
     - 中文大写: others/number_to_chinese.md
     - 嵌套循环: others/nest_loop.md
