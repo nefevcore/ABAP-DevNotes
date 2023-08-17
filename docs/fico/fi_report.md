@@ -1,759 +1,910 @@
-# 通用取值模块
+# 报表查询工具
 
-财务三大报表取值部分可以通用，因此下面只对取值部分进行封装，通过传入配置，可以获取各项目的年初、年末、各期间金额。
+财务报表多按配置进行动态处理，用于对应项目不同的财务报表需求。
 
-## 入参结构
+因此封装取值工具，通过设置报表模板，并传入参数（公司代码等）即可生成需求报表。
 
-| 字段 | 说明 |
-|-|-|
-| BUKRS | 公司代码 |
-| ZITEM | 项目 |
-| ZITEM_SUB | 子项目 |
-| ZTEXT | 项目描述 |
-| REVERSE | 反向标识，计算或汇总时使用 |
-| T_ACCAT_OPT | 科目Range表 |
-| T_FILTER | 除科目外的其他Range表，按字段名动态过滤 |
-| T_COLLECT | ZITEM项目子表，汇总其他项目结果 |
-
-### 示例入参
-
-假如现在需要:
-
-1. 项目\[资产总值\]，ZITEM=1，汇总:
-
-    1. 科目1100\*
-
-    2. 功能范围100、200
-
-    3. ZITEM=2、3
-
-    4. 科目2\*且利润中心21\*
-
-2. 项目\[流动资产\]，ZITEM=2，汇总科目3\*、4\*、5\*
-
-3. 项目\[非流动资产\]，ZITEM=3，汇总科目6\*、7\*、8\*
-
-可以得出入参：
-
-| BUKRS | ZITEM | ZITEM_SUB | ZTEXT | REVERSE | T_ACCAT_OPT | T_FILTER | T_COLLECT |
-|-|-|-|-|-|-|-|-|
-| 1000 | 1 | 1 | 资产总值 |  |  |  |  |
-| 1000 | 1 | 2 | 科目项 | | 1100* |  |  |
-| 1000 | 1 | 3 | 过滤项 | | | 功能范围=100/200 |  |
-| 1000 | 1 | 4 | 其他项 | | | | ZITEM=2/3 |
-| 1000 | 1 | 5 | 结合使用 | | 2* | 利润中心=21* | | |
-|||||||||
-| 1000 | 2 | 1 | 流动资产 | | |  |  |
-| 1000 | 2 | 2 | | | 3* |  |  |
-| 1000 | 2 | 3 | | | 4* |  |  |
-| 1000 | 2 | 4 | | | 5* |  |  |
-|||||||||
-| 1000 | 3 | 1 | 非流动资产 | | |  |  |
-| 1000 | 3 | 2 | | | 6* |  |  |
-| 1000 | 3 | 3 | | | 7* |  |  |
-| 1000 | 3 | 4 | | | 8* |  |  |
-|||||||||
-
-## 出参结构
-
-出参结构包括了年初、年末、本月、截止本月累计、其他各月数据，按需使用即可：
+## 报表模板
 
 | 字段 | 说明 |
 |-|-|
-| BUKRS | 公司代码 |
-| YEAR | 年度 |
-| PERIOD | 期间 |
+| ZINDEX | 排序用 |
 | ZITEM | 项目 |
 | ZTEXT | 项目描述 |
-| YEAR_BEGIN | 年初余额 |
-| TEAR_END | 年末余额 |
-| PERIOD_CURRENT | 本月金额 |
-| PERIOD_TOTAL | 截止本月累计金额 |
-| PERIOD_01 | 01月余额 |
-| PERIOD_02 | 02月余额 |
-| PERIOD_03 | 03月余额 |
-| PERIOD_04 | 04月余额 |
-| PERIOD_05 | 05月余额 |
-| PERIOD_06 | 06月余额 |
-| PERIOD_07 | 07月余额 |
-| PERIOD_08 | 08月余额 |
-| PERIOD_09 | 09月余额 |
-| PERIOD_10 | 10月余额 |
-| PERIOD_11 | 11月余额 |
-| PERIOD_12 | 12月余额 |
-| PERIOD_13 | 13月余额 |
-| PERIOD_14 | 14月余额 |
-| PERIOD_15 | 15月余额 |
-| PERIOD_16 | 16月余额 |
+| INVERSE | 负号 |
+| T_ACCAT_OPT | 科目范围 |
+| T_FILTER | 除科目范围外，其他筛选项 |
+| T_CHILD | 子项，汇总其他项目结果 |
+| T_DETAIL | 明细数据，可以用在穿透需求 |
+| T_CUSTOMIZE | 特殊取值 |
 
-## 文件导出
+### 示例模板
 
-三大报表格式固定，因此可以通过文本替换的方式，将模板中的占位符替换为其他值。
+| ZITEM | ZTEXT | INVERSE | T_ACCAT_OPT | T_FILTER | T_CHILD |
+|-|-|-|-|-|-|
+| 1 | 项目1 |  |  |  |  |
+| 1 | | | 1100* |  |  |
+| 1 | | | | 功能范围=100,200 |  |
+| 1 | | | | | ZITEM=2,3 |
+| 1 | | | 1900* | 利润中心=21* | | |
+| 2 | 项目2 | | 2* |  |  |
+| 3 | 项目3 | X | 3* |  |  |
 
-### XLSX格式导出
+## 报表结果
 
-XLSX格式，或者说Openxml格式，会将文本全部存入到Sharedstrings.xml文件中，因此通过替换Sharedstrings中的文本内容，即可实现文本替换。
+| 字段 | 说明 |
+|-|-|
+| ZITEM | 项目 |
+| ZTEXT | 项目描述 |
+| FI | 财务数据，包括各月份季度的余额和发生额，按需取值即可 |
+| FI_LOC | 本币财务数据 |
+
+## 工具类
 
 <details>
-  <summary>Openxml替换Sharedstrings内容</summary>
+  <summary>ZCL_FI_REPORT</summary>
 
 ```ABAP
 
-*&---------------------------------------------------------------------*
-*& 替换模板文件中的文本内容
-*&---------------------------------------------------------------------*
-METHOD replace_texts.
+CLASS zcl_fi_report DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-  " 程序要求IT_REPLACE至少两列，代码会将左列内容替换为右列内容
-  CHECK it_replace IS NOT INITIAL.
-  " 模板文件不能为空
-  CHECK c_doc IS NOT INITIAL.
-
-  FIELD-SYMBOLS <fs_replace_t> TYPE ANY TABLE.
-  FIELD-SYMBOLS <fs_replace> TYPE any.
-  FIELD-SYMBOLS <fs_from> TYPE any.
-  FIELD-SYMBOLS <fs_to> TYPE any.
-
-  TRY.
-      DATA(lo_doc) = cl_xlsx_document=>load_document( c_doc ).
-      DATA(lo_workbook_part) = lo_doc->get_workbookpart( ).
-      DATA(lo_sharedstrings_part) = lo_workbook_part->get_sharedstringspart( ).
-
-      DATA(l_sharedstrings_xml) = lo_sharedstrings_part->get_data( ).
-      DATA(l_sharedstrings_str) = cl_openxml_helper=>xstring_to_string( l_sharedstrings_xml ).
-
-      ASSIGN it_replace TO <fs_replace_t>.
-      LOOP AT <fs_replace_t> ASSIGNING <fs_replace>.
-        ASSIGN COMPONENT 1 OF STRUCTURE <fs_replace> TO <fs_from> .
-        ASSIGN COMPONENT 2 OF STRUCTURE <fs_replace> TO <fs_to> .
-        IF <fs_from> IS ASSIGNED AND <fs_to> IS ASSIGNED.
-          IF <fs_from> IS NOT INITIAL.
-            REPLACE ALL OCCURRENCES OF <fs_from> IN l_sharedstrings_str WITH <fs_to> IN CHARACTER MODE.
-          ENDIF.
-        ENDIF.
-        UNASSIGN <fs_from>.
-        UNASSIGN <fs_to>.
-      ENDLOOP.
-
-      l_sharedstrings_xml = cl_openxml_helper=>string_to_xstring( l_sharedstrings_str ).
-      lo_sharedstrings_part->feed_data( l_sharedstrings_xml ).
-
-      c_doc = lo_doc->get_package_data( ).
-
-    CATCH cx_openxml_not_found
-          cx_openxml_format
-          cx_openxml_not_allowed
-          INTO DATA(lx_openxml).
-      MESSAGE lx_openxml->get_text( ) TYPE 'S' DISPLAY LIKE 'E'.
-    CATCH cx_root INTO DATA(lx_root).
-      MESSAGE lx_root->get_text( ) TYPE 'S' DISPLAY LIKE 'E'.
-  ENDTRY.
-
-ENDMETHOD.
-
-```
-
-</details>
-
-### XLS格式导出
-
-如果模板是XLS格式，使用OLE进行替换：
-
-<details>
-  <summary>OLE替换文本内容</summary>
-
-```ABAP
-
-TYPE-POOLS ole2.
-DATA:
-  l_app       TYPE ole2_object,
-  l_workbooks TYPE ole2_object,
-  l_cells     TYPE ole2_object.
-
-CREATE OBJECT l_app 'EXCEL.APPLICATION'.
-SET PROPERTY OF l_app 'DisplayAlerts' = 0.
-CALL METHOD OF l_app 'Workbooks' = l_workbooks.
-CALL METHOD OF l_workbooks 'Open'
-  EXPORTING
-    #1 = filename.
-GET PROPERTY OF l_app 'Cells' = l_cells.
-
-FIELD-SYMBOLS:
-  <fs_replace>  TYPE any,
-  <fs_from> TYPE any,
-  <fs_to> TYPE any.
-
-LOOP AT it_replace ASSIGNING <fs_replace>.
-  ASSIGN COMPONENT 1 OF STRUCTURE <fs_replace> TO <fs_from>.
-  ASSIGN COMPONENT 2 OF STRUCTURE <fs_replace> TO <fs_to>.
-  CALL METHOD OF l_cells 'Replace'
-    EXPORTING
-      #1 = <fs_from>
-      #2 = <fs_to>.
-ENDLOOP.
-SET PROPERTY OF l_app 'Visible' = 1.
-
-```
-
-</details>
-
-## Include文件
-
-<details>
-  <summary>示例代码</summary>
-
-```ABAP
-
-*&---------------------------------------------------------------------*
-*& Include zfi_report
-*&---------------------------------------------------------------------*
-*&---------------------------------------------------------------------*
-*& 三大报表取值部分可以通用，因此抽取出来形成一个模块
-*&---------------------------------------------------------------------*
-" 财务明细数据键值
-TYPES:
-  BEGIN OF ty_detail_key,
-    rldnr  TYPE acdoca-rldnr,
-    rbukrs TYPE acdoca-rbukrs,
-    gjahr  TYPE acdoca-gjahr,
-    belnr  TYPE acdoca-belnr,
-    docln  TYPE acdoca-docln,
-  END OF ty_detail_key.
-TYPES tt_detail_key TYPE STANDARD TABLE OF ty_detail_key WITH EMPTY KEY.
-
-" 财务明细数据
-TYPES:
-  BEGIN OF ty_detail,
-    rldnr  TYPE acdoca-rldnr,
-    rbukrs TYPE acdoca-rbukrs,
-    gjahr  TYPE acdoca-gjahr,
-    belnr  TYPE acdoca-belnr,
-    docln  TYPE acdoca-docln,
-    ryear  TYPE acdoca-ryear, " 财年
-    poper  TYPE acdoca-poper, " 期间
-    racct  TYPE acdoca-racct, " 会计科目
-    rcntr  TYPE acdoca-rcntr, " 成本中心
-    prctr  TYPE acdoca-prctr, " 利润中心
-    rstgr  TYPE acdoca-rstgr, " RSTGR
-    rfarea TYPE acdoca-rfarea, " 功能范围
-    rbusa  TYPE acdoca-rbusa, " 业务范围
-    budat  TYPE acdoca-budat, " 过账日期
-    shkzg  TYPE shkzg, " 借贷
-    hsl    TYPE acdoca-hsl,
-  END OF ty_detail.
-TYPES tt_detail TYPE STANDARD TABLE OF ty_detail WITH EMPTY KEY.
-
-" 报表数据
-TYPES ty_amount TYPE p LENGTH 16 DECIMALS 2. " 金额
-TYPES:
-  BEGIN OF ty_fi_data,
-    bukrs          TYPE bukrs, " 公司
-    year           TYPE gjahr, " 年度
-    period         TYPE monat, " 期间
-    zitem          TYPE string, " 项目
-    ztext          TYPE string, " 项目描述
-    year_begin     TYPE ty_amount, " 年初余额
-    year_end       TYPE ty_amount, " 年末余额
-    period_current TYPE ty_amount, " 本月金额
-    period_total   TYPE ty_amount, " 截止本月累计金额
-    period_01      TYPE ty_amount, " 01月余额
-    period_02      TYPE ty_amount, " 02月余额
-    period_03      TYPE ty_amount, " 03月余额
-    period_04      TYPE ty_amount, " 04月余额
-    period_05      TYPE ty_amount, " 05月余额
-    period_06      TYPE ty_amount, " 06月余额
-    period_07      TYPE ty_amount, " 07月余额
-    period_08      TYPE ty_amount, " 08月余额
-    period_09      TYPE ty_amount, " 09月余额
-    period_10      TYPE ty_amount, " 10月余额
-    period_11      TYPE ty_amount, " 11月余额
-    period_12      TYPE ty_amount, " 12月余额
-    period_13      TYPE ty_amount, " 13月余额
-    period_14      TYPE ty_amount, " 14月余额
-    period_15      TYPE ty_amount, " 15月余额
-    period_16      TYPE ty_amount, " 16月余额
-    t_detail_key   TYPE tt_detail_key, " 明细数据键值
-  END OF ty_fi_data.
-TYPES tt_fi_data TYPE STANDARD TABLE OF ty_fi_data WITH EMPTY KEY.
-
-" 筛选项
-TYPES:
-  BEGIN OF ty_filter,
-    name        TYPE string,
-    t_range_opt TYPE RANGE OF char40,
-  END OF ty_filter.
-
-" 对于特殊配置，通过回调方法进行处理
-TYPES:
-  BEGIN OF ty_callback,
-    cb_program TYPE programm,
-    cb_from    TYPE char30,
-  END OF ty_callback.
-TYPES tt_callback TYPE STANDARD TABLE OF ty_callback WITH EMPTY KEY.
-
-" 配置数据
-TYPES ty_config_key TYPE n LENGTH 3.
-TYPES:
-  BEGIN OF ty_config,
-    bukrs       TYPE bukrs, " 公司
-    zitem       TYPE ty_config_key, " 项目
-    zitem_sub   TYPE ty_config_key, " 子项目
-    ztext       TYPE string, " 描述
-    reverse     TYPE xfeld, " 反向标记，汇总或计算的时候使用
-    fi_data     TYPE ty_fi_data,
-    t_racct_opt TYPE RANGE OF racct, " 科目作为财务数据首要筛选维度
-    t_filter    TYPE STANDARD TABLE OF ty_filter WITH EMPTY KEY, " 筛选项
-    t_collect   TYPE STANDARD TABLE OF ty_config_key WITH EMPTY KEY, " 引用汇总其他项目结果
-    processed   TYPE char01, " 处理标识，未处理[空]，处理中[P]，已处理[X]，用于死循环检查和跳过冗余计算
-    t_callback  TYPE tt_callback,
-  END OF ty_config.
-TYPES tt_config TYPE STANDARD TABLE OF ty_config WITH EMPTY KEY.
-
-*&---------------------------------------------------------------------*
-*& 财务报表操作对象
-*&---------------------------------------------------------------------*
-CLASS lcl_fi_report DEFINITION DEFERRED.
-
-*&---------------------------------------------------------------------*
-*& 财务报表操作对象
-*&---------------------------------------------------------------------*
-CLASS lcl_fi_report DEFINITION.
   PUBLIC SECTION.
-    CLASS-METHODS get_smw0_templete IMPORTING i_objid         TYPE w3objid
-                                    RETURNING VALUE(r_buffer) TYPE xstring .
-    CLASS-METHODS replace_texts IMPORTING it_replace TYPE ANY TABLE
-                                CHANGING  c_doc      TYPE xstring.
-    CLASS-METHODS create IMPORTING i_year           TYPE gjahr
-                                   i_period         TYPE monat
-                                   it_config        TYPE tt_config
-                         RETURNING VALUE(ro_result) TYPE REF TO lcl_fi_report.
-    CLASS-METHODS add_hsl IMPORTING ir_config TYPE REF TO ty_config
-                                    i_poper   TYPE ty_detail-poper
-                                    i_hsl     TYPE ty_detail-hsl.
-    METHODS execute RETURNING VALUE(rt_fi_data) TYPE tt_fi_data.
+
+    TYPES:
+      ty_amount TYPE p LENGTH 16 DECIMALS 2 .
+    TYPES:
+      BEGIN OF ty_fi_data,
+        current_period     TYPE ty_amount, " 当前期间发生额
+        current_period_end TYPE ty_amount, " 当前期间余额
+        year_begin         TYPE ty_amount, " 年初余额
+        year_end           TYPE ty_amount, " 年终余额
+        m01                TYPE ty_amount, " 1月发生额
+        m02                TYPE ty_amount, " 2月发生额
+        m03                TYPE ty_amount, " 3月发生额
+        m04                TYPE ty_amount, " 4月发生额
+        m05                TYPE ty_amount, " 5月发生额
+        m06                TYPE ty_amount, " 6月发生额
+        m07                TYPE ty_amount, " 7月发生额
+        m08                TYPE ty_amount, " 8月发生额
+        m09                TYPE ty_amount, " 9月发生额
+        m10                TYPE ty_amount, " 10月发生额
+        m11                TYPE ty_amount, " 11月发生额
+        m12                TYPE ty_amount, " 12月发生额
+        m13                TYPE ty_amount, " 13月发生额
+        m14                TYPE ty_amount, " 14月发生额
+        m15                TYPE ty_amount, " 15月发生额
+        m16                TYPE ty_amount, " 16月发生额
+        q1                 TYPE ty_amount, " 1季度发生额
+        q2                 TYPE ty_amount, " 2季度发生额
+        q3                 TYPE ty_amount, " 3季度发生额
+        q4                 TYPE ty_amount, " 4季度发生额
+        m01end             TYPE ty_amount, " 1月余额
+        m02end             TYPE ty_amount, " 2月余额
+        m03end             TYPE ty_amount, " 3月余额
+        m04end             TYPE ty_amount, " 4月余额
+        m05end             TYPE ty_amount, " 5月余额
+        m06end             TYPE ty_amount, " 6月余额
+        m07end             TYPE ty_amount, " 7月余额
+        m08end             TYPE ty_amount, " 8月余额
+        m09end             TYPE ty_amount, " 9月余额
+        m10end             TYPE ty_amount, " 10月余额
+        m11end             TYPE ty_amount, " 11月余额
+        m12end             TYPE ty_amount, " 12月余额
+        m13end             TYPE ty_amount, " 13月余额
+        m14end             TYPE ty_amount, " 14月余额
+        m15end             TYPE ty_amount, " 15月余额
+        m16end             TYPE ty_amount, " 16月余额
+        q1end              TYPE ty_amount, " 1季度余额
+        q2end              TYPE ty_amount, " 2季度余额
+        q3end              TYPE ty_amount, " 3季度余额
+        q4end              TYPE ty_amount, " 4季度余额
+      END OF ty_fi_data .
+    TYPES:
+      ty_zitem TYPE c LENGTH 20 .                " 报表项目
+    TYPES:
+      BEGIN OF ty_detail_key,
+        rldnr  TYPE acdoca-rldnr,
+        rbukrs TYPE acdoca-rbukrs,
+        gjahr  TYPE acdoca-gjahr,
+        belnr  TYPE acdoca-belnr,
+        docln  TYPE acdoca-docln,
+      END OF ty_detail_key .
+    TYPES:
+      ty_detail_key_t TYPE STANDARD TABLE OF ty_detail_key WITH EMPTY KEY.
+    TYPES:
+      BEGIN OF ty_filter,
+        name         TYPE char30,
+        t_select_opt TYPE RANGE OF char50, " 50位长足够应付大部分情况了
+      END OF ty_filter .
+    TYPES:
+      ty_filter_t TYPE STANDARD TABLE OF ty_filter WITH EMPTY KEY.
+    TYPES:
+      BEGIN OF ty_child,
+        zitem TYPE ty_zitem,
+        zsign TYPE c LENGTH 1, " 运算符号
+      END OF ty_child .
+    TYPES:
+      ty_child_t TYPE STANDARD TABLE OF ty_child WITH EMPTY KEY.
+    TYPES:
+      BEGIN OF ty_customize,
+        function   TYPE char30, " 回调函数
+        class      TYPE char30, " 回调类名
+        method     TYPE char61, " 回调静态方法名
+        progrom    TYPE char40, " 回调程序名
+        subroutine TYPE char30, " 回调子例程
+      END OF ty_customize .
+    TYPES:
+      ty_customize_t TYPE STANDARD TABLE OF ty_customize WITH EMPTY KEY.
+    TYPES:
+      BEGIN OF ty_report,
+        zindex      TYPE sy-index, " 用于排序
+        zitem       TYPE ty_zitem, " 报表项目
+        ztext       TYPE c LENGTH 40, " 报表项目描述
+        inverse     TYPE c LENGTH 1, " 反向标识
+        processed   TYPE c LENGTH 1, " 处理标识，未处理[空]，处理中[P]，已处理[X]，用于死循环检查和跳过冗余计算
+        fi          TYPE ty_fi_data, " 财务数据
+        fi_ksl      TYPE ty_fi_data, " 外币财务数据
+        t_racct_opt TYPE RANGE OF racct, " 科目范围
+        t_filter    TYPE ty_filter_t, " 其他动态筛选项
+        t_child     TYPE ty_child_t, " 汇总其他项目数据
+        t_customize TYPE ty_customize_t, " 特殊处理方法
+        t_detail    TYPE ty_detail_key_t, " 凭证行清单
+      END OF ty_report .
+    TYPES:
+      ty_report_t TYPE STANDARD TABLE OF ty_report WITH EMPTY KEY.
+    TYPES ty_acdoca TYPE acdoca .
+    TYPES ty_faglflext TYPE v_faglflext_view .
+    TYPES:
+      ty_acdoca_t TYPE STANDARD TABLE OF ty_acdoca .
+    TYPES:
+      ty_faglflext_t TYPE STANDARD TABLE OF ty_faglflext WITH EMPTY KEY .
+
+    " 目前仅支持加减计算，如有需要，可自己扩展
+    CONSTANTS:
+      BEGIN OF cns_sign,
+        plus  VALUE '+',
+        minus VALUE '-',
+      END OF cns_sign .
+    CONSTANTS:
+      BEGIN OF cns_datatab,
+        acdoca    TYPE tabname VALUE 'ACDOCA',
+        faglflext TYPE tabname VALUE 'FAGLFLEXT',
+      END OF cns_datatab .
+    CLASS-DATA m_datatab TYPE tabname .
+    DATA m_rldnr TYPE acdoca-rldnr .
+    DATA m_rbukrs TYPE acdoca-rbukrs .
+    DATA m_ryear TYPE acdoca-ryear .
+    DATA mt_filter TYPE ty_filter_t .
+    DATA mt_report TYPE ty_report_t .
+    DATA mt_acdoca TYPE ty_acdoca_t .
+    DATA mt_faglflext TYPE ty_faglflext_t .
+
+    CLASS-METHODS class_constructor .
+    CLASS-METHODS execute
+      IMPORTING
+        !i_rldnr  TYPE rldnr DEFAULT '0L'
+        !i_rbukrs TYPE bukrs OPTIONAL
+        !i_ryear  TYPE ryear DEFAULT sy-datum(4)
+        !i_filter TYPE ty_filter_t OPTIONAL
+      CHANGING
+        !c_report TYPE ty_report_t .
+    CLASS-METHODS from_table
+      IMPORTING
+        !i_tabname TYPE tabname .
+    CLASS-METHODS cus_clear_data
+      IMPORTING
+        !i_report_line TYPE REF TO ty_report
+      CHANGING
+        !c_acdoca      TYPE ty_acdoca_t
+        !c_faglflext   TYPE ty_faglflext_t .
+  PROTECTED SECTION.
   PRIVATE SECTION.
-    METHODS get_detail.
-    METHODS get_fi_data IMPORTING ir_config TYPE REF TO ty_config
-                                  i_depth   TYPE i OPTIONAL.
-    DATA m_year TYPE gjahr.
-    DATA m_period TYPE monat.
-    DATA mt_config TYPE tt_config.
-    DATA mt_detail TYPE tt_detail.
+
+    METHODS _get_data .
+    METHODS _set_global_filter .
+    METHODS _set_report_line
+      IMPORTING
+        !i_report_line TYPE REF TO ty_report
+        !i_depth       TYPE i OPTIONAL .
+    METHODS _add_fi_acdoca
+      IMPORTING
+        !i_report_line TYPE REF TO ty_report
+        !i_acdoca      TYPE REF TO acdoca .
+    METHODS _add_fi_faglflext
+      IMPORTING
+        !i_report_line TYPE REF TO ty_report
+        !i_faglflext   TYPE REF TO v_faglflext_view .
+    METHODS _add_fi_report_line
+      IMPORTING
+        !i_report_line TYPE REF TO ty_report
+        !i_other_line  TYPE REF TO ty_report .
+    METHODS _inverse_fi
+      IMPORTING
+        !i_report_line TYPE REF TO ty_report .
+    METHODS _calc_fi
+      IMPORTING
+        !i_report_line TYPE REF TO ty_report .
 ENDCLASS.
 
-*&---------------------------------------------------------------------*
-*& 财务报表操作对象
-*&---------------------------------------------------------------------*
-CLASS lcl_fi_report IMPLEMENTATION.
 
-*&---------------------------------------------------------------------*
-*& 财务报表操作对象
-*&---------------------------------------------------------------------*
-  METHOD create.
 
-    ro_result = NEW #( ).
-    ro_result->mt_config = it_config.
-    ro_result->m_year = i_year.
-    ro_result->m_period = i_period.
+CLASS zcl_fi_report IMPLEMENTATION.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Static Public Method zcl_fi_report=>CLASS_CONSTRUCTOR
+* +-------------------------------------------------------------------------------------------------+
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD class_constructor.
+
+    " 默认从FAGLGLEXT表取值
+    " ACDOCA有更细的粒度，因此性能会更慢，如果没有明细需求，不建议使用
+    m_datatab = cns_datatab-faglflext.
 
   ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& 根据配置执行
-*&---------------------------------------------------------------------*
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Static Public Method zcl_fi_report=>CUS_CLEAR_DATA
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] I_REPORT_LINE                  TYPE REF TO ty_REPORT
+* | [<-->] C_ACDOCA                       TYPE        ty_ACDOCA_T
+* | [<-->] C_FAGLFLEXT                    TYPE        ty_FAGLFLEXT_T
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD cus_clear_data.
+
+    " 对于汇总行，一般不从表取值
+    CLEAR i_report_line->fi.
+    CLEAR i_report_line->fi_ksl.
+    CLEAR i_report_line->t_detail.
+    CLEAR c_acdoca.
+    CLEAR c_faglflext.
+
+  ENDMETHOD.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Static Public Method zcl_fi_report=>EXECUTE
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] I_RLDNR                        TYPE        RLDNR (default ='0L')
+* | [--->] I_RBUKRS                       TYPE        BUKRS(optional)
+* | [--->] I_RYEAR                        TYPE        RYEAR (default =SY-DATUM(4))
+* | [--->] I_FILTER                       TYPE        ty_FILTER_T(optional)
+* | [<-->] C_REPORT                       TYPE        ty_REPORT_T
+* +--------------------------------------------------------------------------------------</SIGNATURE>
   METHOD execute.
 
-    SORT mt_config BY bukrs zitem zitem_sub.
+    DATA(lo_report) = NEW zcl_fi_report( ).
+    lo_report->m_rldnr = i_rldnr.
+    lo_report->m_rbukrs = i_rbukrs.
+    lo_report->m_ryear = i_ryear.
+    lo_report->mt_filter = i_filter.
+    lo_report->mt_report = c_report.
 
-    get_detail( ). " 获取报表明细数据
-    LOOP AT mt_config REFERENCE INTO DATA(lr_config).
-      get_fi_data( lr_config ). " 生成报表行数据
+    lo_report->_get_data( ).
+    lo_report->_set_global_filter( ).
+    LOOP AT lo_report->mt_report REFERENCE INTO DATA(lr_report).
+      lo_report->_set_report_line( i_report_line = lr_report ).
     ENDLOOP.
 
-    LOOP AT mt_config REFERENCE INTO lr_config
-      GROUP BY (
-        bukrs = lr_config->bukrs
-        zitem = lr_config->zitem
-      ) INTO DATA(ls_config_grp).
-
-      DATA ls_fi_data TYPE ty_fi_data.
-      CLEAR ls_fi_data.
-      ls_fi_data-bukrs = ls_config_grp-bukrs.
-      ls_fi_data-year = m_year.
-      ls_fi_data-period = m_period.
-      ls_fi_data-zitem = ls_config_grp-zitem.
-
-      LOOP AT GROUP ls_config_grp REFERENCE INTO lr_config. " 文本任取一行有值的
-        IF lr_config->ztext IS NOT INITIAL.
-          ls_fi_data-ztext = lr_config->ztext.
-          EXIT.
-        ENDIF.
-      ENDLOOP.
-
-      LOOP AT GROUP ls_config_grp REFERENCE INTO lr_config.
-        ls_fi_data-year_begin = ls_fi_data-year_begi + lr_config->fi_data-year_begin. " 年初余额
-        ls_fi_data-period_01  = ls_fi_data-period_01 + lr_config->fi_data-period_01 . " 01月余额
-        ls_fi_data-period_02  = ls_fi_data-period_02 + lr_config->fi_data-period_02 . " 02月余额
-        ls_fi_data-period_03  = ls_fi_data-period_03 + lr_config->fi_data-period_03 . " 03月余额
-        ls_fi_data-period_04  = ls_fi_data-period_04 + lr_config->fi_data-period_04 . " 04月余额
-        ls_fi_data-period_05  = ls_fi_data-period_05 + lr_config->fi_data-period_05 . " 05月余额
-        ls_fi_data-period_06  = ls_fi_data-period_06 + lr_config->fi_data-period_06 . " 06月余额
-        ls_fi_data-period_07  = ls_fi_data-period_07 + lr_config->fi_data-period_07 . " 07月余额
-        ls_fi_data-period_08  = ls_fi_data-period_08 + lr_config->fi_data-period_08 . " 08月余额
-        ls_fi_data-period_09  = ls_fi_data-period_09 + lr_config->fi_data-period_09 . " 09月余额
-        ls_fi_data-period_10  = ls_fi_data-period_10 + lr_config->fi_data-period_10 . " 10月余额
-        ls_fi_data-period_11  = ls_fi_data-period_11 + lr_config->fi_data-period_11 . " 11月余额
-        ls_fi_data-period_12  = ls_fi_data-period_12 + lr_config->fi_data-period_12 . " 12月余额
-        ls_fi_data-period_13  = ls_fi_data-period_13 + lr_config->fi_data-period_13 . " 13月余额
-        ls_fi_data-period_14  = ls_fi_data-period_14 + lr_config->fi_data-period_14 . " 14月余额
-        ls_fi_data-period_15  = ls_fi_data-period_15 + lr_config->fi_data-period_15 . " 15月余额
-        ls_fi_data-period_16  = ls_fi_data-period_16 + lr_config->fi_data-period_16 . " 16月余额
-        INSERT LINES OF lr_config->fi_data-t_detail_key INTO TABLE ls_fi_data-t_detail_key. " 明细数据键值
-      ENDLOOP.
-
-      ls_fi_data-year_end = ls_fi_data-year_begin.
-      DO 16 TIMES.
-        DATA l_period TYPE ty_fi_data-period.
-        l_period = sy-index.
-        ASSIGN COMPONENT |PERIOD_{ sy-index ALIGN = RIGHT WIDTH = 2 PAD = '0' }| OF STRUCTURE ls_fi_data TO FIELD-SYMBOL(<fs_period>).
-        IF <fs_period> IS ASSIGNED.
-          ls_fi_data-year_end += <fs_period>. " 年末余额
-          IF ls_fi_data-period >= l_period. " 截止本月末累计金额
-            ls_fi_data-period_total += <fs_period>.
-          ENDIF.
-          IF ls_fi_data-period = l_period. " 本月金额
-            ls_fi_data-period_current = <fs_period>.
-          ENDIF.
-        ENDIF.
-      ENDDO.
-
-      INSERT ls_fi_data INTO TABLE rt_fi_data.
-    ENDLOOP.
+    c_report = lo_report->mt_report.
 
   ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& 获取财务明细数据
-*&---------------------------------------------------------------------*
-  METHOD get_detail.
 
-    LOOP AT mt_config REFERENCE INTO DATA(lr_config)
-      GROUP BY ( bukrs = lr_config->bukrs ) INTO DATA(ls_config_grp).
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Static Public Method zcl_fi_report=>FROM_TABLE
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] I_TABNAME                      TYPE        TABNAME
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD from_table.
 
-      " 科目范围
-      DATA lt_racct_opt TYPE RANGE OF racct.
-      CLEAR lt_racct_opt.
-      LOOP AT GROUP ls_config_grp REFERENCE INTO lr_config.
-        INSERT LINES OF lr_config->t_racct_opt INTO TABLE lt_racct_opt.
-      ENDLOOP.
-      CHECK lt_racct_opt IS NOT INITIAL.
-
-      SORT lt_racct_opt.
-      DELETE ADJACENT DUPLICATES FROM lt_racct_opt COMPARING ALL FIELDS.
-
-      " TODO 超过大约一万行数据就应该分批处理了
-
-      " 预查询出全部相关的财务数据
-      SELECT
-        rldnr,
-        rbukrs,
-        gjahr,
-        belnr,
-        docln,
-        ryear, " 财年
-        poper, " 期间
-        racct, " 会计科目
-        rcntr, " 成本中心
-        prctr, " 利润中心
-        rstgr, " 原因代码
-        rfarea, " 功能范围
-        rbusa, " 业务范围
-        budat,
-        CASE WHEN hsl > 0 THEN 'S' ELSE 'H' END AS shkzg, " 借贷标识
-        hsl
-        FROM acdoca
-        WHERE rldnr = '0L' " 主账目表，应该不会变吧？
-          AND rbukrs = @ls_config_grp-bukrs
-          AND ryear = @m_year
-          AND racct IN @lt_racct_opt
-        APPENDING TABLE @mt_detail.
-    ENDLOOP.
-
-    SORT mt_detail BY rldnr rbukrs gjahr belnr docln.
+    m_datatab = i_tabname.
 
   ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& 生成报表行数据
-*&---------------------------------------------------------------------*
-  METHOD get_fi_data.
 
-    IF i_depth > 10 " 迭代层级，防止栈溢出
-    OR ir_config IS NOT BOUND " 空值检查
-    OR ir_config->processed IS NOT INITIAL " 处理标记检查，防止死循环，以及跳过冗余计算
-    .
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Private Method zcl_fi_report->_ADD_FI_ACDOCA
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] I_REPORT_LINE                  TYPE REF TO ty_REPORT
+* | [--->] I_ACDOCA                       TYPE REF TO ACDOCA
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD _add_fi_acdoca.
+
+    IF i_report_line IS NOT BOUND OR i_acdoca IS NOT BOUND.
       RETURN.
     ENDIF.
 
-    " 进度展示
-    DATA l_text TYPE string.
-    l_text = |正在处理项目[{ ir_config->zitem }]: { ir_config->ztext }|.
-    CALL FUNCTION 'SAPGUI_PROGRESS_INDICATOR'
-      EXPORTING
-        text = l_text.
+    " 汇总数据
+    CASE i_acdoca->poper.
+      WHEN  0. i_report_line->fi-year_begin = i_report_line->fi-year_begin + i_acdoca->hsl.
+      WHEN  1. i_report_line->fi-m01 = i_report_line->fi-m01 + i_acdoca->hsl. "
+      WHEN  2. i_report_line->fi-m02 = i_report_line->fi-m02 + i_acdoca->hsl. "
+      WHEN  3. i_report_line->fi-m03 = i_report_line->fi-m03 + i_acdoca->hsl. "
+      WHEN  4. i_report_line->fi-m04 = i_report_line->fi-m04 + i_acdoca->hsl. "
+      WHEN  5. i_report_line->fi-m05 = i_report_line->fi-m05 + i_acdoca->hsl. "
+      WHEN  6. i_report_line->fi-m06 = i_report_line->fi-m06 + i_acdoca->hsl. "
+      WHEN  7. i_report_line->fi-m07 = i_report_line->fi-m07 + i_acdoca->hsl. "
+      WHEN  8. i_report_line->fi-m08 = i_report_line->fi-m08 + i_acdoca->hsl. "
+      WHEN  9. i_report_line->fi-m09 = i_report_line->fi-m09 + i_acdoca->hsl. "
+      WHEN 10. i_report_line->fi-m10 = i_report_line->fi-m10 + i_acdoca->hsl. "
+      WHEN 11. i_report_line->fi-m11 = i_report_line->fi-m11 + i_acdoca->hsl. "
+      WHEN 12. i_report_line->fi-m12 = i_report_line->fi-m12 + i_acdoca->hsl. "
+      WHEN 13. i_report_line->fi-m13 = i_report_line->fi-m13 + i_acdoca->hsl. "
+      WHEN 14. i_report_line->fi-m14 = i_report_line->fi-m14 + i_acdoca->hsl. "
+      WHEN 15. i_report_line->fi-m15 = i_report_line->fi-m15 + i_acdoca->hsl. "
+      WHEN 16. i_report_line->fi-m16 = i_report_line->fi-m16 + i_acdoca->hsl. "
+    ENDCASE.
 
-    ir_config->processed = 'P'. " 处理中
-
-    " 获取当前配置行的有效数据
-    DATA lt_detail TYPE tt_detail.
-    IF ir_config->t_racct_opt IS NOT INITIAL.
-      SELECT * FROM @mt_detail AS ds
-        WHERE rbukrs = @ir_config->bukrs
-          AND racct IN @ir_config->t_racct_opt " 科目
-        INTO TABLE @lt_detail.
-    ENDIF.
-
-    " 特殊处理
-    LOOP AT ir_config->t_callback INTO DATA(ls_callback).
-      " 参考：
-      " FORM frm_config TABLES ct_detail TYPE tt_detail USING cr_config TYPE REF TO ty_config.
-      PERFORM (ls_callback-cb_from) IN PROGRAM (ls_callback-cb_program) IF FOUND
-      TABLES lt_detail USING ir_config.
-    ENDLOOP.
-
-    " 除科目外，其他筛选项动态处理
-    IF ir_config->t_filter IS NOT INITIAL.
-      LOOP AT ir_config->t_filter INTO DATA(ls_filter) WHERE t_range_opt IS NOT INITIAL.
-        IF lt_detail IS NOT INITIAL.
-          DATA(l_condition) = |{ ls_filter-name } IN @LS_FILTER-T_RANGE_OPT|.
-          TRY.
-              SELECT * FROM @lt_detail AS ds WHERE (l_condition) INTO TABLE @lt_detail.
-            CATCH cx_root.
-          ENDTRY.
-        ENDIF.
-      ENDLOOP.
-    ENDIF.
-
-    " 汇总财务数据
-    LOOP AT lt_detail INTO DATA(ls_detail).
-      add_hsl( ir_config = ir_config
-               i_poper = ls_detail-poper
-               i_hsl = ls_detail-hsl ).
-
-      " 写入到明细清单中
-      READ TABLE mt_detail TRANSPORTING NO FIELDS WITH KEY
-      rldnr = ls_detail-rldnr
-      rbukrs = ls_detail-rbukrs
-      gjahr = ls_detail-gjahr
-      belnr = ls_detail-belnr
-      docln = ls_detail-docln
-      BINARY SEARCH.
-      IF sy-subrc = 0.
-        INSERT CORRESPONDING #( ls_detail ) INTO TABLE ir_config->fi_data-t_detail_key.
-      ENDIF.
-    ENDLOOP.
-
-    " 汇总其他项的财务数据
-    LOOP AT ir_config->t_collect INTO DATA(l_other_zitem).
-      READ TABLE mt_config TRANSPORTING NO FIELDS WITH KEY " 嵌套循环优化
-      bukrs = ir_config->bukrs
-      zitem = l_other_zitem
-      BINARY SEARCH.
-      IF sy-subrc = 0.
-        LOOP AT mt_config REFERENCE INTO DATA(lr_config) FROM sy-tabix.
-          IF lr_config->bukrs <> ir_config->bukrs
-          OR lr_config->zitem <> l_other_zitem.
-            EXIT.
-          ENDIF.
-
-          get_fi_data( ir_config = lr_config i_depth = i_depth + 1 ). " 递归取值
-
-          ir_config->fi_data-year_begin = ir_config->fi_data-year_begin + lr_config->fi_data-year_begin. " 年初余额
-          ir_config->fi_data-period_01 = ir_config->fi_data-period_01 + lr_config->fi_data-period_01. " 01月余额
-          ir_config->fi_data-period_02 = ir_config->fi_data-period_02 + lr_config->fi_data-period_02. " 02月余额
-          ir_config->fi_data-period_03 = ir_config->fi_data-period_03 + lr_config->fi_data-period_03. " 03月余额
-          ir_config->fi_data-period_04 = ir_config->fi_data-period_04 + lr_config->fi_data-period_04. " 04月余额
-          ir_config->fi_data-period_05 = ir_config->fi_data-period_05 + lr_config->fi_data-period_05. " 05月余额
-          ir_config->fi_data-period_06 = ir_config->fi_data-period_06 + lr_config->fi_data-period_06. " 06月余额
-          ir_config->fi_data-period_07 = ir_config->fi_data-period_07 + lr_config->fi_data-period_07. " 07月余额
-          ir_config->fi_data-period_08 = ir_config->fi_data-period_08 + lr_config->fi_data-period_08. " 08月余额
-          ir_config->fi_data-period_09 = ir_config->fi_data-period_09 + lr_config->fi_data-period_09. " 09月余额
-          ir_config->fi_data-period_10 = ir_config->fi_data-period_10 + lr_config->fi_data-period_10. " 10月余额
-          ir_config->fi_data-period_11 = ir_config->fi_data-period_11 + lr_config->fi_data-period_11. " 11月余额
-          ir_config->fi_data-period_12 = ir_config->fi_data-period_12 + lr_config->fi_data-period_12. " 12月余额
-          ir_config->fi_data-period_13 = ir_config->fi_data-period_13 + lr_config->fi_data-period_13. " 13月余额
-          ir_config->fi_data-period_14 = ir_config->fi_data-period_14 + lr_config->fi_data-period_14. " 14月余额
-          ir_config->fi_data-period_15 = ir_config->fi_data-period_15 + lr_config->fi_data-period_15. " 15月余额
-          ir_config->fi_data-period_16 = ir_config->fi_data-period_16 + lr_config->fi_data-period_16. " 16月余额
-          INSERT LINES OF lr_config->fi_data-t_detail_key INTO TABLE ir_config->fi_data-t_detail_key. " 明细数据
-        ENDLOOP.
-      ENDIF.
-    ENDLOOP.
-
-    " 反向标记
-    IF ir_config->reverse IS NOT INITIAL.
-      ir_config->fi_data-year_begin = 0 - ir_config->fi_data-year_begin. " 年初余额
-      ir_config->fi_data-period_01  = 0 - ir_config->fi_data-period_01 . " 01月余额
-      ir_config->fi_data-period_02  = 0 - ir_config->fi_data-period_02 . " 02月余额
-      ir_config->fi_data-period_03  = 0 - ir_config->fi_data-period_03 . " 03月余额
-      ir_config->fi_data-period_04  = 0 - ir_config->fi_data-period_04 . " 04月余额
-      ir_config->fi_data-period_05  = 0 - ir_config->fi_data-period_05 . " 05月余额
-      ir_config->fi_data-period_06  = 0 - ir_config->fi_data-period_06 . " 06月余额
-      ir_config->fi_data-period_07  = 0 - ir_config->fi_data-period_07 . " 07月余额
-      ir_config->fi_data-period_08  = 0 - ir_config->fi_data-period_08 . " 08月余额
-      ir_config->fi_data-period_09  = 0 - ir_config->fi_data-period_09 . " 09月余额
-      ir_config->fi_data-period_10  = 0 - ir_config->fi_data-period_10 . " 10月余额
-      ir_config->fi_data-period_11  = 0 - ir_config->fi_data-period_11 . " 11月余额
-      ir_config->fi_data-period_12  = 0 - ir_config->fi_data-period_12 . " 12月余额
-      ir_config->fi_data-period_13  = 0 - ir_config->fi_data-period_13 . " 13月余额
-      ir_config->fi_data-period_14  = 0 - ir_config->fi_data-period_14 . " 14月余额
-      ir_config->fi_data-period_15  = 0 - ir_config->fi_data-period_15 . " 15月余额
-      ir_config->fi_data-period_16  = 0 - ir_config->fi_data-period_16 . " 16月余额
-    ENDIF.
-
-    ir_config->processed = 'X'. " 处理完成
+    " 汇总外币数据
+    CASE i_acdoca->poper.
+      WHEN  0. i_report_line->fi_ksl-year_begin = i_report_line->fi_ksl-year_begin + i_acdoca->hsl.
+      WHEN  1. i_report_line->fi_ksl-m01 = i_report_line->fi_ksl-m01 + i_acdoca->ksl.
+      WHEN  2. i_report_line->fi_ksl-m02 = i_report_line->fi_ksl-m02 + i_acdoca->ksl.
+      WHEN  3. i_report_line->fi_ksl-m03 = i_report_line->fi_ksl-m03 + i_acdoca->ksl.
+      WHEN  4. i_report_line->fi_ksl-m04 = i_report_line->fi_ksl-m04 + i_acdoca->ksl.
+      WHEN  5. i_report_line->fi_ksl-m05 = i_report_line->fi_ksl-m05 + i_acdoca->ksl.
+      WHEN  6. i_report_line->fi_ksl-m06 = i_report_line->fi_ksl-m06 + i_acdoca->ksl.
+      WHEN  7. i_report_line->fi_ksl-m07 = i_report_line->fi_ksl-m07 + i_acdoca->ksl.
+      WHEN  8. i_report_line->fi_ksl-m08 = i_report_line->fi_ksl-m08 + i_acdoca->ksl.
+      WHEN  9. i_report_line->fi_ksl-m09 = i_report_line->fi_ksl-m09 + i_acdoca->ksl.
+      WHEN 10. i_report_line->fi_ksl-m10 = i_report_line->fi_ksl-m10 + i_acdoca->ksl.
+      WHEN 11. i_report_line->fi_ksl-m11 = i_report_line->fi_ksl-m11 + i_acdoca->ksl.
+      WHEN 12. i_report_line->fi_ksl-m12 = i_report_line->fi_ksl-m12 + i_acdoca->ksl.
+      WHEN 13. i_report_line->fi_ksl-m13 = i_report_line->fi_ksl-m13 + i_acdoca->ksl.
+      WHEN 14. i_report_line->fi_ksl-m14 = i_report_line->fi_ksl-m14 + i_acdoca->ksl.
+      WHEN 15. i_report_line->fi_ksl-m15 = i_report_line->fi_ksl-m15 + i_acdoca->ksl.
+      WHEN 16. i_report_line->fi_ksl-m16 = i_report_line->fi_ksl-m16 + i_acdoca->ksl.
+    ENDCASE.
 
   ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& 从SMW0获取模板文件
-*&---------------------------------------------------------------------*
-  METHOD get_smw0_templete.
 
-    DATA: lt_mime TYPE STANDARD TABLE OF w3mime,
-          ls_id   TYPE wwwdataid,
-          ls_key  TYPE wwwdatatab.
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Private Method zcl_fi_report->_ADD_FI_FAGLFLEXT
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] I_REPORT_LINE                  TYPE REF TO ty_REPORT
+* | [--->] I_FAGLFLEXT                    TYPE REF TO V_FAGLFLEXT_VIEW
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD _add_fi_faglflext.
 
-    ls_key-relid ='MI'.
-    ls_key-objid = i_objid.
-
-    CALL FUNCTION 'WWWDATA_IMPORT'
-      EXPORTING
-        key               = ls_key
-      TABLES
-        mime              = lt_mime
-      EXCEPTIONS
-        wrong_object_type = 1
-        import_error      = 2
-        OTHERS            = 3.
-    IF sy-subrc <> 0.
-      MESSAGE |模板[{ i_objid }]获取失败| TYPE 'S' DISPLAY LIKE 'E'.
+    IF i_report_line IS NOT BOUND OR i_faglflext IS NOT BOUND.
       RETURN.
     ENDIF.
 
-    SELECT SINGLE value FROM wwwparams
-      WHERE relid = @ls_key-relid
-        AND objid = @ls_key-objid
-      AND name EQ 'filesize'
-    INTO @DATA(l_param).
+    " 财务数据
+    i_report_line->fi-year_begin = i_report_line->fi-year_begin + i_faglflext->hslvt.
+    i_report_line->fi-m01 = i_report_line->fi-m01 + i_faglflext->hsl01. "
+    i_report_line->fi-m02 = i_report_line->fi-m02 + i_faglflext->hsl02. "
+    i_report_line->fi-m03 = i_report_line->fi-m03 + i_faglflext->hsl03. "
+    i_report_line->fi-m04 = i_report_line->fi-m04 + i_faglflext->hsl04. "
+    i_report_line->fi-m05 = i_report_line->fi-m05 + i_faglflext->hsl05. "
+    i_report_line->fi-m06 = i_report_line->fi-m06 + i_faglflext->hsl06. "
+    i_report_line->fi-m07 = i_report_line->fi-m07 + i_faglflext->hsl07. "
+    i_report_line->fi-m08 = i_report_line->fi-m08 + i_faglflext->hsl08. "
+    i_report_line->fi-m09 = i_report_line->fi-m09 + i_faglflext->hsl09. "
+    i_report_line->fi-m10 = i_report_line->fi-m10 + i_faglflext->hsl10. "
+    i_report_line->fi-m11 = i_report_line->fi-m11 + i_faglflext->hsl11. "
+    i_report_line->fi-m12 = i_report_line->fi-m12 + i_faglflext->hsl12. "
+    i_report_line->fi-m13 = i_report_line->fi-m13 + i_faglflext->hsl13. "
+    i_report_line->fi-m14 = i_report_line->fi-m14 + i_faglflext->hsl14. "
+    i_report_line->fi-m15 = i_report_line->fi-m15 + i_faglflext->hsl15. "
+    i_report_line->fi-m16 = i_report_line->fi-m16 + i_faglflext->hsl16. "
 
-    DATA l_length TYPE i.
-    l_length = l_param.
+    " 外币数据
+    i_report_line->fi_ksl-year_begin = i_report_line->fi_ksl-year_begin + i_faglflext->kslvt.
+    i_report_line->fi_ksl-m01 = i_report_line->fi_ksl-m01 + i_faglflext->ksl01. "
+    i_report_line->fi_ksl-m02 = i_report_line->fi_ksl-m02 + i_faglflext->ksl02. "
+    i_report_line->fi_ksl-m03 = i_report_line->fi_ksl-m03 + i_faglflext->ksl03. "
+    i_report_line->fi_ksl-m04 = i_report_line->fi_ksl-m04 + i_faglflext->ksl04. "
+    i_report_line->fi_ksl-m05 = i_report_line->fi_ksl-m05 + i_faglflext->ksl05. "
+    i_report_line->fi_ksl-m06 = i_report_line->fi_ksl-m06 + i_faglflext->ksl06. "
+    i_report_line->fi_ksl-m07 = i_report_line->fi_ksl-m07 + i_faglflext->ksl07. "
+    i_report_line->fi_ksl-m08 = i_report_line->fi_ksl-m08 + i_faglflext->ksl08. "
+    i_report_line->fi_ksl-m09 = i_report_line->fi_ksl-m09 + i_faglflext->ksl09. "
+    i_report_line->fi_ksl-m10 = i_report_line->fi_ksl-m10 + i_faglflext->ksl10. "
+    i_report_line->fi_ksl-m11 = i_report_line->fi_ksl-m11 + i_faglflext->ksl11. "
+    i_report_line->fi_ksl-m12 = i_report_line->fi_ksl-m12 + i_faglflext->ksl12. "
+    i_report_line->fi_ksl-m13 = i_report_line->fi_ksl-m13 + i_faglflext->ksl13. "
+    i_report_line->fi_ksl-m14 = i_report_line->fi_ksl-m14 + i_faglflext->ksl14. "
+    i_report_line->fi_ksl-m15 = i_report_line->fi_ksl-m15 + i_faglflext->ksl15. "
+    i_report_line->fi_ksl-m16 = i_report_line->fi_ksl-m16 + i_faglflext->ksl16. "
 
-    CALL FUNCTION 'SCMS_BINARY_TO_XSTRING'
-      EXPORTING
-        input_length = l_length
-      IMPORTING
-        buffer       = r_buffer
-      TABLES
-        binary_tab   = lt_mime
-      EXCEPTIONS
-        failed       = 1
-        OTHERS       = 2.
-    IF sy-subrc <> 0.
-      CLEAR r_buffer.
+  ENDMETHOD.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Private Method zcl_fi_report->_ADD_FI_REPORT_LINE
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] I_REPORT_LINE                  TYPE REF TO ty_REPORT
+* | [--->] I_OTHER_LINE                   TYPE REF TO ty_REPORT
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD _add_fi_report_line.
+
+    IF i_report_line IS NOT BOUND OR i_other_line IS NOT BOUND.
+      RETURN.
     ENDIF.
 
-  ENDMETHOD.
+    " 财务数据
+    i_report_line->fi-year_begin = i_report_line->fi-year_begin + i_other_line->fi-year_begin. " 年初余额
+    i_report_line->fi-m01 = i_report_line->fi-m01 + i_other_line->fi-m01. " 01月余额
+    i_report_line->fi-m02 = i_report_line->fi-m02 + i_other_line->fi-m02. " 02月余额
+    i_report_line->fi-m03 = i_report_line->fi-m03 + i_other_line->fi-m03. " 03月余额
+    i_report_line->fi-m04 = i_report_line->fi-m04 + i_other_line->fi-m04. " 04月余额
+    i_report_line->fi-m05 = i_report_line->fi-m05 + i_other_line->fi-m05. " 05月余额
+    i_report_line->fi-m06 = i_report_line->fi-m06 + i_other_line->fi-m06. " 06月余额
+    i_report_line->fi-m07 = i_report_line->fi-m07 + i_other_line->fi-m07. " 07月余额
+    i_report_line->fi-m08 = i_report_line->fi-m08 + i_other_line->fi-m08. " 08月余额
+    i_report_line->fi-m09 = i_report_line->fi-m09 + i_other_line->fi-m09. " 09月余额
+    i_report_line->fi-m10 = i_report_line->fi-m10 + i_other_line->fi-m10. " 10月余额
+    i_report_line->fi-m11 = i_report_line->fi-m11 + i_other_line->fi-m11. " 11月余额
+    i_report_line->fi-m12 = i_report_line->fi-m12 + i_other_line->fi-m12. " 12月余额
+    i_report_line->fi-m13 = i_report_line->fi-m13 + i_other_line->fi-m13. " 13月余额
+    i_report_line->fi-m14 = i_report_line->fi-m14 + i_other_line->fi-m14. " 14月余额
+    i_report_line->fi-m15 = i_report_line->fi-m15 + i_other_line->fi-m15. " 15月余额
+    i_report_line->fi-m16 = i_report_line->fi-m16 + i_other_line->fi-m16. " 16月余额
 
-*&---------------------------------------------------------------------*
-*& 替换模板文件中的文本内容
-*&---------------------------------------------------------------------*
-  METHOD replace_texts.
-
-    " 程序要求IT_REPLACE至少两列，代码会将左列内容替换为右列内容
-    CHECK it_replace IS NOT INITIAL.
-    CHECK c_doc IS NOT INITIAL.
-
-    FIELD-SYMBOLS <fs_replace_t> TYPE ANY TABLE.
-    FIELD-SYMBOLS <fs_replace> TYPE any.
-    FIELD-SYMBOLS <fs_from> TYPE any.
-    FIELD-SYMBOLS <fs_to> TYPE any.
-
-    TRY.
-        DATA(lo_doc) = cl_xlsx_document=>load_document( c_doc ).
-        DATA(lo_workbook_part) = lo_doc->get_workbookpart( ).
-        DATA(lo_sharedstrings_part) = lo_workbook_part->get_sharedstringspart( ).
-
-        DATA(l_sharedstrings_xml) = lo_sharedstrings_part->get_data( ).
-        DATA(l_sharedstrings_str) = cl_openxml_helper=>xstring_to_string( l_sharedstrings_xml ).
-
-        ASSIGN it_replace TO <fs_replace_t>.
-        LOOP AT <fs_replace_t> ASSIGNING <fs_replace>.
-          ASSIGN COMPONENT 1 OF STRUCTURE <fs_replace> TO <fs_from> .
-          ASSIGN COMPONENT 2 OF STRUCTURE <fs_replace> TO <fs_to> .
-          IF <fs_from> IS ASSIGNED AND <fs_to> IS ASSIGNED.
-            IF <fs_from> IS NOT INITIAL.
-              REPLACE ALL OCCURRENCES OF <fs_from> IN l_sharedstrings_str WITH <fs_to> IN CHARACTER MODE.
-            ENDIF.
-          ENDIF.
-          UNASSIGN <fs_from>.
-          UNASSIGN <fs_to>.
-        ENDLOOP.
-
-        l_sharedstrings_xml = cl_openxml_helper=>string_to_xstring( l_sharedstrings_str ).
-        lo_sharedstrings_part->feed_data( l_sharedstrings_xml ).
-
-        c_doc = lo_doc->get_package_data( ).
-
-      CATCH cx_openxml_not_found
-            cx_openxml_format
-            cx_openxml_not_allowed
-            INTO DATA(lx_openxml).
-        MESSAGE lx_openxml->get_text( ) TYPE 'S' DISPLAY LIKE 'E'.
-      CATCH cx_root INTO DATA(lx_root).
-        MESSAGE lx_root->get_text( ) TYPE 'S' DISPLAY LIKE 'E'.
-    ENDTRY.
+    " 外币数据
+    i_report_line->fi_ksl-year_begin = i_report_line->fi_ksl-year_begin + i_other_line->fi_ksl-year_begin. " 年初余额
+    i_report_line->fi_ksl-m01 = i_report_line->fi_ksl-m01 + i_other_line->fi_ksl-m01. " 01月余额
+    i_report_line->fi_ksl-m02 = i_report_line->fi_ksl-m02 + i_other_line->fi_ksl-m02. " 02月余额
+    i_report_line->fi_ksl-m03 = i_report_line->fi_ksl-m03 + i_other_line->fi_ksl-m03. " 03月余额
+    i_report_line->fi_ksl-m04 = i_report_line->fi_ksl-m04 + i_other_line->fi_ksl-m04. " 04月余额
+    i_report_line->fi_ksl-m05 = i_report_line->fi_ksl-m05 + i_other_line->fi_ksl-m05. " 05月余额
+    i_report_line->fi_ksl-m06 = i_report_line->fi_ksl-m06 + i_other_line->fi_ksl-m06. " 06月余额
+    i_report_line->fi_ksl-m07 = i_report_line->fi_ksl-m07 + i_other_line->fi_ksl-m07. " 07月余额
+    i_report_line->fi_ksl-m08 = i_report_line->fi_ksl-m08 + i_other_line->fi_ksl-m08. " 08月余额
+    i_report_line->fi_ksl-m09 = i_report_line->fi_ksl-m09 + i_other_line->fi_ksl-m09. " 09月余额
+    i_report_line->fi_ksl-m10 = i_report_line->fi_ksl-m10 + i_other_line->fi_ksl-m10. " 10月余额
+    i_report_line->fi_ksl-m11 = i_report_line->fi_ksl-m11 + i_other_line->fi_ksl-m11. " 11月余额
+    i_report_line->fi_ksl-m12 = i_report_line->fi_ksl-m12 + i_other_line->fi_ksl-m12. " 12月余额
+    i_report_line->fi_ksl-m13 = i_report_line->fi_ksl-m13 + i_other_line->fi_ksl-m13. " 13月余额
+    i_report_line->fi_ksl-m14 = i_report_line->fi_ksl-m14 + i_other_line->fi_ksl-m14. " 14月余额
+    i_report_line->fi_ksl-m15 = i_report_line->fi_ksl-m15 + i_other_line->fi_ksl-m15. " 15月余额
+    i_report_line->fi_ksl-m16 = i_report_line->fi_ksl-m16 + i_other_line->fi_ksl-m16. " 16月余额
 
   ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& 添加金额到对应期间
-*&---------------------------------------------------------------------*
-  METHOD add_hsl.
 
-    CASE i_poper.
-      WHEN  0. ir_config->fi_data-year_begin += i_hsl.
-      WHEN  1. ir_config->fi_data-period_01 += i_hsl.
-      WHEN  2. ir_config->fi_data-period_02 += i_hsl.
-      WHEN  3. ir_config->fi_data-period_03 += i_hsl.
-      WHEN  4. ir_config->fi_data-period_04 += i_hsl.
-      WHEN  5. ir_config->fi_data-period_05 += i_hsl.
-      WHEN  6. ir_config->fi_data-period_06 += i_hsl.
-      WHEN  7. ir_config->fi_data-period_07 += i_hsl.
-      WHEN  8. ir_config->fi_data-period_08 += i_hsl.
-      WHEN  9. ir_config->fi_data-period_09 += i_hsl.
-      WHEN 10. ir_config->fi_data-period_10 += i_hsl.
-      WHEN 11. ir_config->fi_data-period_11 += i_hsl.
-      WHEN 12. ir_config->fi_data-period_12 += i_hsl.
-      WHEN 13. ir_config->fi_data-period_13 += i_hsl.
-      WHEN 14. ir_config->fi_data-period_14 += i_hsl.
-      WHEN 15. ir_config->fi_data-period_15 += i_hsl.
-      WHEN 16. ir_config->fi_data-period_16 += i_hsl.
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Private Method zcl_fi_report->_CALC_FI
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] I_REPORT_LINE                  TYPE REF TO ty_REPORT
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD _calc_fi.
+
+    " 计算各月余额
+    i_report_line->fi-m01end = i_report_line->fi-m01 + i_report_line->fi-year_begin.
+    i_report_line->fi-m02end = i_report_line->fi-m02 + i_report_line->fi-m01end.
+    i_report_line->fi-m03end = i_report_line->fi-m03 + i_report_line->fi-m02end.
+    i_report_line->fi-m04end = i_report_line->fi-m04 + i_report_line->fi-m03end.
+    i_report_line->fi-m05end = i_report_line->fi-m05 + i_report_line->fi-m04end.
+    i_report_line->fi-m06end = i_report_line->fi-m06 + i_report_line->fi-m05end.
+    i_report_line->fi-m07end = i_report_line->fi-m07 + i_report_line->fi-m06end.
+    i_report_line->fi-m08end = i_report_line->fi-m08 + i_report_line->fi-m07end.
+    i_report_line->fi-m09end = i_report_line->fi-m09 + i_report_line->fi-m08end.
+    i_report_line->fi-m10end = i_report_line->fi-m10 + i_report_line->fi-m09end.
+    i_report_line->fi-m11end = i_report_line->fi-m11 + i_report_line->fi-m10end.
+    i_report_line->fi-m12end = i_report_line->fi-m12 + i_report_line->fi-m11end.
+    i_report_line->fi-m13end = i_report_line->fi-m13 + i_report_line->fi-m12end.
+    i_report_line->fi-m14end = i_report_line->fi-m14 + i_report_line->fi-m13end.
+    i_report_line->fi-m15end = i_report_line->fi-m15 + i_report_line->fi-m14end.
+    i_report_line->fi-m16end = i_report_line->fi-m16 + i_report_line->fi-m15end.
+    i_report_line->fi-year_end = i_report_line->fi-m16end.
+
+    " 计算各季度发生额
+    i_report_line->fi-q1 = i_report_line->fi-m01
+                         + i_report_line->fi-m02
+                         + i_report_line->fi-m03.
+    i_report_line->fi-q2 = i_report_line->fi-m04
+                         + i_report_line->fi-m05
+                         + i_report_line->fi-m06.
+    i_report_line->fi-q3 = i_report_line->fi-m07
+                         + i_report_line->fi-m08
+                         + i_report_line->fi-m09.
+    i_report_line->fi-q4 = i_report_line->fi-m10
+                         + i_report_line->fi-m11
+                         + i_report_line->fi-m12
+                         + i_report_line->fi-m13
+                         + i_report_line->fi-m14
+                         + i_report_line->fi-m15
+                         + i_report_line->fi-m16.
+
+    " 外币计算
+    " 计算各季度余额
+    i_report_line->fi-q1end = i_report_line->fi-q1 + i_report_line->fi-year_begin.
+    i_report_line->fi-q2end = i_report_line->fi-q2 + i_report_line->fi-q1end.
+    i_report_line->fi-q3end = i_report_line->fi-q3 + i_report_line->fi-q2end.
+    i_report_line->fi-q4end = i_report_line->fi-q4 + i_report_line->fi-q3end.
+
+    " 计算各月余额
+    i_report_line->fi_ksl-m01end = i_report_line->fi_ksl-m01 + i_report_line->fi_ksl-year_begin.
+    i_report_line->fi_ksl-m02end = i_report_line->fi_ksl-m02 + i_report_line->fi_ksl-m01end.
+    i_report_line->fi_ksl-m03end = i_report_line->fi_ksl-m03 + i_report_line->fi_ksl-m02end.
+    i_report_line->fi_ksl-m04end = i_report_line->fi_ksl-m04 + i_report_line->fi_ksl-m03end.
+    i_report_line->fi_ksl-m05end = i_report_line->fi_ksl-m05 + i_report_line->fi_ksl-m04end.
+    i_report_line->fi_ksl-m06end = i_report_line->fi_ksl-m06 + i_report_line->fi_ksl-m05end.
+    i_report_line->fi_ksl-m07end = i_report_line->fi_ksl-m07 + i_report_line->fi_ksl-m06end.
+    i_report_line->fi_ksl-m08end = i_report_line->fi_ksl-m08 + i_report_line->fi_ksl-m07end.
+    i_report_line->fi_ksl-m09end = i_report_line->fi_ksl-m09 + i_report_line->fi_ksl-m08end.
+    i_report_line->fi_ksl-m10end = i_report_line->fi_ksl-m10 + i_report_line->fi_ksl-m09end.
+    i_report_line->fi_ksl-m11end = i_report_line->fi_ksl-m11 + i_report_line->fi_ksl-m10end.
+    i_report_line->fi_ksl-m12end = i_report_line->fi_ksl-m12 + i_report_line->fi_ksl-m11end.
+    i_report_line->fi_ksl-m13end = i_report_line->fi_ksl-m13 + i_report_line->fi_ksl-m12end.
+    i_report_line->fi_ksl-m14end = i_report_line->fi_ksl-m14 + i_report_line->fi_ksl-m13end.
+    i_report_line->fi_ksl-m15end = i_report_line->fi_ksl-m15 + i_report_line->fi_ksl-m14end.
+    i_report_line->fi_ksl-m16end = i_report_line->fi_ksl-m16 + i_report_line->fi_ksl-m15end.
+    i_report_line->fi_ksl-year_end = i_report_line->fi_ksl-m16end.
+
+    " 计算各季度发生额
+    i_report_line->fi_ksl-q1 = i_report_line->fi_ksl-m01
+                            + i_report_line->fi_ksl-m02
+                            + i_report_line->fi_ksl-m03.
+    i_report_line->fi_ksl-q2 = i_report_line->fi_ksl-m04
+                            + i_report_line->fi_ksl-m05
+                            + i_report_line->fi_ksl-m06.
+    i_report_line->fi_ksl-q3 = i_report_line->fi_ksl-m07
+                            + i_report_line->fi_ksl-m08
+                            + i_report_line->fi_ksl-m09.
+    i_report_line->fi_ksl-q4 = i_report_line->fi_ksl-m10
+                            + i_report_line->fi_ksl-m11
+                            + i_report_line->fi_ksl-m12
+                            + i_report_line->fi_ksl-m13
+                            + i_report_line->fi_ksl-m14
+                            + i_report_line->fi_ksl-m15
+                            + i_report_line->fi_ksl-m16.
+
+    " 计算各季度余额
+    i_report_line->fi_ksl-q1end = i_report_line->fi_ksl-q1 + i_report_line->fi_ksl-year_begin.
+    i_report_line->fi_ksl-q2end = i_report_line->fi_ksl-q2 + i_report_line->fi_ksl-q1end.
+    i_report_line->fi_ksl-q3end = i_report_line->fi_ksl-q3 + i_report_line->fi_ksl-q2end.
+    i_report_line->fi_ksl-q4end = i_report_line->fi_ksl-q4 + i_report_line->fi_ksl-q3end.
+
+  ENDMETHOD.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Private Method zcl_fi_report->_GET_DATA
+* +-------------------------------------------------------------------------------------------------+
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD _get_data.
+
+    IF mt_report IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    " 四项基础项
+    DATA lt_rldnr_opt TYPE RANGE OF acdoca-rldnr.
+    DATA lt_rbukrs_opt TYPE RANGE OF acdoca-rbukrs.
+    DATA lt_ryear_opt TYPE RANGE OF acdoca-ryear.
+    DATA lt_racct_opt TYPE RANGE OF acdoca-racct.
+
+    " 账目表
+    IF m_rldnr IS NOT INITIAL.
+      INSERT VALUE #(
+        sign = 'I'
+        option = 'EQ'
+        low = m_rldnr
+      ) INTO TABLE lt_rldnr_opt.
+    ENDIF.
+
+    " 公司
+    IF m_rbukrs IS NOT INITIAL.
+      INSERT VALUE #(
+        sign = 'I'
+        option = 'EQ'
+        low = m_rbukrs
+      ) INTO TABLE lt_rbukrs_opt.
+    ENDIF.
+
+    " 年度
+    IF m_ryear IS NOT INITIAL.
+      INSERT VALUE #(
+        sign = 'I'
+        option = 'EQ'
+        low = m_ryear
+      ) INTO TABLE lt_ryear_opt.
+    ENDIF.
+
+    " 科目
+    LOOP AT mt_report REFERENCE INTO DATA(lr_report).
+      INSERT LINES OF lr_report->t_racct_opt INTO TABLE lt_racct_opt.
+    ENDLOOP.
+
+    "
+    SORT lt_racct_opt.
+    DELETE ADJACENT DUPLICATES FROM lt_racct_opt COMPARING ALL FIELDS.
+
+    CASE m_datatab.
+      WHEN cns_datatab-acdoca.
+        " TODO: 字段应该也能动态，后面再调整
+        SELECT
+          rldnr,
+          rbukrs,
+          gjahr,
+          belnr,
+          docln,
+          ryear,
+          poper,
+          racct,
+          rcntr,
+          prctr,
+          rfarea,
+          rbusa,
+          budat,
+          hsl,
+          ksl
+          FROM acdoca
+          WHERE rldnr IN @lt_rldnr_opt
+            AND rbukrs IN @lt_rbukrs_opt
+            AND ryear IN @lt_ryear_opt
+            AND racct IN @lt_racct_opt
+          INTO CORRESPONDING FIELDS OF TABLE @mt_acdoca.
+
+      WHEN cns_datatab-faglflext.
+        " TODO: 字段应该也能动态，后面再调整
+        SELECT
+          rldnr,
+          rbukrs,
+          ryear,
+          racct,
+          rcntr,
+          prctr,
+          rfarea,
+          rbusa,
+          hslvt,
+          hsl01,
+          hsl02,
+          hsl03,
+          hsl04,
+          hsl05,
+          hsl06,
+          hsl07,
+          hsl08,
+          hsl09,
+          hsl10,
+          hsl11,
+          hsl12,
+          hsl13,
+          hsl14,
+          hsl15,
+          hsl16,
+          kslvt,
+          ksl01,
+          ksl02,
+          ksl03,
+          ksl04,
+          ksl05,
+          ksl06,
+          ksl07,
+          ksl08,
+          ksl09,
+          ksl10,
+          ksl11,
+          ksl12,
+          ksl13,
+          ksl14,
+          ksl15,
+          ksl16
+          FROM v_faglflext_view
+          WHERE rldnr IN @lt_rldnr_opt
+            AND rbukrs IN @lt_rbukrs_opt
+            AND ryear IN @lt_ryear_opt
+            AND racct IN @lt_racct_opt
+          INTO CORRESPONDING FIELDS OF TABLE @mt_faglflext.
+
       WHEN OTHERS.
     ENDCASE.
 
   ENDMETHOD.
 
-ENDCLASS.
-*&---------------------------------------------------------------------*
-*& 回调参考方法
-*&---------------------------------------------------------------------*
-FORM frm_config_sample
-  TABLES ct_detail TYPE tt_detail
-  USING cr_config TYPE REF TO ty_config.
 
-ENDFORM.
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Private Method zcl_fi_report->_inverse_FI
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] I_REPORT_LINE                  TYPE REF TO ty_REPORT
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD _inverse_fi.
+
+    IF i_report_line IS NOT BOUND.
+      RETURN.
+    ENDIF.
+
+    " 财务数据
+    i_report_line->fi-year_begin = 0 - i_report_line->fi-year_begin. " 年初余额
+    i_report_line->fi-m01  = 0 - i_report_line->fi-m01 . " 01月余额
+    i_report_line->fi-m02  = 0 - i_report_line->fi-m02 . " 02月余额
+    i_report_line->fi-m03  = 0 - i_report_line->fi-m03 . " 03月余额
+    i_report_line->fi-m04  = 0 - i_report_line->fi-m04 . " 04月余额
+    i_report_line->fi-m05  = 0 - i_report_line->fi-m05 . " 05月余额
+    i_report_line->fi-m06  = 0 - i_report_line->fi-m06 . " 06月余额
+    i_report_line->fi-m07  = 0 - i_report_line->fi-m07 . " 07月余额
+    i_report_line->fi-m08  = 0 - i_report_line->fi-m08 . " 08月余额
+    i_report_line->fi-m09  = 0 - i_report_line->fi-m09 . " 09月余额
+    i_report_line->fi-m10  = 0 - i_report_line->fi-m10 . " 10月余额
+    i_report_line->fi-m11  = 0 - i_report_line->fi-m11 . " 11月余额
+    i_report_line->fi-m12  = 0 - i_report_line->fi-m12 . " 12月余额
+    i_report_line->fi-m13  = 0 - i_report_line->fi-m13 . " 13月余额
+    i_report_line->fi-m14  = 0 - i_report_line->fi-m14 . " 14月余额
+    i_report_line->fi-m15  = 0 - i_report_line->fi-m15 . " 15月余额
+    i_report_line->fi-m16  = 0 - i_report_line->fi-m16 . " 16月余额
+
+    " 外币数据
+    i_report_line->fi_ksl-year_begin = 0 - i_report_line->fi_ksl-year_begin. " 年初余额
+    i_report_line->fi_ksl-m01  = 0 - i_report_line->fi_ksl-m01 . " 01月余额
+    i_report_line->fi_ksl-m02  = 0 - i_report_line->fi_ksl-m02 . " 02月余额
+    i_report_line->fi_ksl-m03  = 0 - i_report_line->fi_ksl-m03 . " 03月余额
+    i_report_line->fi_ksl-m04  = 0 - i_report_line->fi_ksl-m04 . " 04月余额
+    i_report_line->fi_ksl-m05  = 0 - i_report_line->fi_ksl-m05 . " 05月余额
+    i_report_line->fi_ksl-m06  = 0 - i_report_line->fi_ksl-m06 . " 06月余额
+    i_report_line->fi_ksl-m07  = 0 - i_report_line->fi_ksl-m07 . " 07月余额
+    i_report_line->fi_ksl-m08  = 0 - i_report_line->fi_ksl-m08 . " 08月余额
+    i_report_line->fi_ksl-m09  = 0 - i_report_line->fi_ksl-m09 . " 09月余额
+    i_report_line->fi_ksl-m10  = 0 - i_report_line->fi_ksl-m10 . " 10月余额
+    i_report_line->fi_ksl-m11  = 0 - i_report_line->fi_ksl-m11 . " 11月余额
+    i_report_line->fi_ksl-m12  = 0 - i_report_line->fi_ksl-m12 . " 12月余额
+    i_report_line->fi_ksl-m13  = 0 - i_report_line->fi_ksl-m13 . " 13月余额
+    i_report_line->fi_ksl-m14  = 0 - i_report_line->fi_ksl-m14 . " 14月余额
+    i_report_line->fi_ksl-m15  = 0 - i_report_line->fi_ksl-m15 . " 15月余额
+    i_report_line->fi_ksl-m16  = 0 - i_report_line->fi_ksl-m16 . " 16月余额
+
+  ENDMETHOD.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Private Method zcl_fi_report->_SET_GLOBAL_FILTER
+* +-------------------------------------------------------------------------------------------------+
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD _set_global_filter.
+
+    " 作用到全局的筛选项
+    DATA lv_where TYPE string.
+    LOOP AT mt_filter REFERENCE INTO DATA(lr_filter) WHERE t_select_opt IS NOT INITIAL.
+      "
+      lv_where = |{ lr_filter->name } NOT IN LR_FILTER->T_SELECT_OPT|.
+      "
+      IF mt_acdoca IS NOT INITIAL.
+        DELETE mt_acdoca WHERE (lv_where).
+      ENDIF.
+      "
+      IF mt_faglflext IS NOT INITIAL.
+        DELETE mt_faglflext WHERE (lv_where).
+      ENDIF.
+    ENDLOOP.
+
+  ENDMETHOD.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Private Method zcl_fi_report->_SET_REPORT_LINE
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] I_REPORT_LINE                  TYPE REF TO ty_REPORT
+* | [--->] I_DEPTH                        TYPE        I(optional)
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD _set_report_line.
+
+    IF i_depth > 10 " 迭代层级，防止栈溢出
+    OR i_report_line IS NOT BOUND " 空值检查
+    OR i_report_line->processed IS NOT INITIAL " 处理标记检查，防止死循环，以及跳过冗余计算
+    .
+      RETURN.
+    ENDIF.
+
+    " 进度展示
+    i_report_line->processed = 'P'. " 处理中
+
+    " 取全部，后续逐步去除不符合条件的数据
+    DATA(lt_acdoca) = mt_acdoca.
+    DATA(lt_faglflext) = mt_faglflext.
+
+    " 获取当前配置行的有效数据
+    IF i_report_line->t_racct_opt IS NOT INITIAL.
+      DELETE lt_acdoca WHERE racct NOT IN i_report_line->t_racct_opt.
+      DELETE lt_faglflext WHERE racct NOT IN i_report_line->t_racct_opt.
+    ENDIF.
+
+    " 特殊处理
+    LOOP AT i_report_line->t_customize REFERENCE INTO DATA(lr_customize).
+      " 函数
+      IF lr_customize->function IS NOT INITIAL.
+        CALL FUNCTION lr_customize->function
+          EXPORTING
+            i_report_line = i_report_line
+          CHANGING
+            c_acdoca      = lt_acdoca
+            c_faglflext   = lt_faglflext.
+      ENDIF.
+
+      " 静态类方法
+      IF lr_customize->class IS NOT INITIAL AND lr_customize->method IS NOT INITIAL.
+        CALL METHOD (lr_customize->class)=>(lr_customize->method)
+          EXPORTING
+            i_report_line = i_report_line
+          CHANGING
+            c_acdoca      = lt_acdoca
+            c_faglflext   = lt_faglflext.
+      ENDIF.
+
+      " 子例程
+      IF lr_customize->progrom IS NOT INITIAL AND lr_customize->subroutine IS NOT INITIAL.
+        PERFORM (lr_customize->subroutine) IN PROGRAM (lr_customize->progrom) IF FOUND
+          TABLES lt_acdoca lt_faglflext USING i_report_line.
+      ENDIF.
+    ENDLOOP.
+
+    " 除科目外，其他筛选项动态处理
+    DATA lv_where TYPE string.
+    IF i_report_line->t_filter IS NOT INITIAL.
+      LOOP AT i_report_line->t_filter REFERENCE INTO DATA(lr_filter) WHERE t_select_opt IS NOT INITIAL.
+        "
+        lv_where = |{ lr_filter->name } NOT IN LR_FILTER->T_SELECT_OPT|.
+        "
+        IF lt_acdoca IS NOT INITIAL.
+          DELETE lt_acdoca WHERE (lv_where).
+        ENDIF.
+        "
+        IF lt_faglflext IS NOT INITIAL.
+          DELETE lt_faglflext WHERE (lv_where).
+        ENDIF.
+      ENDLOOP.
+    ENDIF.
+
+    " 对于ACDOCA表数据的处理
+    LOOP AT lt_acdoca REFERENCE INTO DATA(lr_acdoca).
+      " 汇总ACDOCA数据
+      _add_fi_acdoca( i_report_line = i_report_line
+                      i_acdoca      = lr_acdoca ).
+      " 如果从ACDOCA表取值，还可以将凭证行存储起来，用于展示数据是如何汇总的
+      INSERT CORRESPONDING #( lr_acdoca->* ) INTO TABLE i_report_line->t_detail.
+    ENDLOOP.
+
+    " 对于FAGLFLEXT表数据的处理
+    LOOP AT lt_faglflext REFERENCE INTO DATA(lr_faglflext).
+      " 汇总FAGLFLEXT数据
+      _add_fi_faglflext( i_report_line = i_report_line
+                         i_faglflext   = lr_faglflext ).
+    ENDLOOP.
+
+    " 计算项目处理
+    LOOP AT i_report_line->t_child REFERENCE INTO DATA(lr_child).
+      READ TABLE mt_report REFERENCE INTO DATA(lr_report_line_child) WITH KEY
+      zitem = lr_child->zitem
+      BINARY SEARCH.
+      IF sy-subrc = 0.
+        " 递归取值
+        _set_report_line( i_report_line = lr_report_line_child i_depth = i_depth + 1 ).
+        " 置反金额
+        IF lr_child->zsign = cns_sign-minus.
+          _inverse_fi( i_report_line ).
+        ENDIF.
+        " 汇总其他项目数据
+        _add_fi_report_line( i_report_line = i_report_line
+                             i_other_line  = lr_report_line_child ).
+        " 加完再返回来
+        " （因为是引用结构，前面的置反会修改源数据，换成结构再引用就不需要这步操作了）
+        IF lr_child->zsign = cns_sign-minus.
+          _inverse_fi( i_report_line ).
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+
+    " 反向标记
+    IF i_report_line->inverse IS NOT INITIAL.
+      " 置反金额
+      _inverse_fi( i_report_line ).
+    ENDIF.
+
+    " 其他数据计算
+    _calc_fi( i_report_line ).
+
+    i_report_line->processed = abap_true. " 处理完成
+
+  ENDMETHOD.
+ENDCLASS.
 
 ```
 

@@ -43,13 +43,11 @@ nav:
     - 发票校验: fico/invoice_check.md
     - 发票预制: fico/invoice_park.md
     - 发票过账: fico/invoice_post.md
-    - 清账: fico/fi_clearing_account.md
-    - 三大报表:
-      - 通用取值模块: fico/fi_report.md
-      - 配置表参考: fico/fi_report_config.md
-      - 资产负债表: fico/fi_report_bs.md
-      - 利润表: fico/fi_report_pl.md
-      - 现金流量表: fico/fi_report_cf.md
+    - 清账: fico/fi_clearing.md
+    - 财务报表:
+      - 报表查询: fico/fi_report.md
+      - 示例: fico/fi_report_sample.md
+      - 报表导出: fico/fi_report_export.md
     - 固定资产明细报表: fico/fixed_assets_report.md
     - 批量WBS成本核算: fico/ckw1.md
   - 多模块复用: 

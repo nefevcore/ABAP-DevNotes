@@ -39,6 +39,8 @@ class ZCL_FI_CLEARING definition
 public section.
   types:
     ty_amount type p length 16 decimals 2.
+  TYPES:
+    ty_exchange_rate TYPE p LENGTH 16 DECIMALS 6.
 
   types:
     BEGIN OF ty_clearing_line,
@@ -149,6 +151,14 @@ PRIVATE SECTION.
   methods GET_PROFIT_LOSS
     returning
       value(R_PROFIT_LOSS) type XFELD .
+  methods GET_EXCHANGERATE
+    importing
+      !I_RATE_TYPE type BAPI1093_1-RATE_TYPE default 'M'
+      !I_FROM type WAERS
+      !I_TO type WAERS
+      !I_DATE type DATUM default SY-DATUM
+    returning
+      value(R_EXCHANGERATE) type TY_EXCHANGE_RATE .
   METHODS posting_before .
   METHODS posting_interface .
 ENDCLASS.
@@ -264,7 +274,7 @@ CLASS ZCL_FI_CLEARING IMPLEMENTATION.
     ENDIF.
 
     " 对于外币清账，如果汇率有差异，还需要考虑损益行
-    IF gs_extra-profit_loss = abap_true.
+    IF ms_extra-profit_loss = abap_true.
       _bdc_begin 'SAPMF05A' '0700'.
       _bdc_data 'BDC_OKCODE' 'NK'. " 跳转到未完成行，在这里就是损益行
 
@@ -393,6 +403,7 @@ CLASS ZCL_FI_CLEARING IMPLEMENTATION.
         AND bseg~belnr = @it_clearing_line-belnr
         AND bseg~gjahr = @it_clearing_line-gjahr
         AND bseg~buzei = @it_clearing_line-buzei
+        AND bseg~hkont = @m_hkont
       INTO CORRESPONDING FIELDS OF TABLE @mt_bseg.
 
 
@@ -431,6 +442,7 @@ CLASS ZCL_FI_CLEARING IMPLEMENTATION.
         AND belnr = @it_clearing_line-belnr
         AND gjahr = @it_clearing_line-gjahr
         AND buzei = @it_clearing_line-buzei
+        AND kunnr = @m_hkont
       INTO CORRESPONDING FIELDS OF TABLE @mt_bseg.
 
 
@@ -468,6 +480,7 @@ CLASS ZCL_FI_CLEARING IMPLEMENTATION.
         AND belnr = @it_clearing_line-belnr
         AND gjahr = @it_clearing_line-gjahr
         AND buzei = @it_clearing_line-buzei
+        AND lifnr = @m_hkont
       INTO CORRESPONDING FIELDS OF TABLE @mt_bseg.
 
 
@@ -901,82 +914,139 @@ CLASS ZCL_FI_CLEARING IMPLEMENTATION.
 
 
 * <SIGNATURE>---------------------------------------------------------------------------------------+
-* | Instance Private Method ZCL_ACC_CLEARING->GET_PROFIT_LOSS
+* | Instance Private Method ZCL_FI_CLEARING->GET_EXCHANGERATE
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] I_RATE_TYPE                    TYPE        BAPI1093_1-RATE_TYPE (default ='M')
+* | [--->] I_FROM                         TYPE        WAERS
+* | [--->] I_TO                           TYPE        WAERS
+* | [--->] I_DATE                         TYPE        DATUM (default =SY-DATUM)
+* | [<-()] R_EXCHANGERATE                 TYPE        TY_EXCHANGE_RATE
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD get_exchangerate.
+
+    DATA ls_rate TYPE bapi1093_0.
+    DATA ls_bapiret1 TYPE bapiret1.
+
+    " 正向汇率
+    CALL FUNCTION 'BAPI_EXCHANGERATE_GETDETAIL'
+      EXPORTING
+        rate_type  = i_rate_type
+        from_curr  = i_from
+        to_currncy = i_to
+        date       = i_date
+      IMPORTING
+        exch_rate  = ls_rate
+        return     = ls_bapiret1.
+    IF sy-subrc = 0.
+      IF ls_rate-to_factor IS NOT INITIAL.
+        r_exchangerate = ( ls_rate-from_factor / ls_rate-to_factor ) * ls_rate-exch_rate.
+      ENDIF.
+      RETURN.
+    ENDIF.
+
+    " 如果没有就按反向汇率计算
+    CLEAR ls_rate.
+    CLEAR ls_bapiret1.
+    CALL FUNCTION 'BAPI_EXCHANGERATE_GETDETAIL'
+      EXPORTING
+        rate_type  = i_rate_type
+        from_curr  = i_to
+        to_currncy = i_from
+        date       = i_date
+      IMPORTING
+        exch_rate  = ls_rate
+        return     = ls_bapiret1.
+    IF sy-subrc <> 0.
+      IF ls_rate-exch_rate IS NOT INITIAL AND ls_rate-to_factor IS NOT INITIAL.
+        r_exchangerate =  ( ls_rate-from_factor / ls_rate-to_factor ) / ls_rate-exch_rate.
+      ENDIF.
+      RETURN.
+    ENDIF.
+
+  ENDMETHOD.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Private Method ZCL_FI_CLEARING->GET_WRBTR_DIFF
+* +-------------------------------------------------------------------------------------------------+
+* | [<-()] R_WRBTR_DIFF                   TYPE        GTY_AMOUNT
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD get_wrbtr_diff.
+
+    LOOP AT mt_bseg REFERENCE INTO DATA(lr_bseg).
+      IF lr_bseg->shkzg = 'S'.
+        r_wrbtr_diff = r_wrbtr_diff + lr_bseg->wrbtr.
+      ELSE.
+        r_wrbtr_diff = r_wrbtr_diff - lr_bseg->wrbtr.
+      ENDIF.
+    ENDLOOP.
+
+    " 外币清账的情况，需要计算外币的差异
+    IF m_waers <> m_waers_loc.
+      DATA(l_exchangerate) = get_exchangerate(
+        i_from = m_waers
+        i_to   = m_waers_loc
+        i_date = m_budat
+      ).
+      r_wrbtr_diff = r_wrbtr_diff * l_exchangerate.
+    ENDIF.
+
+  ENDMETHOD.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Private Method ZCL_FI_CLEARING->GET_PROFIT_LOSS
 * +-------------------------------------------------------------------------------------------------+
 * | [<-()] R_PROFIT_LOSS                  TYPE        XFELD
 * +--------------------------------------------------------------------------------------</SIGNATURE>
   METHOD get_profit_loss.
 
-    CLEAR gs_extra-profit_loss.
+    CLEAR ms_extra-profit_loss.
 
-    DATA ls_rate TYPE bapi1093_0.
-    DATA ls_bapiret1 TYPE bapiret1.
-    DATA l_amount TYPE ty_amount.
+    DATA l_exchangerate TYPE gty_exchange_rate.
+    DATA l_amount TYPE gty_amount.
 
+    " 本币差异计算
     IF m_waers <> m_waers_loc.
-      " 过账日期的凭证货币兑本币汇率
-      CLEAR ls_rate.
-      CLEAR ls_bapiret1.
-      CALL FUNCTION 'BAPI_EXCHANGERATE_GETDETAIL'
-        EXPORTING
-          rate_type  = 'M'
-          from_curr  = m_waers_loc
-          to_currncy = m_waers
-          date       = m_budat
-        IMPORTING
-          exch_rate  = ls_rate
-          return     = ls_bapiret1.
-      IF sy-subrc <> 0.
-        CLEAR ls_rate.
-      ENDIF.
+      l_exchangerate = get_exchangerate(
+        i_from = m_waers
+        i_to   = m_waers_loc
+        i_date = m_budat
+      ).
 
       " 累计损益
-      DATA l_dmbtr_diff TYPE ty_amount.
-      LOOP AT gt_bseg REFERENCE INTO DATA(lr_bseg).
-        " 计算当日汇率下的本币金额
-*        l_amount = lr_bseg->wrbtr / ( ls_rate-exch_rate * ( ls_rate-to_factor / ls_rate-from_factor ) ).
-        l_amount = ( lr_bseg->wrbtr * ls_rate-from_factor ) / ( ls_rate-exch_rate * ls_rate-to_factor ). " 换种写法
-        " 累计差异
+      DATA l_dmbtr_diff TYPE gty_amount.
+      LOOP AT mt_bseg REFERENCE INTO DATA(lr_bseg).
+        l_amount = lr_bseg->wrbtr * l_exchangerate.
         l_dmbtr_diff = l_dmbtr_diff + l_amount - lr_bseg->dmbtr.
       ENDLOOP.
 
       " 累计的差异即为损益
       IF l_dmbtr_diff <> 0.
-        gs_extra-profit_loss = abap_true.
+        ms_extra-profit_loss = abap_true.
         RETURN.
       ENDIF.
     ENDIF.
 
+    " 集团货币差异计算
     IF m_waers <> m_waers_grp.
-      " 过账日期的凭证货币兑集团货币汇率
-      CLEAR ls_rate.
-      CLEAR ls_bapiret1.
-      CALL FUNCTION 'BAPI_EXCHANGERATE_GETDETAIL'
-        EXPORTING
-          rate_type  = 'M'
-          from_curr  = m_waers_grp
-          to_currncy = m_waers
-          date       = m_budat
-        IMPORTING
-          exch_rate  = ls_rate
-          return     = ls_bapiret1.
-      IF sy-subrc <> 0.
-        CLEAR ls_rate.
-      ENDIF.
+      CLEAR l_exchangerate.
+      l_exchangerate = get_exchangerate(
+        i_from = m_waers
+        i_to   = m_waers_grp
+        i_date = m_budat
+      ).
 
       " 累计损益
-      DATA l_dmbe2_diff TYPE ty_amount.
-      LOOP AT gt_bseg REFERENCE INTO lr_bseg.
-        " 计算当日汇率下的本币金额
-*        l_amount = lr_bseg->wrbtr / ( ls_rate-exch_rate * ( ls_rate-to_factor / ls_rate-from_factor ) ).
-        l_amount = ( lr_bseg->wrbtr * ls_rate-from_factor ) / ( ls_rate-exch_rate * ls_rate-to_factor ). " 换种写法
-        " 累计差异
+      DATA l_dmbe2_diff TYPE gty_amount.
+      LOOP AT mt_bseg REFERENCE INTO lr_bseg.
+        l_amount = lr_bseg->wrbtr * l_exchangerate.
         l_dmbe2_diff = l_dmbe2_diff + l_amount - lr_bseg->dmbe2.
       ENDLOOP.
 
       " 累计的差异即为损益
       IF l_dmbe2_diff <> 0.
-        gs_extra-profit_loss = abap_true.
+        ms_extra-profit_loss = abap_true.
         RETURN.
       ENDIF.
     ENDIF.
@@ -985,7 +1055,7 @@ CLASS ZCL_FI_CLEARING IMPLEMENTATION.
 
 
 * <SIGNATURE>---------------------------------------------------------------------------------------+
-* | Instance Private Method ZCL_ACC_CLEARING->GET_WAERS
+* | Instance Private Method ZCL_FI_CLEARING->GET_WAERS
 * +-------------------------------------------------------------------------------------------------+
 * +--------------------------------------------------------------------------------------</SIGNATURE>
   METHOD get_waers.
