@@ -1,82 +1,88 @@
 site_name: ABAP开发笔记
+
 nav:
   - 概述: index.md
   - 更新: log.md
   - 主数据:
-    - 主数据概述: master_data/index.md
-    - 物料: master_data/material.md
-    - 业务伙伴: master_data/bp.md
-    - BOM: master_data/bom.md
-    - 工作中心: master_data/work_center.md
-  - GTM: 
-    - GTM模块概述: gtm/index.md
-    - WTEW: gtm/wtew.md
-    - 合同: gtm/contract.md
-    - 合同关联: gtm/contract_assoc.md
-    - 合同审批: gtm/contract_approval.md
-  - MM: 
-    - MM模块概述: mm/index.md
-    - 采购订单: mm/purchase.md
-    - 内向交货单: mm/inbound_delivery.md
-    - 收货过账: mm/inbound_delivery_post.md
-  - SD: 
-    - SD模块概述: sd/index.md
-    - 销售订单: sd/sale_document.md
-    - 外向交货单: sd/outbound_delivery.md
-    - 发货过账: sd/outbound_delivery_post.md
-    - 销售屏幕增强: sd/sale_doc_screen_enhancement.md
-  - PP: 
-    - PP模块概述: pp/index.md
-    - 工艺路线: pp/pp_routing.md
-    - PIR: pp/pir.md
-    - MRP: pp/mrp.md
-    - 生产版本: pp/pp_version.md
-    - 生产计划: pp/pp_planning.md
-    - 生产工单: pp/pp_order.md
-    - 报工确认: pp/pp_confirmation.md
-    - 生产订单收货: pp/pp_gr.md
-    - 领退料: pp/pp_gi.md
-    - 工单关闭: pp/pp_order_close.md
-  - FICO: 
-    - FICO模块概述: fico/index.md
-    - 会计凭证: fico/acc_document.md
-    - 发票校验: fico/invoice_check.md
-    - 发票预制: fico/invoice_park.md
-    - 发票过账: fico/invoice_post.md
-    - 清账: fico/fi_clearing.md
-    - 财务报表:
-      - 报表查询: fico/fi_report.md
-      - 示例: fico/fi_report_sample.md
-      - 报表导出: fico/fi_report_export.md
-    - 固定资产明细报表: fico/fixed_assets_report.md
-    - 批量WBS成本核算: fico/ckw1.md
-  - 多模块复用: 
-    - MIGO: cross/migo.md
-    - 定价: cross/pricing.md
-    - 发票增强: cross/billing_enhancement.md
-    - MR21: cross/mr21.md
-  - 报表: 
-    - 报表概述: report/index.md
-    - 库存报表: report/stock.md
-    - 销售交货开票报表: report/sd_report.md
-    - 日志查询报表: report/zlogreport.md
-  - 其他: 
-    - ALV相关: others/alv.md
-    - 获取报表数据: others/get_report.md
-    - Excel上传下载: others/xlsx_io.md
-    - 文本取值工具: others/zcl_text.md
-    - 进度条工具: others/progress.md
-    - SMARTFORMS相关: others/smartforms.md
-    - 中文大写: others/number_to_chinese.md
-    - 嵌套循环: others/nest_loop.md
-    - 邮件发送: others/send_mail.md
-    - CMOD增强: others/cmod.md
-    - 导表程序: others/zdataimport.md
+      - 主数据概述: master_data/index.md
+      - 物料: master_data/material.md
+      - 业务伙伴: master_data/bp.md
+      - BOM: master_data/bom.md
+      - 工作中心: master_data/work_center.md
+  - GTM:
+      - GTM模块概述: gtm/index.md
+      - WTEW: gtm/wtew.md
+      - 合同: gtm/contract.md
+      - 合同关联: gtm/contract_assoc.md
+      - 合同审批: gtm/contract_approval.md
+  - MM:
+      - MM模块概述: mm/index.md
+      - 采购订单: mm/purchase.md
+      - 内向交货单: mm/inbound_delivery.md
+      - 收货过账: mm/inbound_delivery_post.md
+  - SD:
+      - SD模块概述: sd/index.md
+      - 销售订单: sd/sale_document.md
+      - 外向交货单: sd/outbound_delivery.md
+      - 发货过账: sd/outbound_delivery_post.md
+      - 销售屏幕增强: sd/sale_doc_screen_enhancement.md
+  - PP:
+      - PP模块概述: pp/index.md
+      - 工艺路线: pp/pp_routing.md
+      - PIR: pp/pir.md
+      - MRP: pp/mrp.md
+      - 生产版本: pp/pp_version.md
+      - 生产计划: pp/pp_planning.md
+      - 生产工单: pp/pp_order.md
+      - 报工确认: pp/pp_confirmation.md
+      - 生产订单收货: pp/pp_gr.md
+      - 领退料: pp/pp_gi.md
+      - 工单关闭: pp/pp_order_close.md
+  - FICO:
+      - FICO模块概述: fico/index.md
+      - 会计凭证: fico/acc_document.md
+      - 发票校验: fico/invoice_check.md
+      - 发票预制: fico/invoice_park.md
+      - 发票过账: fico/invoice_post.md
+      - 清账: fico/fi_clearing.md
+      - 财务报表:
+          - 报表查询: fico/fi_report.md
+          - 示例: fico/fi_report_sample.md
+          - 报表导出: fico/fi_report_export.md
+      - 固定资产明细报表: fico/fixed_assets_report.md
+      - 批量WBS成本核算: fico/ckw1.md
+  - 多模块复用:
+      - MIGO: cross/migo.md
+      - 定价: cross/pricing.md
+      - 发票增强: cross/billing_enhancement.md
+      - MR21: cross/mr21.md
+  - 报表:
+      - 报表概述: report/index.md
+      - 库存报表: report/stock.md
+      - 销售交货开票报表: report/sd_report.md
+      - 日志查询报表: report/zlogreport.md
+  - Fiori: fiori/index.md
+  - 其他:
+      - ALV相关: others/alv.md
+      - 获取报表数据: others/get_report.md
+      - Excel上传下载: others/xlsx_io.md
+      - 文本取值工具: others/zcl_text.md
+      - 进度条工具: others/progress.md
+      - SMARTFORMS相关: others/smartforms.md
+      - 中文大写: others/number_to_chinese.md
+      - 嵌套循环: others/nest_loop.md
+      - 邮件发送: others/send_mail.md
+      - CMOD增强: others/cmod.md
+      - 导表程序: others/zdataimport.md
   - 结语: about.md
-  - 附录: 
-    - MarkDown语法: ex/mdnote.md
-theme: 
+  - 附录:
+      - MarkDown语法: ex/mdnote.md
+
+theme:
   name: material
+  feature:
+    tabs: true # 横向导航
+
 markdown_extensions:
   - admonition
   - codehilite:
