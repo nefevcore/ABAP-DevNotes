@@ -104,11 +104,83 @@ sap.ui.define([
         removeEventListener: function (obj, event) {
             if (obj[event]) {
                 if (obj[event]["_fnOri"]) {
-                    obj[event] = obj[event]["_fnOri"]
+                    obj[event] = obj[event]["_fnOri"];
                 } else {
                     delete obj[event];
                 }
             }
+        },
+
+        /**
+         * 进度条
+         * @param {Object} oParameters
+         * @param {Array<*>} oParameters.array
+         * @param {Number} oParameters.size
+         * @param {function} oParameters.step
+         * @param {function} oParameters.async_step
+         * @param {sap.m.$ProgressIndicator} [oParameter.progress]
+         * @param {sap.m.$DialogSettings} [oParameter.dialog]
+         */
+        progress: function (oParameters) {
+            // 进度条设置
+            var progressSetting = Object.assign({
+                percentValue: 0,
+                displayValue: `${0}/${oParameters.array.length}`,
+                showValue: true,
+                displayAnimation: false,
+                state: "Information"
+            }, oParameters.progress);
+            var oProgressIndicator = new sap.m.ProgressIndicator(progressSetting);
+            // 弹窗设置
+            var oDialogSetting = Object.assign({
+                content: oProgressIndicator,
+                showHeader: false,
+                resizable: false,
+                verticalScrolling: false,
+                contentWidth: "80%",
+                type: "Message"
+            }, oParameters.dialog);
+            var oDialog = new sap.m.Dialog(oDialogSetting);
+            // 启动弹窗
+            oDialog.open();
+            // 尾递归处理
+            var fnFinish;
+            var fnClose = function () {
+                oDialog.close();
+                sap.ui.core.BusyIndicator.hide(); // 隐藏转圈
+                if (fnFinish)
+                    fnFinish();
+            };
+            var fn = async function (nCurr) {
+                // 更新进度条
+                oProgressIndicator.setPercentValue((nCurr / oParameters.array.length) * 100);
+                oProgressIndicator.setDisplayValue(`${nCurr}/${oParameters.array.length}`);
+                // 边界
+                if (nCurr === oParameters.array.length) {
+                    fnClose();
+                    return;
+                }
+                // 切分数据
+                var aItems = oParameters.array.slice(nCurr, nCurr + oParameters.size);
+                var bLast = ((nCurr + aItems.length) === oParameters.array.length);
+                // 异步函数的情况
+                if (oParameters.async_step) {
+                    oParameters.async_step(aItems, bLast)
+                        .then(() => fn(nCurr + aItems.length))
+                        .catch(() => fnClose());
+                    return;
+                }
+                // 同步函数的情况
+                if (oParameters.step)
+                    oParameters.step(aItems, bLast);
+                return fn(nCurr + aItems.length);
+            };
+            // Promise形式返回
+            return new Promise(function (resolve) {
+                fnFinish = resolve;
+                sap.ui.core.BusyIndicator.show(0); // 转圈等待
+                fn(0);
+            });
         }
     };
 });

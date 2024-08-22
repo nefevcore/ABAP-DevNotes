@@ -16,23 +16,23 @@ sap.ui.define([
         read: function (oDataModel, sEntitySet, oParamters) {
             var that = this;
             return new Promise(function (resolve, reject) {
-                that.showBusyIndicator(60000, 0); // 等待1分钟
-                oParamters = oParamters || {}
-                var fnSuccess = oParamters.success || undefined
-                var fnError = oParamters.error || undefined
+                that.showBusyIndicator();
+                oParamters = oParamters || {};
+                var fnSuccess = oParamters.success || undefined;
+                var fnError = oParamters.error || undefined;
                 oParamters.success = function (oData) {
                     that.hideBusyIndicator();
                     if (fnSuccess)
-                        fnSuccess(oData)
+                        fnSuccess(oData);
                     resolve(oData);
-                }
+                };
                 oParamters.error = function (oError) {
                     that.hideBusyIndicator();
                     sap.m.MessageBox.error(that.parseOdataError(oError));
                     if (fnError)
-                        fnError(oError)
+                        fnError(oError);
                     reject(oError);
-                }
+                };
                 oDataModel.read(sEntitySet, oParamters);
             }.bind(this));
         },
@@ -48,23 +48,23 @@ sap.ui.define([
         request: function (oDataModel, sEntitySet, oRequestData, oParamters) {
             var that = this;
             return new Promise(function (resolve, reject) {
-                that.showBusyIndicator(60000, 0); // 等待1分钟
-                oParamters = oParamters || {}
-                var fnSuccess = oParamters.success || undefined
-                var fnError = oParamters.error || undefined
+                that.showBusyIndicator();
+                oParamters = oParamters || {};
+                var fnSuccess = oParamters.success || undefined;
+                var fnError = oParamters.error || undefined;
                 oParamters.success = function (oData) {
                     that.hideBusyIndicator();
                     if (fnSuccess)
-                        fnSuccess(oData)
+                        fnSuccess(oData);
                     resolve(oData);
-                }
+                };
                 oParamters.error = function (oError) {
                     that.hideBusyIndicator();
                     sap.m.MessageBox.error(that.parseOdataError(oError));
                     if (fnError)
-                        fnError(oError)
+                        fnError(oError);
                     reject(oError);
-                }
+                };
                 oDataModel.create(sEntitySet, oRequestData, oParamters);
             });
         },
@@ -72,7 +72,7 @@ sap.ui.define([
         /**
          * 转圈
          * @param {Number} iDuration 
-         * @param {Number} iDelay 
+         * @param {Number} iDelay
          */
         showBusyIndicator: function (iDuration, iDelay) {
             sap.ui.core.BusyIndicator.show(iDelay);

@@ -103,6 +103,8 @@ CLASS zcl_odata_helper IMPLEMENTATION.
 * | [--->] I_TECH_REQUEST_CONTEXT         TYPE REF TO /IWBEP/IF_MGW_REQ_ENTITYSET
 * | [--->] I_DPC                          TYPE REF TO IF_SADL_GW_DPC(optional)
 * | [--->] I_MEASURES                     TYPE        GTY_MEASURE_T(optional)
+* | [--->] I_SORT_DEFAULT                 TYPE        ABAP_SORTORDER_TAB(optional)
+* | [--->] I_USE_FILTER                   TYPE        XFELD(optional)
 * | [<-->] C_DATA                         TYPE        STANDARD TABLE
 * | [<-->] C_RESPONSE_CONTEXT             TYPE        /IWBEP/IF_MGW_APPL_SRV_RUNTIME=>TY_S_MGW_RESPONSE_CONTEXT
 * | [!CX!] /IWBEP/CX_MGW_BUSI_EXCEPTION
@@ -113,6 +115,8 @@ CLASS zcl_odata_helper IMPLEMENTATION.
 *&---------------------------------------------------------------------*
 *& 分组汇总
 *&---------------------------------------------------------------------*
+    "
+    DATA lv_data_source TYPE string VALUE '@C_DATA AS DS'.
     " 查询条件
     DATA lt_select TYPE stringtab.
     lt_select = i_tech_request_context->get_select( ).
@@ -132,7 +136,15 @@ CLASS zcl_odata_helper IMPLEMENTATION.
         READ TABLE i_measures REFERENCE INTO DATA(lr_measure) WITH KEY property = lr_select->*.
         IF sy-subrc = 0.
           " 聚合列加上聚合方法
-          lr_select->* = |{ lr_measure->function }( { lr_select->* } ) AS { lr_select->* }|.
+          " 下面效果：
+          " FIELD -> AGGR_FUNC( FIELD ) AS FIELD
+          " ATC检查太烦了
+          DATA lv_lb VALUE '('.
+          DATA lv_rb VALUE ')'.
+          DATA lv_as(2) VALUE 'AS'.
+          lr_select->* = |{ lr_measure->function
+                         }{ lv_lb }{ space WIDTH = 1 }{ lr_select->* }{ space WIDTH = 1 }{ lv_rb
+                         }{ space WIDTH = 1 }{ lv_as }{ space WIDTH = 1 }{ lr_select->* }|.
         ELSE.
           " 非聚合列要写入分组中
           INSERT |{ lr_select->* }| INTO TABLE lt_groupby.
@@ -148,14 +160,17 @@ CLASS zcl_odata_helper IMPLEMENTATION.
 
       " 聚合处理
       TRY.
-          DATA lv_data_source TYPE string VALUE '@C_DATA AS DS'.
           ##ITAB_KEY_IN_SELECT
           SELECT (lv_select)
             FROM (lv_data_source)
             GROUP BY (lv_groupby)
             INTO CORRESPONDING FIELDS OF TABLE @c_data.
-        CATCH cx_root INTO DATA(lx_root).
-          DATA(lx_err) = lx_root->get_text( ).
+          IF sy-subrc <> 0.
+            CLEAR c_data.
+          ENDIF.
+        CATCH cx_root INTO DATA(lo_xroot).
+          ##NEEDED
+          DATA(lv_err) = lo_xroot->get_text( ).
           " 基本都是由于String无法运用SQL，而导致的错误
           " 因此查询失败后，以无String表再查询一次，还不行那就真的不行了
           DATA(lr_data_without_string) = copy_table_without_string( c_data ).
@@ -170,12 +185,33 @@ CLASS zcl_odata_helper IMPLEMENTATION.
                     FROM (lv_ds_without_string)
                     GROUP BY (lv_groupby)
                     INTO CORRESPONDING FIELDS OF TABLE @c_data.
-                CATCH cx_root INTO lx_root.
-                  lx_err = lx_root->get_text( ).
+                  IF sy-subrc <> 0.
+                    CLEAR c_data.
+                  ENDIF.
+                CATCH cx_root INTO lo_xroot.
+                  lv_err = lo_xroot->get_text( ).
               ENDTRY.
             ENDIF. " IF <fs_table> IS ASSIGNED
           ENDIF. " IF lr_data_without_string IS BOUND
       ENDTRY.
+      SORT c_data. " 聚合查询后，重新执行默认排序
+    ENDIF.
+    
+    " 最终再应用一次筛选，以此符合取值条件
+    " 不过，项目上线了，为了不影响其他，这个默认不启用
+    IF i_use_filter IS NOT INITIAL.
+      " 取WHERE语句
+      DATA(lv_osql) = zcl_acc_odata_helper=>get_osql( i_tech_request_context = i_tech_request_context ).
+      IF lv_osql IS NOT INITIAL.
+        TRY.
+            ##ITAB_KEY_IN_SELECT
+            SELECT * FROM (lv_data_source) WHERE (lv_osql) INTO TABLE @c_data.
+            IF sy-subrc <> 0.
+              CLEAR c_data.
+            ENDIF.
+          CATCH cx_root.
+        ENDTRY.
+      ENDIF.
     ENDIF.
 
     " 聚合失败
@@ -203,8 +239,10 @@ CLASS zcl_odata_helper IMPLEMENTATION.
     ENDLOOP.
     IF lt_abap_order IS NOT INITIAL.
       SORT c_data BY (lt_abap_order).
-    ELSE.
-      SORT c_data.
+    ELSEIF i_sort_default IS SUPPLIED. " 假设传空，表示不排序
+      IF i_sort_default IS NOT INITIAL.
+        SORT c_data BY (i_sort_default). " 新增默认排序
+      ENDIF.
     ENDIF.
 
 *&---------------------------------------------------------------------*
@@ -216,6 +254,9 @@ CLASS zcl_odata_helper IMPLEMENTATION.
     " 对于$inlinecount
     IF i_tech_request_context->has_inlinecount( ).
       c_response_context-inlinecount = lines( c_data ).
+      IF lv_top = zif_constant=>num-_0.
+        CLEAR c_data.
+      ENDIF.
     ENDIF.
     IF lv_top IS NOT INITIAL AND lv_top <> zif_constant=>num-_0.
       DATA lv_tabix TYPE sy-tabix.
@@ -295,7 +336,7 @@ CLASS zcl_odata_helper IMPLEMENTATION.
 * +-------------------------------------------------------------------------------------------------+
 * | [--->] I_TECH_REQUEST_CONTEXT         TYPE REF TO /IWBEP/IF_MGW_REQ_ENTITYSET
 * | [--->] I_PROPERTY                     TYPE        STRING
-* | [--->] I_INIITAL_VALUE                TYPE        STRING(optional)
+* | [--->] I_INITIAL_VALUE                TYPE        STRING(optional)
 * | [<-->] C_ENTITYSET                    TYPE        STANDARD TABLE(optional)
 * | [<-->] C_ENTITY                       TYPE        DATA(optional)
 * +--------------------------------------------------------------------------------------</SIGNATURE>
@@ -315,11 +356,11 @@ CLASS zcl_odata_helper IMPLEMENTATION.
     ENDIF.
 
     " 有些特殊场景，需要保留空行，只对那些赋值的行进行过滤
-    IF i_iniital_value IS SUPPLIED.
+    IF i_initial_value IS SUPPLIED.
       INSERT VALUE #(
         sign = zif_constant=>z_sign_i
         option = zif_constant=>z_option_eq
-        low = i_iniital_value
+        low = i_initial_value
       ) INTO TABLE lt_option.
     ENDIF.
 
@@ -362,20 +403,22 @@ CLASS zcl_odata_helper IMPLEMENTATION.
         " 套壳处理，给Function加括号
         r_osql = lcl_osql_vistr=>get_osql_where_clause_convert( i_tech_request_context ).
       CATCH /iwbep/cx_mgw_busi_exception /iwbep/cx_mgw_tech_exception.
-        r_osql = '1 = 0'. " 永假条件 - XIAOFENG - 15.12.2023 20:12:31
+        DATA lv_osql_false TYPE string VALUE '1 = 0'.
+        r_osql = lv_osql_false. " 永假条件
         RETURN.
     ENDTRY.
 
     " 对于一些后付值，CDS只有默认值或空值，前端传入条件会影响筛选，因此要去除这部分条件
     IF i_removes IS NOT INITIAL.
       " 查找全部筛选条件，最小单元会被括号包裹
-      FIND ALL OCCURRENCES OF PCRE '\([^()]*\)' IN r_osql RESULTS DATA(lt_match).
+      DATA lv_regex TYPE string VALUE '\([^()]*\)'.
+      FIND ALL OCCURRENCES OF PCRE lv_regex IN r_osql RESULTS DATA(lt_match).
       SORT lt_match BY line DESCENDING offset DESCENDING.
       LOOP AT lt_match REFERENCE INTO DATA(lr_match).
         " ( PROPERTY = VALUE )
         DATA(lv_str) = r_osql+lr_match->offset(lr_match->length).
         " 取字段名
-        SPLIT lv_str AT space INTO DATA(lv_dummy) DATA(lv_property) lv_dummy.
+        SPLIT lv_str AT space INTO DATA(lv_dummy) DATA(lv_property) lv_dummy ##NEEDED.
         " 检查是否在排除列表中
         READ TABLE i_removes TRANSPORTING NO FIELDS WITH KEY table_line = lv_property.
         IF sy-subrc = 0.
