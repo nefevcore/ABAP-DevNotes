@@ -8,10 +8,9 @@
 - 新增[RAP开发流程示例](./80030A0002_rap_dev_demo.md)
 - 新增[物料创建(RAP)](./10000A0006_product_creaation.md)
 - 新增[Fiori部署小建议](./80020A0001_fiori_index.md#vscode)
-- 新增[S4升级](./9000000001_s4_migration.md)
-
 - 新增[Fiori报表平台](./80020A0002_fiori_report_platform.md)
 - 新增[共享财务模块](./30030A0001_ssf_index.md)
+- 新增[S4升级](./9000000001_s4_migration.md)
 - 新增[XCO](./80000A0001_xco.md)工具说明
 
 ## 2023/12/19
