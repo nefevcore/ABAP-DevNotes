@@ -1,87 +1,118 @@
-site_name: ABAP开发笔记
+site_name: SAP开发笔记
 
 nav:
   - 概述: index.md
-  - 更新: log.md
+  - 更新日志: 0000000002_update_record.md
   - 主数据:
-      - 主数据概述: master_data/index.md
-      - 物料: master_data/material.md
-      - 业务伙伴: master_data/bp.md
-      - BOM: master_data/bom.md
-      - 工作中心: master_data/work_center.md
-  - GTM:
-      - GTM模块概述: gtm/index.md
-      - WTEW: gtm/wtew.md
-      - 合同: gtm/contract.md
-      - 合同关联: gtm/contract_assoc.md
-      - 合同审批: gtm/contract_approval.md
-  - MM:
-      - MM模块概述: mm/index.md
-      - 采购订单: mm/purchase.md
-      - 内向交货单: mm/inbound_delivery.md
-      - 收货过账: mm/inbound_delivery_post.md
-  - SD:
-      - SD模块概述: sd/index.md
-      - 销售订单: sd/sale_document.md
-      - 外向交货单: sd/outbound_delivery.md
-      - 发货过账: sd/outbound_delivery_post.md
-      - 销售屏幕增强: sd/sale_doc_screen_enhancement.md
-  - PP:
-      - PP模块概述: pp/index.md
-      - 工艺路线: pp/pp_routing.md
-      - PIR: pp/pir.md
-      - MRP: pp/mrp.md
-      - 生产版本: pp/pp_version.md
-      - 生产计划: pp/pp_planning.md
-      - 生产工单: pp/pp_order.md
-      - 报工确认: pp/pp_confirmation.md
-      - 生产订单收货: pp/pp_gr.md
-      - 领退料: pp/pp_gi.md
-      - 工单关闭: pp/pp_order_close.md
-  - FICO:
-      - FICO模块概述: fico/index.md
-      - 会计凭证: fico/acc_document.md
-      - 发票校验: fico/invoice_check.md
-      - 发票预制: fico/invoice_park.md
-      - 发票过账: fico/invoice_post.md
-      - 清账: fico/fi_clearing.md
-      - 财务报表:
-          - 报表查询: fico/fi_report.md
-          - 示例: fico/fi_report_sample.md
-          - 报表导出: fico/fi_report_export.md
-      - 固定资产明细报表: fico/fixed_assets_report.md
-      - 批量WBS成本核算: fico/ckw1.md
-  - 多模块复用:
-      - MIGO: cross/migo.md
-      - 定价: cross/pricing.md
-      - 发票增强: cross/billing_enhancement.md
-      - MR21: cross/mr21.md
-  - 报表:
-      - 报表概述: report/index.md
-      - 库存报表: report/stock.md
-      - 销售交货开票报表: report/sd_report.md
-      - 日志查询报表: report/zlogreport.md
-  - Fiori: fiori/index.md
+      - 主数据概述: 10000A0001_md_index.md
+      - 业务伙伴: 10000A0002_bp.md
+      - 物料: 10000A0003_material.md
+      - 物料(RAP): 10000A0006_product_creaation.md
+      - BOM: 10000A0004_bom.md
+      - 工作中心: 10000A0005_work_center.md
+  - 后勤:
+      - 全球贸易管理:
+          - GTM模块概述: 20010A0001_gtm_index.md
+          - WTEW: 20010A0002_wtew.md
+          - 合同: 20010A0003_contract.md
+          - 合同关联: 20010A0004_contract_assoc.md
+          - 合同审批: 20010A0005_contract_approval.md
+      - 采购管理:
+          - MM模块概述: 20020A0001_mm_index.md
+          - 采购订单: 20020A0002_purchase.md
+          - 内向交货单: 20020A0003_inbound_delivery.md
+          - 收货过账: 20020A0004_inbound_delivery_post.md
+          - MIGO: 20020A0005_migo.md
+          - 定价: 20020A0006_mm_pricing.md
+          - 价格修改(MR21): 20020A0007_price_modify.md
+      - 销售分销:
+          - SD模块概述: 20030A0001_sd_index.md
+          - 销售订单: 20030A0002_sale_document.md
+          - 外向交货单: 20030A0003_outbound_delivery.md
+          - 发货过账: 20030A0004_outbound_delivery_post.md
+          - 定价: 20030A0005_sd_pricing.md
+          - 销售屏幕增强: 20030A0006_sale_doc_screen_enhancement.md
+          - 发票增强: 20030A0007_billing_enhancement.md
+      - 生产计划:
+          - PP模块概述: 20040A0001_pp_index.md
+          - 工艺路线: 20040A0002_pp_routing.md
+          - 计划独立需求(PIR): 20040A0003_pir.md
+          - 物料需求计划(MRP): 20040A0004_mrp.md
+          - 生产版本: 20040A0005_pp_version.md
+          - 生产计划: 20040A0006_pp_planning.md
+          - 生产工单: 20040A0007_pp_order.md
+          - 报工确认: 20040A0008_pp_confirmation.md
+          - 生产订单收货: 20040A0009_pp_gr.md
+          - 领退料: 20040A0010_pp_gi.md
+          - 工单关闭: 20040A0011_pp_order_close.md
+      - 报表:
+          - 库存报表: 20000A0001_stock.md
+          - 销售交货开票报表: 20000A0002_sd_report.md
+  - 财务:
+      - 财务:
+          - FI模块概述: 30010A0001_fico_index.md
+          - 财务凭证: 30010A0002_acc_document.md
+          - 发票校验: 30010A0003_invoice_check.md
+          - 发票预制: 30010A0004_invoice_park.md
+          - 发票过账: 30010A0005_invoice_post.md
+          - 清账: 30010A0006_fi_clearing.md
+          - 固定资产明细报表: 30010A0007_fixed_assets_report.md
+          - 三大报表:
+              - 报表查询: 30010A0008_01_fi_report.md
+              - 示例: 30010A0008_02_fi_report_sample.md
+              - 报表导出: 30010A0008_03_fi_report_export.md
+      - 会计:
+          - 批量WBS成本核算: 30020A0001_ckw1.md
+      - 共享财务:
+          - SSF模块概述: 30030A0001_ssf_index.md
+  - 开发:
+      - 传统技术:
+          - 传统技术概览: 80010A0001_abap_index.md
+          - ALV: 80010A0002_alv.md
+          - SMARTFORMS: 80010A0003_smartforms.md
+          - CMOD增强: 80010A0004_cmod.md
+          - 工具:
+              - 接口日志查询报表: 80010A0005_zlogreport.md
+              - Excel上传下载: 80010A0006_xlsx_io.md
+              - 文本取值工具: 80010A0007_zcl_text.md
+              - 进度条工具: 80010A0008_progress.md
+              - 导表工具: 80010A0009_zdataimport.md
+          - 其他:
+              - 嵌套循环优化: 80010A0010_nest_loop.md
+              - 获取报表数据: 80010A0011_get_report.md
+              - 中文大写: 80010A0012_number_to_chinese.md
+              - 邮件发送: 80010A0013_send_mail.md
+      - Fiori:
+          - Fiori开发概览: 80020A0001_fiori_index.md
+          - Fiori报表平台: 80020A0002_fiori_report_platform.md
+      - RAP:
+          - RAP开发概览: 80030A0001_rap_index.md
+          - RAP开发流程示例: 80030A0002_rap_dev_demo.md
+      - XCO: 80000A0001_xco.md
   - 其他:
-      - ALV相关: others/alv.md
-      - 获取报表数据: others/get_report.md
-      - Excel上传下载: others/xlsx_io.md
-      - 文本取值工具: others/zcl_text.md
-      - 进度条工具: others/progress.md
-      - SMARTFORMS相关: others/smartforms.md
-      - 中文大写: others/number_to_chinese.md
-      - 嵌套循环: others/nest_loop.md
-      - 邮件发送: others/send_mail.md
-      - CMOD增强: others/cmod.md
-      - 导表程序: others/zdataimport.md
-  - 结语: about.md
+      - S4升级: 9000000001_s4_migration.md
+  - 结语: 0000000003_about.md
   - 附录:
-      - MarkDown语法: ex/mdnote.md
+      - MarkDown语法: 0000000004_markdown_note.md
 
 theme:
   name: material
-  feature:
-    tabs: true # 横向导航
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default # 日间模式
+      # teal
+      toggle:
+        icon: material/toggle-switch # 图标
+        name: 切换至夜间模式 # 鼠标悬浮提示
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate # 夜间模式
+      # teal
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: 切换至日间模式
+
+extra:
+  generator: false # 移除页脚“使用Mkdoc导航”
 
 markdown_extensions:
   - admonition
@@ -100,11 +131,21 @@ markdown_extensions:
   - pymdownx.critic
   - pymdownx.details
   - pymdownx.emoji:
-      emoji_generator: !!python/name:pymdownx.emoji.to_png
+      emoji_generator: !!python/name:materialx.emoji.to_svg
   - pymdownx.inlinehilite
   - pymdownx.magiclink
   - pymdownx.mark
   - pymdownx.smartsymbols
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tasklist
   - pymdownx.tilde
+  - pymdownx.highlight: # 代码块高亮
+      linenums: true # 显示行号
+  - pymdownx.arithmatex: # latex支持
+      generic: true
+  - pymdownx.tabbed:  #内容选项卡
+      alternate_style: true  #启用内容选项卡替代样式，必须开启
