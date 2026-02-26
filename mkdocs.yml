@@ -7,7 +7,7 @@ nav:
       - 主数据概述: 10000A0001_md_index.md
       - 业务伙伴: 10000A0002_bp.md
       - 物料: 10000A0003_material.md
-      - 物料(RAP): 10000A0006_product_creaation.md
+      - 物料(RAP): 10000C0006_product_creaation.md
       - BOM: 10000A0004_bom.md
       - 工作中心: 10000A0005_work_center.md
   - 后勤:
@@ -71,23 +71,29 @@ nav:
           - ALV: 80010A0002_alv.md
           - SMARTFORMS: 80010A0003_smartforms.md
           - CMOD增强: 80010A0004_cmod.md
+          - 开发小知识: 80010A0016_abap_tips.md
           - 工具:
               - 接口日志查询报表: 80010A0005_zlogreport.md
               - Excel上传下载: 80010A0006_xlsx_io.md
               - 文本取值工具: 80010A0007_zcl_text.md
               - 进度条工具: 80010A0008_progress.md
               - 导表工具: 80010A0009_zdataimport.md
-          - 其他:
-              - 嵌套循环优化: 80010A0010_nest_loop.md
-              - 获取报表数据: 80010A0011_get_report.md
-              - 中文大写: 80010A0012_number_to_chinese.md
-              - 邮件发送: 80010A0013_send_mail.md
+              - 汇率计算工具: 80010A0014_calc_exchangedrate.md
+              - 批量翻译数据元素和域值工具: 80010A0015_batch_translate_dtel.md
+              - 中文大写转换函数: 80010A0012_number_to_chinese.md
       - Fiori:
-          - Fiori开发概览: 80020A0001_fiori_index.md
-          - Fiori报表平台: 80020A0002_fiori_report_platform.md
-      - RAP:
-          - RAP开发概览: 80030A0001_rap_index.md
-          - RAP开发流程示例: 80030A0002_rap_dev_demo.md
+          - 前期配置: 80020B0005_fiori_config.md
+          - 开发辅助工具: 80020B0001_fiori_tools.md
+          - SAPUI5开发小知识: 80020B0007_fiori_tips.md
+          - Logo替换: 80020B0006_fiori_replace_logo.md
+          - Excel Viewer: 80020B0003_fiori_excel_viewer.md
+          - 自开发报表平台: 80020B0002_fiori_report_platform.md
+          - 自开发快捷导航: 80020B0004_fiori_quick_nav.md
+          - 数据大屏: 80020B0008_fiori_cdm.md
+      - Cloud:
+          - Cloud开发概览: 80030C0001_cloud_index.md
+          - Cloud发布公共接口: 80030C0003_cloud_publish_api.md
+          - RAP开发流程示例: 80030C0002_rap_dev_demo.md
       - XCO: 80000A0001_xco.md
   - 其他:
       - S4升级: 9000000001_s4_migration.md
