@@ -58,6 +58,8 @@
       
     
     
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,a=__md_scope)=>JSON.parse(t.getItem(a.pathname+"."+e)),__md_set=(e,t,a=localStorage,_=__md_scope)=>{try{a.setItem(_.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
@@ -864,7 +866,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../03_mm/20020A0001_mm_index/" class="md-nav__link">
+      <a href="../../02_mm/20020A0001_mm_index/" class="md-nav__link">
         
   
   
@@ -892,7 +894,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../03_mm/20020A0002_purchase/" class="md-nav__link">
+      <a href="../../02_mm/20020A0002_purchase/" class="md-nav__link">
         
   
   
@@ -920,7 +922,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../03_mm/20020A0003_inbound_delivery/" class="md-nav__link">
+      <a href="../../02_mm/20020A0003_inbound_delivery/" class="md-nav__link">
         
   
   
@@ -948,7 +950,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../03_mm/20020A0004_inbound_delivery_post/" class="md-nav__link">
+      <a href="../../02_mm/20020A0004_inbound_delivery_post/" class="md-nav__link">
         
   
   
@@ -976,7 +978,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../03_mm/20020A0005_migo/" class="md-nav__link">
+      <a href="../../02_mm/20020A0005_migo/" class="md-nav__link">
         
   
   
@@ -1004,7 +1006,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../03_mm/20020A0006_mm_pricing/" class="md-nav__link">
+      <a href="../../02_mm/20020A0006_mm_pricing/" class="md-nav__link">
         
   
   
@@ -1032,7 +1034,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../03_mm/20020A0007_price_modify/" class="md-nav__link">
+      <a href="../../02_mm/20020A0007_price_modify/" class="md-nav__link">
         
   
   
@@ -1115,7 +1117,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../02_sd/20030A0001_sd_index/" class="md-nav__link">
+      <a href="../../03_sd/20030A0001_sd_index/" class="md-nav__link">
         
   
   
@@ -1143,7 +1145,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../02_sd/20030A0002_sale_document/" class="md-nav__link">
+      <a href="../../03_sd/20030A0002_sale_document/" class="md-nav__link">
         
   
   
@@ -1171,7 +1173,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../02_sd/20030A0003_outbound_delivery/" class="md-nav__link">
+      <a href="../../03_sd/20030A0003_outbound_delivery/" class="md-nav__link">
         
   
   
@@ -1199,7 +1201,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../02_sd/20030A0004_outbound_delivery_post/" class="md-nav__link">
+      <a href="../../03_sd/20030A0004_outbound_delivery_post/" class="md-nav__link">
         
   
   
@@ -1227,7 +1229,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../02_sd/20030A0005_sd_pricing/" class="md-nav__link">
+      <a href="../../03_sd/20030A0005_sd_pricing/" class="md-nav__link">
         
   
   
@@ -1255,7 +1257,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../02_sd/20030A0006_sale_doc_screen_enhancement/" class="md-nav__link">
+      <a href="../../03_sd/20030A0006_sale_doc_screen_enhancement/" class="md-nav__link">
         
   
   
@@ -1283,7 +1285,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../02_sd/20030A0007_billing_enhancement/" class="md-nav__link">
+      <a href="../../03_sd/20030A0007_billing_enhancement/" class="md-nav__link">
         
   
   
@@ -1729,7 +1731,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../02_sd/20000A0001_stock/" class="md-nav__link">
+      <a href="../../03_sd/20000A0001_stock/" class="md-nav__link">
         
   
   
@@ -1757,7 +1759,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../02_sd/20000A0002_sd_report/" class="md-nav__link">
+      <a href="../../03_sd/20000A0002_sd_report/" class="md-nav__link">
         
   
   
@@ -3686,7 +3688,7 @@
       <a href="../.." class="md-path__link">
         
   <span class="md-ellipsis">
-    NEFEV Core 技术文档库
+    技术文档库
   </span>
 
       </a>
@@ -3850,116 +3852,116 @@
 <span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">*&amp;---------------------------------------------------------------------*</span>
 <span class="c1">*&amp; 模拟公共接口（A2X/V2）调用</span>
 <span class="c1">*&amp;---------------------------------------------------------------------*</span>
-<span class="w">    </span><span class="c1">&quot; 演示用，假设这是程序的入参和出参</span>
-<span class="w">    </span><span class="k">TYPES</span><span class="p">:</span>
-<span class="w">      </span><span class="k">BEGIN OF</span><span class="w"> </span><span class="nv">ty_datalake</span><span class="p">,</span>
-<span class="w">        </span><span class="nv">matnr</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">mara</span><span class="o">-</span><span class="nv">matnr</span><span class="p">,</span>
-<span class="w">        </span><span class="nv">maktx</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">makt</span><span class="o">-</span><span class="nv">maktx</span><span class="p">,</span>
-<span class="w">      </span><span class="k">END OF</span><span class="w"> </span><span class="nv">ty_datalake</span><span class="p">.</span>
-<span class="w">    </span><span class="k">TYPES</span><span class="w"> </span><span class="nv">tt_datalake</span><span class="w"> </span><span class="k">TYPE STANDARD TABLE OF</span><span class="w"> </span><span class="nv">ty_datalake</span><span class="p">.</span>
+<span class="c1">&quot; 演示用，假设这是程序的入参和出参</span>
+<span class="k">TYPES</span><span class="p">:</span>
+<span class="w">  </span><span class="k">BEGIN OF</span><span class="w"> </span><span class="nv">ty_datalake</span><span class="p">,</span>
+<span class="w">    </span><span class="nv">matnr</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">mara</span><span class="o">-</span><span class="nv">matnr</span><span class="p">,</span>
+<span class="w">    </span><span class="nv">maktx</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">makt</span><span class="o">-</span><span class="nv">maktx</span><span class="p">,</span>
+<span class="w">  </span><span class="k">END OF</span><span class="w"> </span><span class="nv">ty_datalake</span><span class="p">.</span>
+<span class="k">TYPES</span><span class="w"> </span><span class="nv">tt_datalake</span><span class="w"> </span><span class="k">TYPE STANDARD TABLE OF</span><span class="w"> </span><span class="nv">ty_datalake</span><span class="p">.</span>
 
-<span class="w">    </span><span class="c1">&quot; 定义参数格式</span>
-<span class="w">    </span><span class="k">TYPES</span><span class="p">:</span>
-<span class="w">      </span><span class="k">BEGIN OF</span><span class="w"> </span><span class="nv">ty_entity</span><span class="p">.</span>
-<span class="w">        </span><span class="k">INCLUDE</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">a_product</span><span class="p">.</span>
-<span class="w">    </span><span class="k">TYPES</span><span class="p">:</span>
-<span class="w">        </span><span class="nv">to_description</span><span class="w"> </span><span class="k">TYPE STANDARD TABLE OF</span><span class="w"> </span><span class="nv">a_productdescription</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="nv">EMPTY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
-<span class="w">      </span><span class="k">END OF</span><span class="w"> </span><span class="nv">ty_entity</span><span class="p">.</span>
-<span class="w">    </span><span class="c1">&quot; 暂时没找到批量处理的方法，不过为了保持和V4格式一致，这里还是保留批处理结构</span>
-<span class="w">    </span><span class="k">TYPES</span><span class="p">:</span>
-<span class="w">      </span><span class="k">BEGIN OF</span><span class="w"> </span><span class="nv">ty_batch</span><span class="p">,</span>
-<span class="w">        </span><span class="nv">data_ref</span><span class="w">      </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="k">data</span><span class="p">,</span>
-<span class="w">        </span><span class="nv">request_body</span><span class="w">  </span><span class="k">TYPE </span><span class="nv">ty_entity</span><span class="p">,</span>
-<span class="w">        </span><span class="nv">request</span><span class="w">       </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_request_create</span><span class="p">,</span>
-<span class="w">        </span><span class="nv">response_body</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">ty_entity</span><span class="p">,</span>
-<span class="w">        </span><span class="nv">response</span><span class="w">      </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_response_create</span><span class="p">,</span>
-<span class="w">      </span><span class="k">END OF</span><span class="w"> </span><span class="nv">ty_batch</span><span class="p">.</span>
+<span class="c1">&quot; 定义参数格式</span>
+<span class="k">TYPES</span><span class="p">:</span>
+<span class="w">  </span><span class="k">BEGIN OF</span><span class="w"> </span><span class="nv">ty_entity</span><span class="p">.</span>
+<span class="w">    </span><span class="k">INCLUDE</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">a_product</span><span class="p">.</span>
+<span class="k">TYPES</span><span class="p">:</span>
+<span class="w">    </span><span class="nv">to_description</span><span class="w"> </span><span class="k">TYPE STANDARD TABLE OF</span><span class="w"> </span><span class="nv">a_productdescription</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="nv">EMPTY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="k">END OF</span><span class="w"> </span><span class="nv">ty_entity</span><span class="p">.</span>
+<span class="c1">&quot; 暂时没找到批量处理的方法，不过为了保持和V4格式一致，这里还是保留批处理结构</span>
+<span class="k">TYPES</span><span class="p">:</span>
+<span class="w">  </span><span class="k">BEGIN OF</span><span class="w"> </span><span class="nv">ty_batch</span><span class="p">,</span>
+<span class="w">    </span><span class="nv">data_ref</span><span class="w">      </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="k">data</span><span class="p">,</span>
+<span class="w">    </span><span class="nv">request_body</span><span class="w">  </span><span class="k">TYPE </span><span class="nv">ty_entity</span><span class="p">,</span>
+<span class="w">    </span><span class="nv">request</span><span class="w">       </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_request_create</span><span class="p">,</span>
+<span class="w">    </span><span class="nv">response_body</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">ty_entity</span><span class="p">,</span>
+<span class="w">    </span><span class="nv">response</span><span class="w">      </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_response_create</span><span class="p">,</span>
+<span class="w">  </span><span class="k">END OF</span><span class="w"> </span><span class="nv">ty_batch</span><span class="p">.</span>
 
-<span class="w">    </span><span class="k">DATA</span><span class="p">:</span>
-<span class="w">      </span><span class="nv">lt_batch</span><span class="w"> </span><span class="k">TYPE STANDARD TABLE OF</span><span class="w"> </span><span class="nv">ty_batch</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="nv">EMPTY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
-<span class="w">      </span><span class="nv">ls_batch</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">ty_batch</span><span class="p">,</span>
-<span class="w">      </span><span class="nv">lv_mtype</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">bapi_mtype</span><span class="p">,</span>
-<span class="w">      </span><span class="nv">lv_msg</span><span class="w">   </span><span class="k">TYPE </span><span class="nv">bapi_msg</span><span class="p">.</span>
+<span class="k">DATA</span><span class="p">:</span>
+<span class="w">  </span><span class="nv">lt_batch</span><span class="w"> </span><span class="k">TYPE STANDARD TABLE OF</span><span class="w"> </span><span class="nv">ty_batch</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="nv">EMPTY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="nv">ls_batch</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">ty_batch</span><span class="p">,</span>
+<span class="w">  </span><span class="nv">lv_mtype</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">bapi_mtype</span><span class="p">,</span>
+<span class="w">  </span><span class="nv">lv_msg</span><span class="w">   </span><span class="k">TYPE </span><span class="nv">bapi_msg</span><span class="p">.</span>
 
-<span class="w">    </span><span class="k">DATA</span><span class="p">:</span>
-<span class="w">      </span><span class="nv">lo_client_proxy</span><span class="w">             </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_client_proxy</span><span class="p">,</span>
-<span class="w">      </span><span class="nv">lo_create_request_changeset</span><span class="w"> </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_request_changeset</span><span class="p">,</span>
-<span class="w">      </span><span class="nv">lo_create_request</span><span class="w">           </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_request_create</span><span class="p">,</span>
-<span class="w">      </span><span class="nv">lo_create_response</span><span class="w">          </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_response_create</span><span class="p">,</span>
-<span class="w">      </span><span class="nv">lo_data_desc_node_root</span><span class="w">      </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_data_desc_node</span><span class="p">,</span>
-<span class="w">      </span><span class="nv">lo_data_desc_node_child</span><span class="w">     </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_data_desc_node</span><span class="p">,</span>
-<span class="w">      </span><span class="nv">lo_entity_list_resource</span><span class="w">     </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_resource_list</span><span class="p">.</span>
+<span class="k">DATA</span><span class="p">:</span>
+<span class="w">  </span><span class="nv">lo_client_proxy</span><span class="w">             </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_client_proxy</span><span class="p">,</span>
+<span class="w">  </span><span class="nv">lo_create_request_changeset</span><span class="w"> </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_request_changeset</span><span class="p">,</span>
+<span class="w">  </span><span class="nv">lo_create_request</span><span class="w">           </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_request_create</span><span class="p">,</span>
+<span class="w">  </span><span class="nv">lo_create_response</span><span class="w">          </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_response_create</span><span class="p">,</span>
+<span class="w">  </span><span class="nv">lo_data_desc_node_root</span><span class="w">      </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_data_desc_node</span><span class="p">,</span>
+<span class="w">  </span><span class="nv">lo_data_desc_node_child</span><span class="w">     </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_data_desc_node</span><span class="p">,</span>
+<span class="w">  </span><span class="nv">lo_entity_list_resource</span><span class="w">     </span><span class="k">TYPE REF TO</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_resource_list</span><span class="p">.</span>
 
-<span class="w">    </span><span class="k">TRY</span><span class="p">.</span>
-<span class="w">        </span><span class="c1">&quot; OData代理</span>
-<span class="w">        </span><span class="c1">&quot; ID和Version可以从S4HANA_OP_API包中查找</span>
-<span class="w">        </span><span class="k">DATA</span><span class="p">:</span><span class="w"> </span><span class="nv">ls_service_key</span><span class="w"> </span><span class="nv">TYPE</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_client_proxy</span><span class="o">=&gt;</span><span class="nv">ty_s_service_key_v2</span><span class="p">.</span>
-<span class="w">        </span><span class="nv">ls_service_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">VALUE</span><span class="w"> </span><span class="err">#</span><span class="p">(</span><span class="w"> </span><span class="nv">service_id</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;API_PRODUCT_SRV&#39;</span>
-<span class="w">                                  </span><span class="nv">service_version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;0001&#39;</span><span class="w"> </span><span class="p">).</span>
-<span class="w">        </span><span class="nv">lo_client_proxy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">cl_cp_client_proxy_fact</span><span class="o">=&gt;</span><span class="nf">create_v2_local_proxy</span><span class="p">(</span><span class="w"> </span><span class="nv">is_service_key</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nv">ls_service_key</span>
-<span class="w">                                                                                 </span><span class="nv">iv_do_write_traces</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">abap_true</span><span class="w"> </span><span class="p">).</span>
+<span class="k">TRY</span><span class="p">.</span>
+<span class="w">    </span><span class="c1">&quot; OData代理</span>
+<span class="w">    </span><span class="c1">&quot; ID和Version可以从S4HANA_OP_API包中查找</span>
+<span class="w">    </span><span class="k">DATA</span><span class="p">:</span><span class="w"> </span><span class="nv">ls_service_key</span><span class="w"> </span><span class="nv">TYPE</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">if_cp_client_proxy</span><span class="o">=&gt;</span><span class="nv">ty_s_service_key_v2</span><span class="p">.</span>
+<span class="w">    </span><span class="nv">ls_service_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">VALUE</span><span class="w"> </span><span class="err">#</span><span class="p">(</span><span class="w"> </span><span class="nv">service_id</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;API_PRODUCT_SRV&#39;</span>
+<span class="w">                              </span><span class="nv">service_version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;0001&#39;</span><span class="w"> </span><span class="p">).</span>
+<span class="w">    </span><span class="nv">lo_client_proxy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">cl_cp_client_proxy_fact</span><span class="o">=&gt;</span><span class="nf">create_v2_local_proxy</span><span class="p">(</span><span class="w"> </span><span class="nv">is_service_key</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nv">ls_service_key</span>
+<span class="w">                                                                            </span><span class="nv">iv_do_write_traces</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">abap_true</span><span class="w"> </span><span class="p">).</span>
 
-<span class="w">        </span><span class="c1">&quot; 创建资源对象</span>
-<span class="w">        </span><span class="nv">lo_entity_list_resource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lo_client_proxy</span><span class="o">-&gt;</span><span class="nf">create_resource_for_entity_set</span><span class="p">(</span><span class="w"> </span><span class="s1">&#39;A_Product&#39;</span><span class="w"> </span><span class="p">).</span>
+<span class="w">    </span><span class="c1">&quot; 创建资源对象</span>
+<span class="w">    </span><span class="nv">lo_entity_list_resource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lo_client_proxy</span><span class="o">-&gt;</span><span class="nf">create_resource_for_entity_set</span><span class="p">(</span><span class="w"> </span><span class="s1">&#39;A_Product&#39;</span><span class="w"> </span><span class="p">).</span>
 
-<span class="w">        </span><span class="k">LOOP AT </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="k">REFERENCE INTO</span><span class="w"> </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lr_datalake</span><span class="p">).</span>
-<span class="w">          </span><span class="c1">&quot; 还要回写消息，统一记录起来</span>
-<span class="w">          </span><span class="k">CLEAR</span><span class="w"> </span><span class="nv">ls_batch</span><span class="p">.</span>
-<span class="w">          </span><span class="nv">ls_batch</span><span class="o">-</span><span class="nv">data_ref</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="p">.</span>
-<span class="w">          </span><span class="k">INSERT</span><span class="w"> </span><span class="nv">ls_batch</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="nv">lt_batch</span><span class="w"> </span><span class="k">REFERENCE INTO</span><span class="w"> </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lr_batch</span><span class="p">).</span>
+<span class="w">    </span><span class="k">LOOP AT </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="k">REFERENCE INTO</span><span class="w"> </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lr_datalake</span><span class="p">).</span>
+<span class="w">      </span><span class="c1">&quot; 还要回写消息，统一记录起来</span>
+<span class="w">      </span><span class="k">CLEAR</span><span class="w"> </span><span class="nv">ls_batch</span><span class="p">.</span>
+<span class="w">      </span><span class="nv">ls_batch</span><span class="o">-</span><span class="nv">data_ref</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="p">.</span>
+<span class="w">      </span><span class="k">INSERT</span><span class="w"> </span><span class="nv">ls_batch</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="nv">lt_batch</span><span class="w"> </span><span class="k">REFERENCE INTO</span><span class="w"> </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lr_batch</span><span class="p">).</span>
 
-<span class="w">          </span><span class="c1">&quot; 基础视图</span>
-<span class="w">          </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">request_body</span><span class="o">-</span><span class="nv">producttype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;FERT&#39;</span><span class="p">.</span>
-<span class="w">          </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">request_body</span><span class="o">-</span><span class="nv">industrysector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;M&#39;</span><span class="p">.</span>
-<span class="w">          </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">request_body</span><span class="o">-</span><span class="nv">baseunit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;EA&#39;</span><span class="p">.</span>
-<span class="w">          </span><span class="c1">&quot; 物料描述</span>
-<span class="w">          </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">request_body</span><span class="o">-</span><span class="nv">to_description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">VALUE</span><span class="w"> </span><span class="err">#</span><span class="p">(</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="k">language</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;1&#39;</span><span class="w"> </span><span class="nv">productdescription</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">productname</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">).</span>
+<span class="w">      </span><span class="c1">&quot; 基础视图</span>
+<span class="w">      </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">request_body</span><span class="o">-</span><span class="nv">producttype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;FERT&#39;</span><span class="p">.</span>
+<span class="w">      </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">request_body</span><span class="o">-</span><span class="nv">industrysector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;M&#39;</span><span class="p">.</span>
+<span class="w">      </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">request_body</span><span class="o">-</span><span class="nv">baseunit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;EA&#39;</span><span class="p">.</span>
+<span class="w">      </span><span class="c1">&quot; 物料描述</span>
+<span class="w">      </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">request_body</span><span class="o">-</span><span class="nv">to_description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">VALUE</span><span class="w"> </span><span class="err">#</span><span class="p">(</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="k">language</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;1&#39;</span><span class="w"> </span><span class="nv">productdescription</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">productname</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">).</span>
 
-<span class="w">          </span><span class="c1">&quot;</span>
-<span class="w">          </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">request</span><span class="w"> </span><span class="o">=</span>
-<span class="w">          </span><span class="nv">lo_create_request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lo_entity_list_resource</span><span class="o">-&gt;</span><span class="nf">create_request_for_create</span><span class="p">(</span><span class="w"> </span><span class="p">).</span>
-<span class="w">          </span><span class="c1">&quot; 节点描述</span>
-<span class="w">          </span><span class="nv">lo_data_desc_node_root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lo_create_request</span><span class="o">-&gt;</span><span class="nf">create_data_descripton_node</span><span class="p">(</span><span class="w"> </span><span class="p">).</span>
-<span class="w">          </span><span class="nv">lo_data_desc_node_child</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lo_data_desc_node_root</span><span class="o">-&gt;</span><span class="nf">add_child</span><span class="p">(</span><span class="w"> </span><span class="s1">&#39;TO_DESCRIPTION&#39;</span><span class="w"> </span><span class="p">).</span>
+<span class="w">      </span><span class="c1">&quot;</span>
+<span class="w">      </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">request</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="nv">lo_create_request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lo_entity_list_resource</span><span class="o">-&gt;</span><span class="nf">create_request_for_create</span><span class="p">(</span><span class="w"> </span><span class="p">).</span>
+<span class="w">      </span><span class="c1">&quot; 节点描述</span>
+<span class="w">      </span><span class="nv">lo_data_desc_node_root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lo_create_request</span><span class="o">-&gt;</span><span class="nf">create_data_descripton_node</span><span class="p">(</span><span class="w"> </span><span class="p">).</span>
+<span class="w">      </span><span class="nv">lo_data_desc_node_child</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lo_data_desc_node_root</span><span class="o">-&gt;</span><span class="nf">add_child</span><span class="p">(</span><span class="w"> </span><span class="s1">&#39;TO_DESCRIPTION&#39;</span><span class="w"> </span><span class="p">).</span>
 
-<span class="w">          </span><span class="nv">lo_create_request</span><span class="o">-&gt;</span><span class="nf">set_deep_business_data</span><span class="p">(</span><span class="w"> </span><span class="nv">is_business_data</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">request_body</span>
-<span class="w">                                                     </span><span class="nv">io_data_description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lo_data_desc_node_root</span><span class="w"> </span><span class="p">).</span>
-<span class="w">          </span><span class="nv">lo_create_request</span><span class="o">-&gt;</span><span class="nf">execute</span><span class="p">(</span><span class="w"> </span><span class="p">).</span>
-<span class="w">        </span><span class="k">ENDLOOP</span><span class="p">.</span>
+<span class="w">      </span><span class="nv">lo_create_request</span><span class="o">-&gt;</span><span class="nf">set_deep_business_data</span><span class="p">(</span><span class="w"> </span><span class="nv">is_business_data</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">request_body</span>
+<span class="w">                                                </span><span class="nv">io_data_description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lo_data_desc_node_root</span><span class="w"> </span><span class="p">).</span>
+<span class="w">      </span><span class="nv">lo_create_request</span><span class="o">-&gt;</span><span class="nf">execute</span><span class="p">(</span><span class="w"> </span><span class="p">).</span>
+<span class="w">    </span><span class="k">ENDLOOP</span><span class="p">.</span>
 
-<span class="w">        </span><span class="c1">&quot; 回写执行消息</span>
-<span class="w">        </span><span class="k">LOOP AT </span><span class="nv">lt_batch</span><span class="w"> </span><span class="k">REFERENCE INTO</span><span class="w"> </span><span class="nv">lr_batch</span><span class="p">.</span>
-<span class="w">          </span><span class="k">TRY</span><span class="p">.</span>
-<span class="w">              </span><span class="nv">lo_create_request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">request</span><span class="o">-&gt;</span><span class="nf">check_execution</span><span class="p">(</span><span class="w"> </span><span class="p">).</span>
-<span class="w">              </span><span class="k">IF</span><span class="w"> </span><span class="nv">lo_create_request</span><span class="w"> </span><span class="ow">IS BOUND</span><span class="p">.</span>
-<span class="w">                </span><span class="nv">lo_create_response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lo_create_request</span><span class="o">-&gt;</span><span class="nf">get_response</span><span class="p">(</span><span class="w">  </span><span class="p">).</span>
-<span class="w">                </span><span class="nv">lo_create_response</span><span class="o">-&gt;</span><span class="nf">get_business_data</span><span class="p">(</span><span class="w"> </span><span class="k">IMPORTING</span><span class="w"> </span><span class="nv">es_business_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">response_body</span><span class="w"> </span><span class="p">).</span>
-<span class="w">              </span><span class="k">ENDIF</span><span class="p">.</span>
-<span class="w">            </span><span class="k">CATCH</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">cx_cp_remote</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lx_cp_remote</span><span class="p">).</span>
-<span class="w">              </span><span class="c1">&quot; HTTP Status Code - {@link /IWBEP/CX_CP_REMOTE.data:HTTP_STATUS_CODE}</span>
-<span class="w">              </span><span class="c1">&quot; HTTP Status Reason Message - {@link /IWBEP/CX_CP_REMOTE.data:HTTP_STATUS_MESSAGE}</span>
-<span class="w">              </span><span class="c1">&quot; OData Error Details - {@link /IWBEP/CX_CP_REMOTE.data:S_ODATA_ERROR}</span>
-<span class="w">              </span><span class="c1">&quot; 还要判断HTTP状态等，挺麻烦的，先简单弄下</span>
-<span class="w">              </span><span class="nv">lv_mtype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;E&#39;</span><span class="p">.</span>
-<span class="w">              </span><span class="nv">lv_msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lx_cp_remote</span><span class="o">-&gt;</span><span class="nv">s_odata_error</span><span class="o">-</span><span class="nv">message</span><span class="p">.</span>
-<span class="w">          </span><span class="k">ENDTRY</span><span class="p">.</span>
-
-<span class="w">          </span><span class="k">IF</span><span class="w"> </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">response_body</span><span class="o">-</span><span class="nv">product</span><span class="w"> </span><span class="ow">IS NOT INITIAL</span><span class="p">.</span>
-<span class="w">            </span><span class="nv">lr_datalake</span><span class="w"> </span><span class="o">?=</span><span class="w"> </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">data_ref</span><span class="p">.</span>
-<span class="w">            </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">response_body</span><span class="o">-</span><span class="nv">product</span><span class="p">.</span>
-<span class="w">            </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">mtype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;S&#39;</span><span class="p">.</span>
-<span class="w">          </span><span class="k">ELSE</span><span class="p">.</span>
-<span class="w">            </span><span class="nv">lr_datalake</span><span class="w"> </span><span class="o">?=</span><span class="w"> </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">data_ref</span><span class="p">.</span>
-<span class="w">            </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">mtype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lv_mtype</span><span class="p">.</span>
-<span class="w">            </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lv_msg</span><span class="p">.</span>
+<span class="w">    </span><span class="c1">&quot; 回写执行消息</span>
+<span class="w">    </span><span class="k">LOOP AT </span><span class="nv">lt_batch</span><span class="w"> </span><span class="k">REFERENCE INTO</span><span class="w"> </span><span class="nv">lr_batch</span><span class="p">.</span>
+<span class="w">      </span><span class="k">TRY</span><span class="p">.</span>
+<span class="w">          </span><span class="nv">lo_create_request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">request</span><span class="o">-&gt;</span><span class="nf">check_execution</span><span class="p">(</span><span class="w"> </span><span class="p">).</span>
+<span class="w">          </span><span class="k">IF</span><span class="w"> </span><span class="nv">lo_create_request</span><span class="w"> </span><span class="ow">IS BOUND</span><span class="p">.</span>
+<span class="w">            </span><span class="nv">lo_create_response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lo_create_request</span><span class="o">-&gt;</span><span class="nf">get_response</span><span class="p">(</span><span class="w">  </span><span class="p">).</span>
+<span class="w">            </span><span class="nv">lo_create_response</span><span class="o">-&gt;</span><span class="nf">get_business_data</span><span class="p">(</span><span class="w"> </span><span class="k">IMPORTING</span><span class="w"> </span><span class="nv">es_business_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">response_body</span><span class="w"> </span><span class="p">).</span>
 <span class="w">          </span><span class="k">ENDIF</span><span class="p">.</span>
-<span class="w">        </span><span class="k">ENDLOOP</span><span class="p">.</span>
+<span class="w">        </span><span class="k">CATCH</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">cx_cp_remote</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lx_cp_remote</span><span class="p">).</span>
+<span class="w">          </span><span class="c1">&quot; HTTP Status Code - {@link /IWBEP/CX_CP_REMOTE.data:HTTP_STATUS_CODE}</span>
+<span class="w">          </span><span class="c1">&quot; HTTP Status Reason Message - {@link /IWBEP/CX_CP_REMOTE.data:HTTP_STATUS_MESSAGE}</span>
+<span class="w">          </span><span class="c1">&quot; OData Error Details - {@link /IWBEP/CX_CP_REMOTE.data:S_ODATA_ERROR}</span>
+<span class="w">          </span><span class="c1">&quot; 还要判断HTTP状态等，挺麻烦的，先简单弄下</span>
+<span class="w">          </span><span class="nv">lv_mtype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;E&#39;</span><span class="p">.</span>
+<span class="w">          </span><span class="nv">lv_msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lx_cp_remote</span><span class="o">-&gt;</span><span class="nv">s_odata_error</span><span class="o">-</span><span class="nv">message</span><span class="p">.</span>
+<span class="w">      </span><span class="k">ENDTRY</span><span class="p">.</span>
 
-<span class="w">      </span><span class="k">CATCH</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">cx_gateway</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lx_gateway</span><span class="p">).</span>
-<span class="w">        </span><span class="nv">lv_msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lx_gateway</span><span class="o">-&gt;</span><span class="nf">get_text</span><span class="p">(</span><span class="w"> </span><span class="p">).</span>
-<span class="w">        </span><span class="nv">_write_error</span><span class="p">(</span><span class="w"> </span><span class="k">EXPORTING</span><span class="w"> </span><span class="nv">iv_msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lv_msg</span><span class="w"> </span><span class="k">CHANGING</span><span class="w"> </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="p">).</span>
-<span class="w">        </span><span class="k">RETURN</span><span class="p">.</span>
-<span class="w">    </span><span class="k">ENDTRY</span><span class="p">.</span>
+<span class="w">      </span><span class="k">IF</span><span class="w"> </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">response_body</span><span class="o">-</span><span class="nv">product</span><span class="w"> </span><span class="ow">IS NOT INITIAL</span><span class="p">.</span>
+<span class="w">        </span><span class="nv">lr_datalake</span><span class="w"> </span><span class="o">?=</span><span class="w"> </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">data_ref</span><span class="p">.</span>
+<span class="w">        </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">response_body</span><span class="o">-</span><span class="nv">product</span><span class="p">.</span>
+<span class="w">        </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">mtype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;S&#39;</span><span class="p">.</span>
+<span class="w">      </span><span class="k">ELSE</span><span class="p">.</span>
+<span class="w">        </span><span class="nv">lr_datalake</span><span class="w"> </span><span class="o">?=</span><span class="w"> </span><span class="nv">lr_batch</span><span class="o">-&gt;</span><span class="nv">data_ref</span><span class="p">.</span>
+<span class="w">        </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">mtype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lv_mtype</span><span class="p">.</span>
+<span class="w">        </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lv_msg</span><span class="p">.</span>
+<span class="w">      </span><span class="k">ENDIF</span><span class="p">.</span>
+<span class="w">    </span><span class="k">ENDLOOP</span><span class="p">.</span>
+
+<span class="w">  </span><span class="k">CATCH</span><span class="w"> </span><span class="p">/</span><span class="nv">iwbep</span><span class="p">/</span><span class="nv">cx_gateway</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lx_gateway</span><span class="p">).</span>
+<span class="w">    </span><span class="nv">lv_msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lx_gateway</span><span class="o">-&gt;</span><span class="nf">get_text</span><span class="p">(</span><span class="w"> </span><span class="p">).</span>
+<span class="w">    </span><span class="nv">_write_error</span><span class="p">(</span><span class="w"> </span><span class="k">EXPORTING</span><span class="w"> </span><span class="nv">iv_msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lv_msg</span><span class="w"> </span><span class="k">CHANGING</span><span class="w"> </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="p">).</span>
+<span class="w">    </span><span class="k">RETURN</span><span class="p">.</span>
+<span class="k">ENDTRY</span><span class="p">.</span>
 </code></pre></div></td></tr></table></div>
 
 </details>
@@ -4089,127 +4091,127 @@
 <span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
-<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="c1">&quot; 演示用，假设这是程序的入参和出参</span>
-<span class="w">    </span><span class="k">TYPES</span><span class="p">:</span>
-<span class="w">      </span><span class="k">BEGIN OF</span><span class="w"> </span><span class="nv">ty_datalake</span><span class="p">,</span>
-<span class="w">        </span><span class="nv">matnr</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">mara</span><span class="o">-</span><span class="nv">matnr</span><span class="p">,</span>
-<span class="w">        </span><span class="nv">maktx</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">makt</span><span class="o">-</span><span class="nv">maktx</span><span class="p">,</span>
-<span class="w">      </span><span class="k">END OF</span><span class="w"> </span><span class="nv">ty_datalake</span><span class="p">.</span>
-<span class="w">    </span><span class="k">TYPES</span><span class="w"> </span><span class="nv">tt_datalake</span><span class="w"> </span><span class="k">TYPE STANDARD TABLE OF</span><span class="w"> </span><span class="nv">ty_datalake</span><span class="p">.</span>
+<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">&quot; 演示用，假设这是程序的入参和出参</span>
+<span class="k">TYPES</span><span class="p">:</span>
+<span class="w">  </span><span class="k">BEGIN OF</span><span class="w"> </span><span class="nv">ty_datalake</span><span class="p">,</span>
+<span class="w">    </span><span class="nv">matnr</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">mara</span><span class="o">-</span><span class="nv">matnr</span><span class="p">,</span>
+<span class="w">    </span><span class="nv">maktx</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">makt</span><span class="o">-</span><span class="nv">maktx</span><span class="p">,</span>
+<span class="w">  </span><span class="k">END OF</span><span class="w"> </span><span class="nv">ty_datalake</span><span class="p">.</span>
+<span class="k">TYPES</span><span class="w"> </span><span class="nv">tt_datalake</span><span class="w"> </span><span class="k">TYPE STANDARD TABLE OF</span><span class="w"> </span><span class="nv">ty_datalake</span><span class="p">.</span>
 
 <span class="c1">*&amp;---------------------------------------------------------------------*</span>
 <span class="c1">*&amp; 使用内部API（cl_cmd_prod_data_api）创建物料，代码类似以前的BAPI</span>
 <span class="c1">*&amp;---------------------------------------------------------------------*</span>
-<span class="w">    </span><span class="k">DATA</span><span class="p">:</span><span class="w"> </span><span class="nv">lt_unified_api_data</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">cmd_prd_t_unified_prod_data</span><span class="p">,</span>
-<span class="w">          </span><span class="nv">ls_unified_api_data</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">cmd_prd_s_unified_prod_data</span><span class="p">,</span>
-<span class="w">          </span><span class="nv">lt_prodwise_output</span><span class="w">  </span><span class="k">TYPE </span><span class="nv">cl_cmd_prod_data_api</span><span class="o">=&gt;</span><span class="nv">if_cmd_product_maint_api~tt_pmd_output</span><span class="p">,</span>
-<span class="w">          </span><span class="nv">lv_has_error</span><span class="w">        </span><span class="k">TYPE </span><span class="nv">boole_d</span><span class="w"> </span><span class="k">VALUE</span><span class="w"> </span><span class="nv">abap_false</span><span class="p">,</span>
-<span class="w">          </span><span class="nv">lv_product</span><span class="w">          </span><span class="k">TYPE </span><span class="nv">productnumber</span><span class="p">,</span>
-<span class="w">          </span><span class="nv">lv_mtype</span><span class="w">            </span><span class="k">TYPE </span><span class="nv">bapi_mtype</span><span class="p">,</span>
-<span class="w">          </span><span class="nv">lv_msg</span><span class="w">              </span><span class="k">TYPE </span><span class="nv">bapi_msg</span><span class="p">.</span>
+<span class="k">DATA</span><span class="p">:</span><span class="w"> </span><span class="nv">lt_unified_api_data</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">cmd_prd_t_unified_prod_data</span><span class="p">,</span>
+<span class="w">      </span><span class="nv">ls_unified_api_data</span><span class="w"> </span><span class="k">TYPE </span><span class="nv">cmd_prd_s_unified_prod_data</span><span class="p">,</span>
+<span class="w">      </span><span class="nv">lt_prodwise_output</span><span class="w">  </span><span class="k">TYPE </span><span class="nv">cl_cmd_prod_data_api</span><span class="o">=&gt;</span><span class="nv">if_cmd_product_maint_api~tt_pmd_output</span><span class="p">,</span>
+<span class="w">      </span><span class="nv">lv_has_error</span><span class="w">        </span><span class="k">TYPE </span><span class="nv">boole_d</span><span class="w"> </span><span class="k">VALUE</span><span class="w"> </span><span class="nv">abap_false</span><span class="p">,</span>
+<span class="w">      </span><span class="nv">lv_product</span><span class="w">          </span><span class="k">TYPE </span><span class="nv">productnumber</span><span class="p">,</span>
+<span class="w">      </span><span class="nv">lv_mtype</span><span class="w">            </span><span class="k">TYPE </span><span class="nv">bapi_mtype</span><span class="p">,</span>
+<span class="w">      </span><span class="nv">lv_msg</span><span class="w">              </span><span class="k">TYPE </span><span class="nv">bapi_msg</span><span class="p">.</span>
 
 <span class="c1">*&amp;---------------------------------------------------------------------*</span>
 <span class="c1">*&amp; 数据填充</span>
 <span class="c1">*&amp;---------------------------------------------------------------------*</span>
-<span class="w">    </span><span class="k">LOOP AT </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="k">REFERENCE INTO</span><span class="w"> </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lr_datalake</span><span class="p">).</span>
-<span class="w">      </span><span class="k">CLEAR</span><span class="w"> </span><span class="nv">ls_unified_api_data</span><span class="p">.</span>
+<span class="k">LOOP AT </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="k">REFERENCE INTO</span><span class="w"> </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lr_datalake</span><span class="p">).</span>
+<span class="w">  </span><span class="k">CLEAR</span><span class="w"> </span><span class="nv">ls_unified_api_data</span><span class="p">.</span>
 
-<span class="w">      </span><span class="c1">&quot; 对于非外部给号物料，需设置S_TEMP_NUM=X</span>
-<span class="w">      </span><span class="k">IF</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">product</span><span class="w"> </span><span class="ow">IS INITIAL</span><span class="p">.</span>
-<span class="w">        </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">|</span><span class="s1">%</span><span class="p">{</span><span class="w"> </span><span class="nv">sy</span><span class="o">-</span><span class="nv">tabix</span><span class="w"> </span><span class="p">}|.</span>
-<span class="w">        </span><span class="nv">ls_unified_api_data</span><span class="o">-</span><span class="nv">s_temp_num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">abap_true</span><span class="p">.</span>
-<span class="w">      </span><span class="k">ENDIF</span><span class="p">.</span>
+<span class="w">  </span><span class="c1">&quot; 对于非外部给号物料，需设置S_TEMP_NUM=X</span>
+<span class="w">  </span><span class="k">IF</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">product</span><span class="w"> </span><span class="ow">IS INITIAL</span><span class="p">.</span>
+<span class="w">    </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">|</span><span class="s1">%</span><span class="p">{</span><span class="w"> </span><span class="nv">sy</span><span class="o">-</span><span class="nv">tabix</span><span class="w"> </span><span class="p">}|.</span>
+<span class="w">    </span><span class="nv">ls_unified_api_data</span><span class="o">-</span><span class="nv">s_temp_num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">abap_true</span><span class="p">.</span>
+<span class="w">  </span><span class="k">ENDIF</span><span class="p">.</span>
 
 <span class="c1">*&amp;---------------------------------------------------------------------*</span>
 <span class="c1">*&amp; 物料基础视图</span>
 <span class="c1">*&amp;---------------------------------------------------------------------*</span>
-<span class="w">      </span><span class="nv">ls_unified_api_data</span><span class="o">-</span><span class="nv">product</span><span class="o">-</span><span class="nv">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">product</span><span class="p">.</span>
-<span class="w">      </span><span class="nv">ls_unified_api_data</span><span class="o">-</span><span class="nv">product</span><span class="o">-</span><span class="nv">productdescription</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">productname</span><span class="p">.</span>
-<span class="w">      </span><span class="nv">ls_unified_api_data</span><span class="o">-</span><span class="nv">product</span><span class="o">-</span><span class="nv">industrysector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;M&#39;</span><span class="p">.</span>
-<span class="w">      </span><span class="nv">ls_unified_api_data</span><span class="o">-</span><span class="nv">product</span><span class="o">-</span><span class="nv">producttype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;FERT&#39;</span><span class="p">.</span>
-<span class="w">      </span><span class="nv">ls_unified_api_data</span><span class="o">-</span><span class="nv">product</span><span class="o">-</span><span class="nv">baseunit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;11&#39;</span><span class="p">.</span><span class="w"> </span><span class="c1">&quot; 因为不想在测试中创建物料，这里随便给个错误值</span>
+<span class="w">  </span><span class="nv">ls_unified_api_data</span><span class="o">-</span><span class="nv">product</span><span class="o">-</span><span class="nv">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">product</span><span class="p">.</span>
+<span class="w">  </span><span class="nv">ls_unified_api_data</span><span class="o">-</span><span class="nv">product</span><span class="o">-</span><span class="nv">productdescription</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">productname</span><span class="p">.</span>
+<span class="w">  </span><span class="nv">ls_unified_api_data</span><span class="o">-</span><span class="nv">product</span><span class="o">-</span><span class="nv">industrysector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;M&#39;</span><span class="p">.</span>
+<span class="w">  </span><span class="nv">ls_unified_api_data</span><span class="o">-</span><span class="nv">product</span><span class="o">-</span><span class="nv">producttype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;FERT&#39;</span><span class="p">.</span>
+<span class="w">  </span><span class="nv">ls_unified_api_data</span><span class="o">-</span><span class="nv">product</span><span class="o">-</span><span class="nv">baseunit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;11&#39;</span><span class="p">.</span><span class="w"> </span><span class="c1">&quot; 因为不想在测试中创建物料，这里随便给个错误值</span>
 
 <span class="c1">*&amp;---------------------------------------------------------------------*</span>
 <span class="c1">*&amp; 物料描述</span>
 <span class="c1">*&amp;---------------------------------------------------------------------*</span>
-<span class="w">      </span><span class="k">DATA</span><span class="w"> </span><span class="nv">ls_prd_descr</span><span class="w"> </span><span class="k">LIKE LINE OF</span><span class="w"> </span><span class="nv">ls_unified_api_data</span><span class="o">-</span><span class="nv">prd_descr</span><span class="p">.</span>
-<span class="w">      </span><span class="k">CLEAR</span><span class="w"> </span><span class="nv">ls_prd_descr</span><span class="p">.</span>
-<span class="w">      </span><span class="nv">ls_prd_descr</span><span class="o">-</span><span class="nv">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">product</span><span class="p">.</span>
-<span class="w">      </span><span class="nv">ls_prd_descr</span><span class="o">-</span><span class="nv">language</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;1&#39;</span><span class="p">.</span>
-<span class="w">      </span><span class="nv">ls_prd_descr</span><span class="o">-</span><span class="nv">productdescription</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">productname</span><span class="p">.</span>
-<span class="w">      </span><span class="k">INSERT</span><span class="w"> </span><span class="nv">ls_prd_descr</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="nv">ls_unified_api_data</span><span class="o">-</span><span class="nv">prd_descr</span><span class="p">.</span>
+<span class="w">  </span><span class="k">DATA</span><span class="w"> </span><span class="nv">ls_prd_descr</span><span class="w"> </span><span class="k">LIKE LINE OF</span><span class="w"> </span><span class="nv">ls_unified_api_data</span><span class="o">-</span><span class="nv">prd_descr</span><span class="p">.</span>
+<span class="w">  </span><span class="k">CLEAR</span><span class="w"> </span><span class="nv">ls_prd_descr</span><span class="p">.</span>
+<span class="w">  </span><span class="nv">ls_prd_descr</span><span class="o">-</span><span class="nv">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">product</span><span class="p">.</span>
+<span class="w">  </span><span class="nv">ls_prd_descr</span><span class="o">-</span><span class="nv">language</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;1&#39;</span><span class="p">.</span>
+<span class="w">  </span><span class="nv">ls_prd_descr</span><span class="o">-</span><span class="nv">productdescription</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">productname</span><span class="p">.</span>
+<span class="w">  </span><span class="k">INSERT</span><span class="w"> </span><span class="nv">ls_prd_descr</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="nv">ls_unified_api_data</span><span class="o">-</span><span class="nv">prd_descr</span><span class="p">.</span>
 
-<span class="w">      </span><span class="k">INSERT</span><span class="w"> </span><span class="nv">ls_unified_api_data</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="nv">lt_unified_api_data</span><span class="p">.</span>
-<span class="w">    </span><span class="k">ENDLOOP</span><span class="p">.</span>
+<span class="w">  </span><span class="k">INSERT</span><span class="w"> </span><span class="nv">ls_unified_api_data</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="nv">lt_unified_api_data</span><span class="p">.</span>
+<span class="k">ENDLOOP</span><span class="p">.</span>
 
 <span class="c1">*&amp;---------------------------------------------------------------------*</span>
 <span class="c1">*&amp; 复制标准代码，价格优先根据科目价格</span>
 <span class="c1">*&amp;---------------------------------------------------------------------*</span>
-<span class="w">    </span><span class="k">LOOP AT </span><span class="nv">lt_unified_api_data</span><span class="w"> </span><span class="k">ASSIGNING</span><span class="w"> </span><span class="k">FIELD-SYMBOL</span><span class="p">(</span><span class="nv">&lt;ls_unified_api_data&gt;</span><span class="p">).</span>
-<span class="w">      </span><span class="nv">LOOP</span><span class="w"> </span><span class="k">AT</span><span class="w"> </span><span class="nv">&lt;ls_unified_api_data&gt;</span><span class="o">-</span><span class="nv">ml_prices</span><span class="w"> </span><span class="k">ASSIGNING</span><span class="w"> </span><span class="k">FIELD-SYMBOL</span><span class="p">(</span><span class="nv">&lt;ls_ml_prices&gt;</span><span class="p">).</span>
-<span class="w">        </span><span class="k">TRY</span><span class="w"> </span><span class="p">.</span>
-<span class="w">            </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lr_ml_account</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">REF</span><span class="w"> </span><span class="err">#</span><span class="p">(</span><span class="w"> </span><span class="nv">&lt;ls_unified_api_data&gt;</span><span class="o">-</span><span class="nv">ml_account</span><span class="p">[</span><span class="w"> </span><span class="nv">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">&lt;ls_ml_prices&gt;</span><span class="o">-</span><span class="nv">product</span>
-<span class="w">                                                                           </span><span class="nv">valuationarea</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">&lt;ls_ml_prices&gt;</span><span class="o">-</span><span class="nv">valuationarea</span>
-<span class="w">                                                                           </span><span class="nv">valuationtype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">&lt;ls_ml_prices&gt;</span><span class="o">-</span><span class="nv">valuationtype</span>
-<span class="w">                                                                           </span><span class="nv">currencyrole</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">&lt;ls_ml_prices&gt;</span><span class="o">-</span><span class="nv">currencyrole</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">).</span>
-<span class="w">            </span><span class="nv">&lt;ls_ml_prices&gt;</span><span class="o">-</span><span class="nv">priceunitqty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_ml_account</span><span class="o">-&gt;</span><span class="nv">priceunitqty</span><span class="p">.</span>
-<span class="w">          </span><span class="k">CATCH</span><span class="w"> </span><span class="nv">cx_sy_itab_line_not_found</span><span class="p">.</span>
-<span class="w">        </span><span class="k">ENDTRY</span><span class="p">.</span>
-<span class="w">      </span><span class="k">ENDLOOP</span><span class="p">.</span>
-<span class="w">    </span><span class="k">ENDLOOP</span><span class="p">.</span>
+<span class="k">LOOP AT </span><span class="nv">lt_unified_api_data</span><span class="w"> </span><span class="k">ASSIGNING</span><span class="w"> </span><span class="k">FIELD-SYMBOL</span><span class="p">(</span><span class="nv">&lt;ls_unified_api_data&gt;</span><span class="p">).</span>
+<span class="w">  </span><span class="nv">LOOP</span><span class="w"> </span><span class="k">AT</span><span class="w"> </span><span class="nv">&lt;ls_unified_api_data&gt;</span><span class="o">-</span><span class="nv">ml_prices</span><span class="w"> </span><span class="k">ASSIGNING</span><span class="w"> </span><span class="k">FIELD-SYMBOL</span><span class="p">(</span><span class="nv">&lt;ls_ml_prices&gt;</span><span class="p">).</span>
+<span class="w">    </span><span class="k">TRY</span><span class="w"> </span><span class="p">.</span>
+<span class="w">        </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lr_ml_account</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">REF</span><span class="w"> </span><span class="err">#</span><span class="p">(</span><span class="w"> </span><span class="nv">&lt;ls_unified_api_data&gt;</span><span class="o">-</span><span class="nv">ml_account</span><span class="p">[</span><span class="w"> </span><span class="nv">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">&lt;ls_ml_prices&gt;</span><span class="o">-</span><span class="nv">product</span>
+<span class="w">                                                                        </span><span class="nv">valuationarea</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">&lt;ls_ml_prices&gt;</span><span class="o">-</span><span class="nv">valuationarea</span>
+<span class="w">                                                                        </span><span class="nv">valuationtype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">&lt;ls_ml_prices&gt;</span><span class="o">-</span><span class="nv">valuationtype</span>
+<span class="w">                                                                        </span><span class="nv">currencyrole</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">&lt;ls_ml_prices&gt;</span><span class="o">-</span><span class="nv">currencyrole</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">).</span>
+<span class="w">        </span><span class="nv">&lt;ls_ml_prices&gt;</span><span class="o">-</span><span class="nv">priceunitqty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lr_ml_account</span><span class="o">-&gt;</span><span class="nv">priceunitqty</span><span class="p">.</span>
+<span class="w">      </span><span class="k">CATCH</span><span class="w"> </span><span class="nv">cx_sy_itab_line_not_found</span><span class="p">.</span>
+<span class="w">    </span><span class="k">ENDTRY</span><span class="p">.</span>
+<span class="w">  </span><span class="k">ENDLOOP</span><span class="p">.</span>
+<span class="k">ENDLOOP</span><span class="p">.</span>
 
 <span class="c1">*&amp;---------------------------------------------------------------------*</span>
 <span class="c1">*&amp; API调用</span>
 <span class="c1">*&amp;---------------------------------------------------------------------*</span>
-<span class="w">    </span><span class="nv">cl_cmd_prod_data_api</span><span class="o">=&gt;</span><span class="nf">get_instance</span><span class="p">(</span>
+<span class="nv">cl_cmd_prod_data_api</span><span class="o">=&gt;</span><span class="nf">get_instance</span><span class="p">(</span>
+<span class="w">  </span><span class="k">IMPORTING</span>
+<span class="w">    </span><span class="nv">eo_cmd_prod_data_api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lo_unified_prod_data_api</span><span class="p">)</span>
+<span class="p">).</span>
+
+<span class="k">TRY</span><span class="w"> </span><span class="p">.</span>
+<span class="w">    </span><span class="nv">lo_unified_prod_data_api</span><span class="o">-&gt;</span><span class="nf">if_cmd_product_maint_api~check</span><span class="p">(</span>
 <span class="w">      </span><span class="k">IMPORTING</span>
-<span class="w">        </span><span class="nv">eo_cmd_prod_data_api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lo_unified_prod_data_api</span><span class="p">)</span>
+<span class="w">        </span><span class="nv">et_prodwise_output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lt_prodwise_output</span>
+<span class="w">      </span><span class="k">CHANGING</span>
+<span class="w">        </span><span class="nv">ct_data</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="nv">lt_unified_api_data</span>
 <span class="w">    </span><span class="p">).</span>
+<span class="w">  </span><span class="k">CATCH</span><span class="w"> </span><span class="nv">cx_cmd_product_maint_api</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lx_cmd_product_maint_api</span><span class="p">).</span>
+<span class="w">    </span><span class="nv">lv_msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lx_cmd_product_maint_api</span><span class="o">-&gt;</span><span class="nf">if_message~get_text</span><span class="p">(</span><span class="w"> </span><span class="p">).</span>
+<span class="w">    </span><span class="nv">_write_error</span><span class="p">(</span><span class="w"> </span><span class="k">EXPORTING</span><span class="w"> </span><span class="nv">iv_msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lv_msg</span><span class="w"> </span><span class="k">CHANGING</span><span class="w"> </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="p">).</span>
+<span class="w">    </span><span class="k">RETURN</span><span class="p">.</span>
+<span class="k">ENDTRY</span><span class="p">.</span>
 
-<span class="w">    </span><span class="k">TRY</span><span class="w"> </span><span class="p">.</span>
-<span class="w">        </span><span class="nv">lo_unified_prod_data_api</span><span class="o">-&gt;</span><span class="nf">if_cmd_product_maint_api~check</span><span class="p">(</span>
-<span class="w">          </span><span class="k">IMPORTING</span>
-<span class="w">            </span><span class="nv">et_prodwise_output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lt_prodwise_output</span>
-<span class="w">          </span><span class="k">CHANGING</span>
-<span class="w">            </span><span class="nv">ct_data</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="nv">lt_unified_api_data</span>
-<span class="w">        </span><span class="p">).</span>
-<span class="w">      </span><span class="k">CATCH</span><span class="w"> </span><span class="nv">cx_cmd_product_maint_api</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lx_cmd_product_maint_api</span><span class="p">).</span>
-<span class="w">        </span><span class="nv">lv_msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lx_cmd_product_maint_api</span><span class="o">-&gt;</span><span class="nf">if_message~get_text</span><span class="p">(</span><span class="w"> </span><span class="p">).</span>
-<span class="w">        </span><span class="nv">_write_error</span><span class="p">(</span><span class="w"> </span><span class="k">EXPORTING</span><span class="w"> </span><span class="nv">iv_msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lv_msg</span><span class="w"> </span><span class="k">CHANGING</span><span class="w"> </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="p">).</span>
-<span class="w">        </span><span class="k">RETURN</span><span class="p">.</span>
-<span class="w">    </span><span class="k">ENDTRY</span><span class="p">.</span>
-
-<span class="w">    </span><span class="k">LOOP AT </span><span class="nv">lt_prodwise_output</span><span class="w"> </span><span class="k">ASSIGNING</span><span class="w"> </span><span class="k">FIELD-SYMBOL</span><span class="p">(</span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="p">).</span>
-<span class="w">      </span><span class="k">IF</span><span class="w"> </span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="o">-</span><span class="nv">enqueue_failed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">abap_true</span><span class="w"> </span><span class="ow">OR</span><span class="w"> </span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="o">-</span><span class="nv">update_failed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">abap_true</span><span class="p">.</span>
-<span class="w">        </span><span class="nv">lv_has_error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">abap_true</span><span class="p">.</span>
-<span class="w">        </span><span class="k">READ</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="k">REFERENCE INTO</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="nv">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="o">-</span><span class="nv">product</span><span class="p">.</span>
-<span class="w">        </span><span class="k">IF</span><span class="w"> </span><span class="nv">sy</span><span class="o">-</span><span class="nv">subrc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span>
-<span class="w">          </span><span class="nv">LOOP</span><span class="w"> </span><span class="k">AT</span><span class="w"> </span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="o">-</span><span class="nv">t_message</span><span class="w"> </span><span class="k">ASSIGNING</span><span class="w"> </span><span class="k">FIELD-SYMBOL</span><span class="p">(</span><span class="nv">&lt;ls_message&gt;</span><span class="p">)</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="nv">msgty</span><span class="w"> </span><span class="ow">CA</span><span class="w"> </span><span class="s1">&#39;EAX&#39;</span><span class="p">.</span>
-<span class="w">            </span><span class="k">MESSAGE</span><span class="w"> </span><span class="k">ID</span><span class="w"> </span><span class="nv">&lt;ls_message&gt;</span><span class="o">-</span><span class="nv">msgid</span><span class="w"> </span><span class="nv">TYPE</span><span class="w"> </span><span class="nv">&lt;ls_message&gt;</span><span class="o">-</span><span class="nv">msgty</span><span class="w"> </span><span class="k">NUMBER</span><span class="w"> </span><span class="nv">&lt;ls_message&gt;</span><span class="o">-</span><span class="nv">msgno</span>
-<span class="w">            </span><span class="k">WITH</span><span class="w"> </span><span class="nv">&lt;ls_message&gt;</span><span class="o">-</span><span class="nv">msgv1</span><span class="w"> </span><span class="nv">&lt;ls_message&gt;</span><span class="o">-</span><span class="nv">msgv2</span><span class="w"> </span><span class="nv">&lt;ls_message&gt;</span><span class="o">-</span><span class="nv">msgv3</span><span class="w"> </span><span class="nv">&lt;ls_message&gt;</span><span class="o">-</span><span class="nv">msgv4</span>
-<span class="w">            </span><span class="k">INTO</span><span class="w"> </span><span class="nv">lv_msg</span><span class="p">.</span>
-<span class="w">            </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">mtype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;E&#39;</span><span class="p">.</span>
-<span class="w">            </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">|{</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">msg</span><span class="w"> </span><span class="p">}{</span><span class="w"> </span><span class="nv">lv_msg</span><span class="w"> </span><span class="p">}</span><span class="s1">;</span><span class="p">|.</span>
-<span class="w">          </span><span class="k">ENDLOOP</span><span class="p">.</span>
-<span class="w">        </span><span class="k">ENDIF</span><span class="p">.</span>
-<span class="w">      </span><span class="k">ELSEIF</span><span class="w"> </span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="o">-</span><span class="nv">is_new_number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">abap_true</span><span class="p">.</span>
-<span class="w">        </span><span class="k">READ</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="k">REFERENCE INTO</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="nv">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="o">-</span><span class="nv">product_temp</span><span class="p">.</span>
-<span class="w">        </span><span class="k">IF</span><span class="w"> </span><span class="nv">sy</span><span class="o">-</span><span class="nv">subrc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span>
-<span class="w">          </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="o">-</span><span class="nv">product</span><span class="p">.</span>
-<span class="w">          </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">mtype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;S&#39;</span><span class="p">.</span>
-<span class="w">          </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">|</span><span class="s1">物料</span><span class="p">{</span><span class="w"> </span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="o">-</span><span class="nv">product</span><span class="w"> </span><span class="p">}</span><span class="s1">创建成功</span><span class="p">|.</span>
-<span class="w">        </span><span class="k">ENDIF</span><span class="p">.</span>
-<span class="w">      </span><span class="k">ENDIF</span><span class="p">.</span>
-<span class="w">    </span><span class="k">ENDLOOP</span><span class="p">.</span>
-
-<span class="w">    </span><span class="k">IF</span><span class="w"> </span><span class="nv">lv_has_error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">abap_false</span><span class="p">.</span>
-<span class="w">      </span><span class="k">TRY</span><span class="w"> </span><span class="p">.</span>
-<span class="w">          </span><span class="nv">lo_unified_prod_data_api</span><span class="o">-&gt;</span><span class="nf">if_cmd_product_maint_api~save</span><span class="p">(</span><span class="w"> </span><span class="p">).</span>
-<span class="w">        </span><span class="k">CATCH</span><span class="w"> </span><span class="nv">cx_cmd_product_maint_api</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lx_cmd_product_maint_api_save</span><span class="p">).</span>
-<span class="w">          </span><span class="nv">lv_msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lx_cmd_product_maint_api_save</span><span class="o">-&gt;</span><span class="nf">if_message~get_text</span><span class="p">(</span><span class="w"> </span><span class="p">).</span>
-<span class="w">          </span><span class="nv">_write_error</span><span class="p">(</span><span class="w"> </span><span class="k">EXPORTING</span><span class="w"> </span><span class="nv">iv_msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lv_msg</span><span class="w"> </span><span class="k">CHANGING</span><span class="w"> </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="p">).</span>
-<span class="w">      </span><span class="k">ENDTRY</span><span class="p">.</span>
+<span class="k">LOOP AT </span><span class="nv">lt_prodwise_output</span><span class="w"> </span><span class="k">ASSIGNING</span><span class="w"> </span><span class="k">FIELD-SYMBOL</span><span class="p">(</span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="p">).</span>
+<span class="w">  </span><span class="k">IF</span><span class="w"> </span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="o">-</span><span class="nv">enqueue_failed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">abap_true</span><span class="w"> </span><span class="ow">OR</span><span class="w"> </span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="o">-</span><span class="nv">update_failed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">abap_true</span><span class="p">.</span>
+<span class="w">    </span><span class="nv">lv_has_error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">abap_true</span><span class="p">.</span>
+<span class="w">    </span><span class="k">READ</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="k">REFERENCE INTO</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="nv">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="o">-</span><span class="nv">product</span><span class="p">.</span>
+<span class="w">    </span><span class="k">IF</span><span class="w"> </span><span class="nv">sy</span><span class="o">-</span><span class="nv">subrc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span>
+<span class="w">      </span><span class="nv">LOOP</span><span class="w"> </span><span class="k">AT</span><span class="w"> </span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="o">-</span><span class="nv">t_message</span><span class="w"> </span><span class="k">ASSIGNING</span><span class="w"> </span><span class="k">FIELD-SYMBOL</span><span class="p">(</span><span class="nv">&lt;ls_message&gt;</span><span class="p">)</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="nv">msgty</span><span class="w"> </span><span class="ow">CA</span><span class="w"> </span><span class="s1">&#39;EAX&#39;</span><span class="p">.</span>
+<span class="w">        </span><span class="k">MESSAGE</span><span class="w"> </span><span class="k">ID</span><span class="w"> </span><span class="nv">&lt;ls_message&gt;</span><span class="o">-</span><span class="nv">msgid</span><span class="w"> </span><span class="nv">TYPE</span><span class="w"> </span><span class="nv">&lt;ls_message&gt;</span><span class="o">-</span><span class="nv">msgty</span><span class="w"> </span><span class="k">NUMBER</span><span class="w"> </span><span class="nv">&lt;ls_message&gt;</span><span class="o">-</span><span class="nv">msgno</span>
+<span class="w">        </span><span class="k">WITH</span><span class="w"> </span><span class="nv">&lt;ls_message&gt;</span><span class="o">-</span><span class="nv">msgv1</span><span class="w"> </span><span class="nv">&lt;ls_message&gt;</span><span class="o">-</span><span class="nv">msgv2</span><span class="w"> </span><span class="nv">&lt;ls_message&gt;</span><span class="o">-</span><span class="nv">msgv3</span><span class="w"> </span><span class="nv">&lt;ls_message&gt;</span><span class="o">-</span><span class="nv">msgv4</span>
+<span class="w">        </span><span class="k">INTO</span><span class="w"> </span><span class="nv">lv_msg</span><span class="p">.</span>
+<span class="w">        </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">mtype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;E&#39;</span><span class="p">.</span>
+<span class="w">        </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">|{</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">msg</span><span class="w"> </span><span class="p">}{</span><span class="w"> </span><span class="nv">lv_msg</span><span class="w"> </span><span class="p">}</span><span class="s1">;</span><span class="p">|.</span>
+<span class="w">      </span><span class="k">ENDLOOP</span><span class="p">.</span>
 <span class="w">    </span><span class="k">ENDIF</span><span class="p">.</span>
+<span class="w">  </span><span class="k">ELSEIF</span><span class="w"> </span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="o">-</span><span class="nv">is_new_number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">abap_true</span><span class="p">.</span>
+<span class="w">    </span><span class="k">READ</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="k">REFERENCE INTO</span><span class="w"> </span><span class="nv">lr_datalake</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="nv">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="o">-</span><span class="nv">product_temp</span><span class="p">.</span>
+<span class="w">    </span><span class="k">IF</span><span class="w"> </span><span class="nv">sy</span><span class="o">-</span><span class="nv">subrc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span>
+<span class="w">      </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="o">-</span><span class="nv">product</span><span class="p">.</span>
+<span class="w">      </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">mtype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;S&#39;</span><span class="p">.</span>
+<span class="w">      </span><span class="nv">lr_datalake</span><span class="o">-&gt;</span><span class="nv">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">|</span><span class="s1">物料</span><span class="p">{</span><span class="w"> </span><span class="nv">&lt;ls_prodwise_output&gt;</span><span class="o">-</span><span class="nv">product</span><span class="w"> </span><span class="p">}</span><span class="s1">创建成功</span><span class="p">|.</span>
+<span class="w">    </span><span class="k">ENDIF</span><span class="p">.</span>
+<span class="w">  </span><span class="k">ENDIF</span><span class="p">.</span>
+<span class="k">ENDLOOP</span><span class="p">.</span>
+
+<span class="k">IF</span><span class="w"> </span><span class="nv">lv_has_error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">abap_false</span><span class="p">.</span>
+<span class="w">  </span><span class="k">TRY</span><span class="w"> </span><span class="p">.</span>
+<span class="w">      </span><span class="nv">lo_unified_prod_data_api</span><span class="o">-&gt;</span><span class="nf">if_cmd_product_maint_api~save</span><span class="p">(</span><span class="w"> </span><span class="p">).</span>
+<span class="w">    </span><span class="k">CATCH</span><span class="w"> </span><span class="nv">cx_cmd_product_maint_api</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="k">DATA</span><span class="p">(</span><span class="nv">lx_cmd_product_maint_api_save</span><span class="p">).</span>
+<span class="w">      </span><span class="nv">lv_msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lx_cmd_product_maint_api_save</span><span class="o">-&gt;</span><span class="nf">if_message~get_text</span><span class="p">(</span><span class="w"> </span><span class="p">).</span>
+<span class="w">      </span><span class="nv">_write_error</span><span class="p">(</span><span class="w"> </span><span class="k">EXPORTING</span><span class="w"> </span><span class="nv">iv_msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lv_msg</span><span class="w"> </span><span class="k">CHANGING</span><span class="w"> </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ct_datalake</span><span class="w"> </span><span class="p">).</span>
+<span class="w">  </span><span class="k">ENDTRY</span><span class="p">.</span>
+<span class="k">ENDIF</span><span class="p">.</span>
 </code></pre></div></td></tr></table></div>
 
 </details>

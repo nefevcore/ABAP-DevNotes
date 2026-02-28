@@ -1,0 +1,465 @@
+以下是您所需的Custom Data Monitor数据大屏HTML代码。它采用Grid布局实现灵活的组件化展示，包含抬头栏（Logo、标题、实时时间）和多个数据监控子组件。
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDM · 数据大屏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #0b0f1a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        /* 大屏容器 — 深邃质感，轻微发光 */
+        .dashboard {
+            width: 1440px;
+            max-width: 100%;
+            height: 900px;
+            max-height: 95vh;
+            background: #0e121f;
+            border-radius: 36px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(66, 153, 225, 0.2) inset, 0 0 30px rgba(0, 180, 255, 0.2);
+            backdrop-filter: blur(2px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(30, 120, 210, 0.3);
+        }
+
+        /* ---------- 抬头栏 ---------- */
+        .header {
+            flex-shrink: 0;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;  /* 左中右 三等分逻辑 */
+            align-items: center;
+            padding: 18px 32px;
+            background: rgba(10, 18, 30, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #1e2f46;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            z-index: 5;
+        }
+
+        /* 左侧 Logo 区域 */
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(145deg, #1e90ff, #0a5fbf);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 18px #00336680, 0 0 8px #3f9eff;
+        }
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+            filter: drop-shadow(0 2px 4px black);
+        }
+        .logo-text {
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #b3e0ff, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 10px #00a6ff70;
+        }
+
+        /* 中间标题 */
+        .page-title {
+            font-weight: 600;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #bddbff, #8ec7ff, #5fb2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px #0099ff;
+            white-space: nowrap;
+        }
+
+        /* 右侧时间 */
+        .time-area {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        .current-time {
+            background: #0f1a2b;
+            padding: 10px 22px;
+            border-radius: 60px;
+            border: 1px solid #2e4b70;
+            box-shadow: 0 4px 14px #0000004d, inset 0 1px 2px #5688d0;
+            color: #e2f0ff;
+            font-size: 1.5rem;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 8px #58b2ff;
+            backdrop-filter: blur(4px);
+            font-variant-numeric: tabular-nums;
+            transition: all 0.2s;
+        }
+
+        /* ---------- 内容区域 (grid 布局大本营) ---------- */
+        .content {
+            flex: 1;
+            padding: 24px 28px 28px 28px;
+            display: grid;
+            /* 用grid-template-areas 进行灵活区域命名 — 典型的CDM多组件布局 */
+            grid-template-areas: 
+                "metricA metricA chartB chartB alertC"
+                "metricD listE listE chartF alertC"
+                "metricG listE listE chartH statusI"
+                "footerGauge footerGauge footerGauge footerGauge statusI";
+            grid-template-columns: 1.2fr 1.2fr 1.8fr 1.8fr 0.9fr;
+            grid-template-rows: 1.1fr 1.2fr 1.2fr 0.8fr;
+            gap: 18px;
+        }
+
+        /* 所有子组件卡片通用风格 */
+        .grid-card {
+            background: rgba(16, 24, 38, 0.75);
+            backdrop-filter: blur(10px);
+            border: 1px solid #253c5c;
+            border-radius: 24px;
+            padding: 18px 20px;
+            box-shadow: 0 18px 28px -12px #000000e0, 0 0 0 1px #1e3f64 inset, 0 0 16px #003a7050;
+            color: #edf5ff;
+            transition: 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .grid-card:hover {
+            border-color: #3e7bb6;
+            box-shadow: 0 20px 32px -10px #040c1a, 0 0 0 1px #4791db inset;
+        }
+
+        /* 每个卡片头部 (模拟组件标题) */
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-weight: 500;
+            color: #a5c9ff;
+            letter-spacing: 0.4px;
+            border-bottom: 1px dashed #2f496e;
+            padding-bottom: 8px;
+        }
+        .card-header span {
+            background: #1d3557;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            color: #b9dcff;
+        }
+
+        /* 自定义组件视觉内容 */
+        .metric-value {
+            font-size: 2.4rem;
+            font-weight: 600;
+            background: linear-gradient(145deg, #fff, #9ac7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+        .chart-sim {
+            flex: 1;
+            background: #0d1829;
+            border-radius: 18px;
+            margin-top: 6px;
+            padding: 8px;
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            border: 1px solid #264a72;
+        }
+        .bar {
+            background: linear-gradient(to top, #1e88e5, #6ab7ff);
+            width: 100%;
+            border-radius: 6px 6px 4px 4px;
+            min-height: 4px;
+            box-shadow: 0 -2px 12px #3f9eff;
+        }
+        .list-area {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 6px;
+        }
+        .list-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #263e5a;
+            padding-bottom: 4px;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #2ecc71;
+            box-shadow: 0 0 10px #2ecc71;
+        }
+        .dot.warning {
+            background: #f39c12;
+            box-shadow: 0 0 10px #f39c12;
+        }
+        .dot.critical {
+            background: #e74c3c;
+            box-shadow: 0 0 10px #e74c3c;
+        }
+
+        /* 区域分配 (grid-area) */
+        .area-metricA { grid-area: metricA; }
+        .area-metricD { grid-area: metricD; }
+        .area-metricG { grid-area: metricG; }
+        .area-chartB { grid-area: chartB; }
+        .area-chartF { grid-area: chartF; }
+        .area-chartH { grid-area: chartH; }
+        .area-listE { grid-area: listE; }
+        .area-alertC { grid-area: alertC; }
+        .area-statusI { grid-area: statusI; }
+        .area-footerGauge { grid-area: footerGauge; }
+
+        /* 个别卡片微调背景 */
+        .area-alertC {
+            background: rgba(25, 15, 30, 0.9);
+            border-left: 3px solid #ff4f7e;
+        }
+        .area-footerGauge {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-around;
+        }
+
+        /* 模拟进度条 / 仪表 */
+        .gauge-mini {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(#4cd137 0deg 220deg, #2f3640 220deg 360deg);
+            border: 4px solid #2b4a72;
+        }
+        .footer-stats {
+            display: flex;
+            gap: 32px;
+        }
+
+        /* 一些小图标的点缀 */
+        .glow-text {
+            color: #7cb9ff;
+            font-size: 0.9rem;
+        }
+
+        /* 保证右侧时间不换行 */
+        @media (max-width: 1000px) {
+            .content { gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- 抬头栏：Logo / 标题 / 当前时间 -->
+        <div class="header">
+            <!-- 左侧Logo部分 -->
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <!-- 简单CDM自定义logo (眼睛+数据) -->
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 6C7.8 6 4.2 8.1 2 11.5 4.2 14.9 7.8 17 12 17s7.8-2.1 10-5.5C19.8 8.1 16.2 6 12 6zm0 9.5c-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5 4.5 2 4.5 4.5-2 4.5-4.5 4.5zm0-7c-1.4 0-2.5 1.1-2.5 2.5s1.1 2.5 2.5 2.5 2.5-1.1 2.5-2.5-1.1-2.5-2.5-2.5z"/>
+                    </svg>
+                </div>
+                <span class="logo-text">CUSTOM DATA MONITOR</span>
+            </div>
+
+            <!-- 中间标题 -->
+            <div class="page-title">CDM 实时指挥舱</div>
+
+            <!-- 右侧时间 (动态刷新) -->
+            <div class="time-area">
+                <div class="current-time" id="liveTime">--:--:--</div>
+            </div>
+        </div>
+
+        <!-- 内容区域：grid-template-areas 布局 10个组件 -->
+        <div class="content">
+            <!-- 组件 A：基础指标 (metricA) -->
+            <div class="grid-card area-metricA">
+                <div class="card-header">📊 总请求 <span>metricA</span></div>
+                <div class="metric-value">2.48M</div>
+                <div style="display: flex; gap: 16px; margin-top: 8px;">
+                    <div><span class="glow-text">同比</span> +23%</div>
+                    <div><span class="glow-text">环比</span> +5.2%</div>
+                </div>
+                <div class="chart-sim" style="margin-top: 16px; height: 40px;">
+                    <div style="width: 20%;" class="bar"></div>
+                    <div style="width: 45%;" class="bar"></div>
+                    <div style="width: 30%;" class="bar"></div>
+                    <div style="width: 60%;" class="bar"></div>
+                </div>
+            </div>
+
+            <!-- 组件 B：流量图表 (chartB) -->
+            <div class="grid-card area-chartB">
+                <div class="card-header">📈 流量趋势 <span>chartB</span></div>
+                <div class="chart-sim" style="height: 90px; align-items: flex-end;">
+                    <div style="height: 70%;" class="bar"></div>
+                    <div style="height: 45%;" class="bar"></div>
+                    <div style="height: 90%;" class="bar"></div>
+                    <div style="height: 60%;" class="bar"></div>
+                    <div style="height: 85%;" class="bar"></div>
+                    <div style="height: 40%;" class="bar"></div>
+                    <div style="height: 72%;" class="bar"></div>
+                </div>
+            </div>
+
+            <!-- 组件 C：告警列表 (alertC) 占据右侧较大区域 -->
+            <div class="grid-card area-alertC">
+                <div class="card-header">⚠️ 实时告警 <span>alertC</span></div>
+                <div class="list-area" style="overflow-y: auto;">
+                    <div class="list-item"><span class="dot critical"></span> CPU 过载 - us-east-1</div>
+                    <div class="list-item"><span class="dot warning"></span> 延迟抖动 - 90th > 210ms</div>
+                    <div class="list-item"><span class="dot critical"></span> 节点宕机 · az-03</div>
+                    <div class="list-item"><span class="dot warning"></span> 磁盘使用率 89%</div>
+                    <div class="list-item"><span class="dot"></span> 恢复: 数据库连接</div>
+                    <div class="list-item"><span class="dot warning"></span> 内存碎片率 >1.5</div>
+                </div>
+                <div style="margin-top: auto; text-align: right; color: #abc9ff;">最后5条</div>
+            </div>
+
+            <!-- 组件 D：指标 (metricD) -->
+            <div class="grid-card area-metricD">
+                <div class="card-header">🖥️ 活跃连接 <span>metricD</span></div>
+                <div class="metric-value">6.2k</div>
+                <div style="margin-top: 8px;"><span class="glow-text">峰值</span> 8.9k</div>
+            </div>
+
+            <!-- 组件 E：长列表 / 日志 (listE) 跨两行 -->
+            <div class="grid-card area-listE">
+                <div class="card-header">📋 事件流 <span>listE</span></div>
+                <div class="list-area">
+                    <div class="list-item">10:23:22 写入成功 shard-02</div>
+                    <div class="list-item">10:22:10 慢查询 >500ms x2</div>
+                    <div class="list-item">10:21:04 缓存命中率 91%</div>
+                    <div class="list-item">10:19:47 节点加入 kafka-15</div>
+                    <div class="list-item">10:17:33 备份完成 size 4TB</div>
+                    <div class="list-item">10:14:12 重启服务 auth</div>
+                    <div class="list-item">10:11:02 消费滞后 1200</div>
+                </div>
+            </div>
+
+            <!-- 组件 F：图表 (chartF) -->
+            <div class="grid-card area-chartF">
+                <div class="card-header">📉 错误率 <span>chartF</span></div>
+                <div class="metric-value" style="font-size: 2rem;">0.27%</div>
+                <div class="chart-sim" style="height: 30px;">
+                    <div style="width: 12%; background: #ff6b6b;" class="bar"></div>
+                    <div style="width: 8%; background: #ff6b6b;" class="bar"></div>
+                    <div style="width: 15%; background: #ff6b6b;" class="bar"></div>
+                </div>
+            </div>
+
+            <!-- 组件 G：metricG -->
+            <div class="grid-card area-metricG">
+                <div class="card-header">⏱️ 平均延迟 <span>metricG</span></div>
+                <div class="metric-value">147ms</div>
+                <div class="glow-text">p99 312ms</div>
+            </div>
+
+            <!-- 组件 H：chartH 迷你柱状 -->
+            <div class="grid-card area-chartH">
+                <div class="card-header">🔹 分片负载 <span>chartH</span></div>
+                <div class="chart-sim" style="height: 70px;">
+                    <div style="height: 30%;" class="bar"></div>
+                    <div style="height: 80%;" class="bar"></div>
+                    <div style="height: 55%;" class="bar"></div>
+                    <div style="height: 100%;" class="bar"></div>
+                    <div style="height: 42%;" class="bar"></div>
+                </div>
+            </div>
+
+            <!-- 组件 I：状态汇总 (statusI) 右侧底部 -->
+            <div class="grid-card area-statusI">
+                <div class="card-header">🔰 健康状态 <span>statusI</span></div>
+                <div style="margin-top: 8px;">
+                    <div style="display: flex; justify-content: space-between;"><span>存储</span> <span>88%</span></div>
+                    <div style="background: #1e3b5a; height: 8px; border-radius: 10px; margin: 6px 0;"><div style="width: 88%; background: #f0b27a; height: 8px; border-radius: 10px;"></div></div>
+                    <div style="display: flex; justify-content: space-between;"><span>计算</span> <span>42%</span></div>
+                    <div style="background: #1e3b5a; height: 8px; border-radius: 10px; margin: 6px 0;"><div style="width: 42%; background: #7fb3d5; height: 8px; border-radius: 10px;"></div></div>
+                    <div style="display: flex; justify-content: space-between;"><span>网络</span> <span>23%</span></div>
+                    <div style="background: #1e3b5a; height: 8px; border-radius: 10px;"><div style="width: 23%; background: #9b59b6; height: 8px; border-radius: 10px;"></div></div>
+                </div>
+            </div>
+
+            <!-- 组件 底部仪表盘 (footerGauge) 跨四列 -->
+            <div class="grid-card area-footerGauge" style="flex-direction: row; align-items: center; gap: 20px;">
+                <div class="card-header" style="margin-bottom: 0;">⚙️ 系统仪表 <span>footerGauge</span></div>
+                <div style="display: flex; gap: 24px;">
+                    <div style="width: 70px; height: 70px; background: conic-gradient(#2ecc71 0deg 220deg, #1e3c5a 220deg); border-radius: 50%; border: 2px solid #3080d0;"></div>
+                    <div style="width: 70px; height: 70px; background: conic-gradient(#f1c40f 0deg 150deg, #1e3c5a 150deg); border-radius: 50%; border: 2px solid #3080d0;"></div>
+                    <div style="width: 70px; height: 70px; background: conic-gradient(#e67e22 0deg 300deg, #1e3c5a 300deg); border-radius: 50%; border: 2px solid #3080d0;"></div>
+                </div>
+                <div class="footer-stats">
+                    <div><span class="glow-text">IOPS</span> 3.2k</div>
+                    <div><span class="glow-text">重传</span> 0.3%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 简单的实时时间脚本 -->
+    <script>
+        function updateTime() {
+            const now = new Date();
+            // 格式: 2025-02-20 15:24:38 (或 15:24:38)
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            // 组合成 2025-02-20 15:24:38 格式 或者 15:24:38
+            // 右侧展示日期+时间 更丰富 (也可以只显示时间，这里显示完整)
+            const dateStr = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            document.getElementById('liveTime').textContent = dateStr;
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>
+```
+
+### 大屏布局与组件功能
+
+页面通过Grid模板划分为多个监控区域，每个卡片代表一个独立的数据组件。
+
+- **抬头栏**：左侧展示自定义Logo与“CUSTOM DATA MONITOR”文字；中央为页面标题“CDM 实时指挥舱”；右侧实时显示当前日期和时间（每秒更新）。
+- **内容网格**：使用 `grid-template-areas` 定义了10个区域（如metricA、chartB、alertC等）。每个区域通过 `grid-area` 属性定位，实现了灵活的组件排列。
+- **组件示例**：包括总请求数、流量趋势图、实时告警列表、事件流、错误率、平均延迟、健康状态进度条和系统仪表盘等，每个组件都通过卡片形式封装，带有标题和模拟数据可视化元素。

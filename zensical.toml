@@ -24,22 +24,22 @@ nav = [
             { "合同审批" = "06_gtm/20010A0005_contract_approval.md" },
         ] },
         { "采购管理" = [
-            { "MM模块概述" = "03_mm/20020A0001_mm_index.md" },
-            { "采购订单" = "03_mm/20020A0002_purchase.md" },
-            { "内向交货单" = "03_mm/20020A0003_inbound_delivery.md" },
-            { "收货过账" = "03_mm/20020A0004_inbound_delivery_post.md" },
-            { "MIGO" = "03_mm/20020A0005_migo.md" },
-            { "定价" = "03_mm/20020A0006_mm_pricing.md" },
-            { "价格修改(MR21)" = "03_mm/20020A0007_price_modify.md" },
+            { "MM模块概述" = "02_mm/20020A0001_mm_index.md" },
+            { "采购订单" = "02_mm/20020A0002_purchase.md" },
+            { "内向交货单" = "02_mm/20020A0003_inbound_delivery.md" },
+            { "收货过账" = "02_mm/20020A0004_inbound_delivery_post.md" },
+            { "MIGO" = "02_mm/20020A0005_migo.md" },
+            { "定价" = "02_mm/20020A0006_mm_pricing.md" },
+            { "价格修改(MR21)" = "02_mm/20020A0007_price_modify.md" },
         ] },
         { "销售分销" = [
-            { "SD模块概述" = "02_sd/20030A0001_sd_index.md" },
-            { "销售订单" = "02_sd/20030A0002_sale_document.md" },
-            { "外向交货单" = "02_sd/20030A0003_outbound_delivery.md" },
-            { "发货过账" = "02_sd/20030A0004_outbound_delivery_post.md" },
-            { "定价" = "02_sd/20030A0005_sd_pricing.md" },
-            { "销售屏幕增强" = "02_sd/20030A0006_sale_doc_screen_enhancement.md" },
-            { "发票增强" = "02_sd/20030A0007_billing_enhancement.md" },
+            { "SD模块概述" = "03_sd/20030A0001_sd_index.md" },
+            { "销售订单" = "03_sd/20030A0002_sale_document.md" },
+            { "外向交货单" = "03_sd/20030A0003_outbound_delivery.md" },
+            { "发货过账" = "03_sd/20030A0004_outbound_delivery_post.md" },
+            { "定价" = "03_sd/20030A0005_sd_pricing.md" },
+            { "销售屏幕增强" = "03_sd/20030A0006_sale_doc_screen_enhancement.md" },
+            { "发票增强" = "03_sd/20030A0007_billing_enhancement.md" },
         ] },
         { "生产计划" = [
             { "PP模块概述" = "04_pp/20040A0001_pp_index.md" },
@@ -55,8 +55,8 @@ nav = [
             { "工单关闭" = "04_pp/20040A0011_pp_order_close.md" },
         ] },
         { "报表" = [
-            { "库存报表" = "02_sd/20000A0001_stock.md" },
-            { "销售交货开票报表" = "02_sd/20000A0002_sd_report.md" },
+            { "库存报表" = "03_sd/20000A0001_stock.md" },
+            { "销售交货开票报表" = "03_sd/20000A0002_sd_report.md" },
         ] },
     ] },
     { "财务" = [
@@ -127,8 +127,7 @@ nav = [
 ]
 
 # 静态资源路径配置
-# [project.extra_css]
-# extra_css = []
+extra_css = ["stylesheets/extra.css"]
 
 # [project.extra_javascript]
 # extra_javascript = []
@@ -153,7 +152,8 @@ def_list = {}
 
 [project.markdown_extensions.pymdownx]
 arithmatex = { generic = true }
-betterem = { smart_enable = "all" }
+# 改进斜体和粗体，会导致符号前需要加空格，变得麻烦
+# betterem = { smart_enable = "all" } 
 caret = {}
 critic = {}
 details = {}
@@ -166,6 +166,7 @@ tasklist = {}
 tilde = {}
 highlight = { linenums = true }
 tabbed = { alternate_style = true }
+emoji = { emoji_index = "zensical.extensions.emoji.twemoji", emoji_generator = "zensical.extensions.emoji.to_svg" }
 
 # 主题配置（保持不变）
 [project.theme]
