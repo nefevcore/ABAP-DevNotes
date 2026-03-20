@@ -1,0 +1,142 @@
+/* CSS 变量定义 - 分层主题系统 */
+:root {
+    /* ===== 1. 布局尺寸 ===== */
+    --cdm-header-height: 80px;
+    --cdm-component-padding: 10px;
+    --cdm-component-gap: 10px;
+    --cdm-component-border-radius: 12px;
+
+    /* ===== 2. 核心主题色 (基础色板) ===== */
+    /* 主色系 */
+    --cdm-color-primary: #5a8eff;
+    --cdm-color-primary-light: #7dabff;
+    --cdm-color-primary-dark: #3a5fc8;
+    --cdm-color-primary-soft: rgba(90, 142, 255, 0.15);
+
+    /* 背景色系 */
+    --cdm-color-bg-primary: #0b1127;
+    --cdm-color-bg-secondary: #121c3a;
+    --cdm-color-bg-surface: #1a274d;
+    --cdm-color-bg-elevated: #22305a;
+
+    /* 文本色系 */
+    --cdm-color-text-primary: #ffffff;
+    --cdm-color-text-secondary: #c8d9ff;
+    --cdm-color-text-muted: #a0b5ff;
+    --cdm-color-text-on-primary: #ffffff;
+
+    /* 语义色系 */
+    --cdm-color-accent: #ffb74d;
+    --cdm-color-accent-light: #ffd180;
+    --cdm-color-success: #4cd964;
+    --cdm-color-warning: #ffa726;
+    --cdm-color-error: #ff6b6b;
+    --cdm-color-highlight: #00e5ff;
+
+    /* 边框色系 - 更细腻的层次 */
+    --cdm-color-border-ultralight: rgba(90, 142, 255, 0.1);
+    --cdm-color-border-light: rgba(90, 142, 255, 0.2);
+    --cdm-color-border-medium: rgba(90, 142, 255, 0.35);
+    --cdm-color-border-heavy: rgba(90, 142, 255, 0.5);
+    --cdm-color-border: var(--cdm-color-border-medium);
+
+    /* 渐变定义 */
+    --cdm-gradient-primary: linear-gradient(135deg, #5a8eff 0%, #7dabff 100%);
+    --cdm-gradient-accent: linear-gradient(135deg, #ffb74d 0%, #ffcc80 100%);
+    --cdm-gradient-bg-header: linear-gradient(90deg, #0b1127 0%, #121c3a 50%, #1a274d 100%);
+    --cdm-gradient-bg-card: linear-gradient(145deg, rgba(26, 39, 77, 0.95), rgba(18, 28, 58, 0.98));
+    --cdm-gradient-bg-sidebar: linear-gradient(180deg, #121c3a 0%, #1a274d 100%);
+
+    /* ===== 3. 组件颜色 (基于主题色分配) ===== */
+    /* 布局组件 */
+    --cdm-header-bg: var(--cdm-gradient-bg-header);
+    --cdm-header-shadow: 0 4px 20px rgba(0, 15, 40, 0.4);
+    --cdm-sidebar-bg: var(--cdm-gradient-bg-sidebar);
+
+    /* 通用组件 */
+    --cdm-component-bg: var(--cdm-color-bg-surface);
+    --cdm-component-border-color: var(--cdm-color-border-light);
+    --cdm-component-shadow: 0 4px 12px rgba(0, 15, 40, 0.3);
+    --cdm-component-hover-shadow: 0 6px 20px rgba(90, 142, 255, 0.4);
+    --cdm-component-active-bg: var(--cdm-color-primary-soft);
+
+    /* 卡片组件 */
+    --cdm-card-bg: var(--cdm-gradient-bg-card);
+    --cdm-card-border: 1px solid var(--cdm-color-border-light);
+    --cdm-card-hover-bg: linear-gradient(145deg, rgba(34, 48, 90, 0.95), rgba(26, 39, 77, 0.98));
+    --cdm-card-metric-bg: rgba(90, 142, 255, 0.15);
+    --cdm-card-title-color: #00d4ff;
+
+    /* 表格组件 */
+    --cdm-table-header-bg: rgba(26, 39, 77, 0.9);
+    --cdm-table-header-text: var(--cdm-color-primary-light);
+    --cdm-table-row-bg: transparent;
+    --cdm-table-row-even-bg: rgba(90, 142, 255, 0.08);
+    --cdm-table-row-hover-bg: rgba(90, 142, 255, 0.2);
+    --cdm-table-border-color: var(--cdm-color-border-ultralight);
+
+    /* 按钮组件 */
+    --cdm-button-primary-bg: var(--cdm-gradient-primary);
+    --cdm-button-primary-hover-bg: linear-gradient(135deg, #4a7eff 0%, #6d9bff 100%);
+    --cdm-button-secondary-bg: rgba(90, 142, 255, 0.1);
+    --cdm-button-secondary-hover-bg: rgba(90, 142, 255, 0.2);
+
+    /* 输入框组件 */
+    --cdm-input-bg: rgba(18, 28, 58, 0.8);
+    --cdm-input-border: 1px solid var(--cdm-color-border-medium);
+    --cdm-input-focus-border: 1px solid var(--cdm-color-primary);
+    --cdm-input-focus-shadow: 0 0 0 3px rgba(90, 142, 255, 0.3);
+
+    /* 嵌套组件 */
+    --cdm-nested-component-bg: rgba(26, 39, 77, 0.5);
+    --cdm-nested-component-hover-bg: rgba(90, 142, 255, 0.15);
+
+    /* 滚动条 */
+    --cdm-scrollbar-track: rgba(26, 39, 77, 0.4);
+    --cdm-scrollbar-thumb: var(--cdm-color-primary);
+    --cdm-scrollbar-thumb-hover: var(--cdm-color-primary-light);
+    --cdm-global-scrollbar-track: rgba(18, 28, 58, 0.3);
+
+    /* 信息组件 */
+    --cdm-time-info-bg: rgba(26, 39, 77, 0.7);
+    --cdm-time-info-border: 1px solid var(--cdm-color-border-light);
+
+    /* 徽标 */
+    --cdm-logo-icon-color: var(--cdm-color-primary);
+    --cdm-logo-text-color: var(--cdm-color-text-primary);
+
+    /* ===== 4. 特效参数 ===== */
+    /* 流光特效 */
+    --cdm-glow-border-color: rgba(90, 142, 255, 0.4);
+    --cdm-glow-shadow: 0 0 20px rgba(90, 142, 255, 0.4);
+    --cdm-glow-hover-shadow: 0 0 30px rgba(90, 142, 255, 0.6);
+    --cdm-glow-animation: glow-pulse 3s infinite alternate;
+
+    /* 边界光晕 */
+    --cdm-glow-top-color: rgba(125, 171, 255, 0.6);
+    --cdm-glow-bottom-color: rgba(90, 142, 255, 0.6);
+    --cdm-glow-height: 2px;
+    --cdm-glow-spread: 8px;
+
+    /* 悬浮效果 */
+    --cdm-hover-transition: all 0.25s ease;
+    --cdm-hover-transform: translateY(-2px);
+
+    /* ===== 5. 字体设置 ===== */
+    --cdm-font-size-title: 18px;
+    --cdm-font-size-subtitle: 16px;
+    --cdm-font-size-body: 14px;
+    --cdm-font-size-small: 12px;
+    --cdm-font-size-icon: 20px;
+    --cdm-font-size-logo-icon: 28px;
+    --cdm-font-size-logo-text: 24px;
+    --cdm-font-weight-light: 300;
+    --cdm-font-weight-regular: 400;
+    --cdm-font-weight-medium: 500;
+    --cdm-font-weight-bold: 600;
+
+    /* ===== 6. 过渡效果 ===== */
+    --cdm-transition-speed: 0.25s;
+    --cdm-transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --cdm-transition-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}

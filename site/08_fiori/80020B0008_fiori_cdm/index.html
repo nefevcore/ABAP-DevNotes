@@ -3563,6 +3563,67 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#5-echarts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. ECharts 主题
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. ECharts 主题">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 生成主题配置原型
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 适配项目可用的主题文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 运行时动态生成主题
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 粒子系统
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4452,6 +4513,67 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#5-echarts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. ECharts 主题
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. ECharts 主题">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 生成主题配置原型
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 适配项目可用的主题文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 运行时动态生成主题
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 粒子系统
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4727,29 +4849,7 @@
 <li><strong><code>oControl.getId()</code> 的核心作用</strong>：当控件数据变化触发重渲染时，SAPUI5框架利用此ID精准定位到对应的DOM元素，从而实现高效的局部更新，而非重建整个控件。</li>
 </ul>
 <p>其重渲染机制可概括为：</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code>```mermaid
+<div class="codehilite"><pre><span></span><code>```mermaid
 graph TD
     subgraph &quot;数据变更&quot;
         A[绑定数据更新] --&gt; B[触发重渲染流程]
@@ -4772,7 +4872,8 @@ graph TD
     style F fill:#f3e5f5
     style G fill:#e8f5e8
 ```
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
+
 <ul>
 <li><strong>ID生成规则</strong>：SAPUI5会自动为每个控件生成唯一的ID，通常基于控件层次结构，如 <code>__component0---app--myControl</code>，开发者无需关心ID的具体生成规则，直接通过oControl.getId()获取即可。</li>
 </ul>
@@ -6030,7 +6131,7 @@ graph TD
 <p><strong>核心特性</strong>:</p>
 <ul>
 <li><strong>ECharts实例管理</strong>: 自动创建和管理ECharts实例，处理初始化和销毁</li>
-<li><strong>动态主题适配</strong>: 基于CSS变量动态生成ECharts主题，确保与整体UI风格一致</li>
+<li><strong><a href="#case-5">动态主题适配</a></strong>: 基于CSS变量动态生成ECharts主题，确保与整体UI风格一致</li>
 <li><strong>响应式布局</strong>: 自动监听窗口大小变化，实时调整图表尺寸</li>
 <li><strong>数据绑定支持</strong>: 支持SAPUI5数据绑定，便于与后端数据集成</li>
 <li><strong>性能优化</strong>: 延迟渲染、防抖处理等优化措施</li>
@@ -9823,12 +9924,8 @@ graph TD
 </ul>
 <p><strong>提示词</strong>：</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>请根据主题文件（ @cdm-tech-theme.css ），对时间轴组件（ @case-3-1.html ）的样式进行适配调整：
-1. 将原有的硬编码颜色、尺寸、阴影值替换为对应的CSS变量
-2. 保持原有的布局结构和交互效果不变
-3. 输出完整的HTML+CSS代码以供验证
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>调整组件代码（ @EchartContainerWithoutTheme.js ），基于目前已存在的CSS样式（ @cdm-variables.css ），生成一个完整的ECharts主题配置对象，要求：
+1. 参考Echart主题的可配置项（ @echart-cdm-theme ），将里面的可配置项都替换为对应的CSS变量
 </code></pre></div></td></tr></table></div>
 <p><strong>结果</strong>：</p>
 <p>AI生成了适配主题后的时间轴组件代码，原有的固定数值被替换为<code>var(--cdm-*)</code>形式的CSS变量引用。</p>
@@ -9838,6 +9935,179 @@ graph TD
 <img alt="静态页面效果图" src="..//cdm_resources/images/case-4-2.png" /></p>
 <p><strong>分析与说明</strong>：</p>
 <p>这一步骤充分发挥了AI在模式化任务中的优势——将繁琐的变量替换工作交由AI处理，开发者仅需核对最终效果是否符合预期。同样的方法可以快速应用于<code>GenericCard</code>、<code>TabBar</code>等其他控件，确保整个大屏的视觉风格高度统一。</p>
+<hr />
+<hr />
+<h3 id="5-echarts"><span id="case-5">5. ECharts 主题</span><a class="headerlink" href="#5-echarts" title="Permanent link">&para;</a></h3>
+<p><strong>问题背景</strong>：
+在数据大屏中，ECharts 图表的视觉风格需要与基于 CSS 变量构建的整体 UI 主题保持严格一致。然而，ECharts 的主题配置项繁多，手动对齐成本高且容易出错。因此，我们需要借助 AI 来高效地完成这一任务。</p>
+<h4 id="51">5.1 生成主题配置原型<a class="headerlink" href="#51" title="Permanent link">&para;</a></h4>
+<p><strong>目标</strong>：快速生成一个与 CDM 主题系统对齐的 ECharts 主题配置 JSON 文件，用于初步预览效果。</p>
+<p><strong>参考文件</strong>：</p>
+<ul>
+<li><code>@cdm-variables.css</code>：项目已定义好的 CSS 主题变量。</li>
+<li><code>@echart-theme-config.json</code>：从 ECharts 官方导出的主题配置模板文件。</li>
+</ul>
+<p><strong>提示词</strong>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>请参考 @cdm-variables.css 中定义的 CSS 变量，将 @echart-theme-config.json 模板中的可配置项都替换为已设定好的具体颜色值。
+</code></pre></div></td></tr></table></div>
+<p><strong>结果</strong>：
+AI 生成了一个以 CSS 变量形式引用的 ECharts 主题配置文件。</p>
+<ul>
+<li><a href="../cdm_resources/chat_response/case-5-1/" target="_blank">查看 AI 的回复与代码</a></li>
+</ul>
+<p><strong>效果图</strong>：</p>
+<p>将AI生成的配置文件重新上传，预览实际效果</p>
+<p><img alt="主题效果图" src="..//cdm_resources/images/case-5-1.png" /></p>
+<h4 id="52">5.2 适配项目可用的主题文件<a class="headerlink" href="#52" title="Permanent link">&para;</a></h4>
+<p><strong>目标</strong>：将上一步生成的、包含 CSS 变量的主题配置，转换为 ECharts 可以直接解析的纯 JSON 格式，以便在项目中实际加载使用。</p>
+<p><strong>参考文件</strong>：</p>
+<ul>
+<li><code>@cdm-variables.css</code>：项目已定义好的 CSS 主题变量。</li>
+<li><code>@echart-theme.json</code>：从 ECharts 官网下载的主题 JSON 文件（非导出，格式不同）。</li>
+</ul>
+<p><strong>提示词</strong>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>请参考 @cdm-variables.css 中的 CSS 变量值，将 @echart-theme.json 中的可配置项，替换为对应的参数变量（如 `var(--cdm-color-primary)`）。
+</code></pre></div></td></tr></table></div>
+<p><strong>结果</strong>：
+AI 生成了一个 ECharts 可直接使用的 JSON 主题文件。</p>
+<ul>
+<li><a href="../cdm_resources/chat_response/case-5-2/" target="_blank">查看 AI 的回复与代码</a></li>
+</ul>
+<h4 id="53">5.3 运行时动态生成主题<a class="headerlink" href="#53" title="Permanent link">&para;</a></h4>
+<p><strong>目标</strong>：解决 ECharts 在运行时无法直接解析 CSS 变量的问题。我们需要在 JavaScript 代码中，将 CSS 变量动态解析为具体像素值，然后生成主题配置对象。</p>
+<p><strong>参考文件</strong>：</p>
+<ul>
+<li><code>@EchartContainer.js</code>：尚未实现主题动态解析功能的 ECharts 容器控件代码。</li>
+</ul>
+<p><strong>提示词</strong>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>ECharts 的主题配置中使用了 var() 函数，这在运行时不会生效。请修改 @EchartContainer.js 中的代码，在初始化 ECharts 实例前，通过 JavaScript 获取页面根元素的计算样式，将主题配置中的所有 CSS 变量（如 `var(--cdm-color-primary)`）解析为实际的 RGB 或颜色字符串值，再传递给 ECharts。
+</code></pre></div></td></tr></table></div>
+<p><strong>结果</strong>：
+AI 调整了组件代码，使其能在运行时动态解析 CSS 变量，生成可用的主题配置。</p>
+<ul>
+<li><a href="../cdm_resources/chat_response/case-5-3/" target="_blank">查看 AI 的回复与代码</a></li>
+</ul>
+<p><strong>效果图</strong>：</p>
+<p>将AI应用的代码部署到项目上，Echart图表效果如下：</p>
+<p><img alt="实际效果图" src="..//cdm_resources/images/case-5-3.png" /></p>
+<hr />
+<h3 id="6"><span id="case-6">6. 粒子系统</span><a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<p><strong>问题背景</strong>：
+为增强数据大屏的视觉冲击力，希望在静态背景基础上，加入动态的粒子飘浮效果。</p>
+<p><strong>参考文件</strong>：</p>
+<ul>
+<li><a href="../cdm_resources/file/MonitorBackground.js" target="_blank">@MonitorBackground.js</a> 基础背景组件</li>
+<li><a href="../cdm_resources/file/MonitorBackgroundRenderer.js" target="_blank">@MonitorBackgroundRenderer.js</a> 配套渲染器</li>
+</ul>
+<p><strong>提示词</strong>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>继承 MonitorBackground 控件，编写一个粒子飘浮的背景组件，以增强界面的视觉效果。
+</code></pre></div></td></tr></table></div>
+<p><strong>结果</strong>：</p>
+<p>AI 生成了 <code>ParticleBackground</code> 控件及其渲染器的核心代码。</p>
+<p><a href="../cdm_resources/chat_response/case-6-1/" target="_blank">查看AI的回复与代码</a></p>
+<p><strong>应用示例</strong>：</p>
+<p>在 XML 视图中，将粒子背景作为 <code>Monitor</code> 的一个背景层添加：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">&lt;cus:Monitor</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;id_Demo_Monitor&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;cus:backgrounds&gt;</span>
+<span class="w">        </span><span class="nt">&lt;cus:MonitorBackground</span>
+<span class="w">            </span><span class="na">backgroundColor=</span><span class="s">&quot;#0b1127&quot;</span>
+<span class="w">            </span><span class="na">zIndex=</span><span class="s">&quot;-9999&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;cus:ParticleBackground</span>
+<span class="w">            </span><span class="na">id=</span><span class="s">&quot;id_Demo_ParticleBackground&quot;</span>
+<span class="w">            </span><span class="na">zIndex=</span><span class="s">&quot;9999&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/cus:backgrounds&gt;</span>
+<span class="nt">&lt;/cus:Monitor&gt;</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>效果图</strong>：</p>
+<p><img alt="粒子背景效果图" src="..//cdm_resources/images/case-6-1.gif" /></p>
+<p><strong>分析与说明</strong>：</p>
+<p>AI 生成的控件主体逻辑（<code>ParticleBackground.js</code>）可直接使用，但在渲染器（<code>ParticleBackgroundRenderer.js</code>）部分存在偏差。由于受“继承”这一表述的影响，AI 尝试复用基类渲染器，导致生成的 DOM 结构不匹配实际布局需求。经手动调整后，渲染器被修正为独立生成容器与画布，并正确应用了 <code>zIndex</code> 与 <code>pointer-events</code> 等属性，最终实现了预期的视觉效果。</p>
+<p>修正代码如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">sap</span><span class="p">.</span><span class="nx">ui</span><span class="p">.</span><span class="nx">define</span><span class="p">([</span>
+<span class="w">    </span><span class="s2">&quot;cdm/ui/control/MonitorBackgroundRenderer&quot;</span>
+<span class="p">],</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">MonitorBackgroundRenderer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="s2">&quot;use strict&quot;</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">ParticleBackgroundRenderer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">({},</span><span class="w"> </span><span class="nx">MonitorBackgroundRenderer</span><span class="p">);</span>
+
+<span class="w">    </span><span class="nx">ParticleBackgroundRenderer</span><span class="p">.</span><span class="nx">render</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">rm</span><span class="p">,</span><span class="w"> </span><span class="nx">oControl</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// 原渲染代码无法复用，直接移除</span>
+<span class="w">        </span><span class="c1">// MonitorBackgroundRenderer.render(rm, oControl);</span>
+
+<span class="w">        </span><span class="c1">// 改为获取自身组件ID</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">sId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">oControl</span><span class="p">.</span><span class="nx">getId</span><span class="p">();</span>
+
+<span class="w">        </span><span class="c1">// Canvas外新增一层div用于隔绝基础框架的布局影响</span>
+<span class="w">        </span><span class="c1">// 同时将样式设置移到该DIV下</span>
+<span class="w">        </span><span class="nx">rm</span><span class="p">.</span><span class="nx">openStart</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">sId</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="kd">class</span><span class="p">(</span><span class="s2">&quot;cdm-particle-container&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;absolute&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;top&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;100%&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;100%&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;z-index&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">oControl</span><span class="p">.</span><span class="nx">getZIndex</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;pointer-events&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">oControl</span><span class="p">.</span><span class="nx">getInteractive</span><span class="p">()</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s2">&quot;auto&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">openEnd</span><span class="p">();</span>
+
+<span class="w">        </span><span class="c1">// 渲染粒子画布</span>
+<span class="w">        </span><span class="nx">rm</span><span class="p">.</span><span class="nx">openStart</span><span class="p">(</span><span class="s2">&quot;canvas&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">sId</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;-particleCanvas&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="kd">class</span><span class="p">(</span><span class="s2">&quot;cdm-particle-canvas&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">rm</span><span class="p">.</span><span class="nx">openEnd</span><span class="p">();</span>
+<span class="w">        </span><span class="nx">rm</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="s2">&quot;canvas&quot;</span><span class="p">);</span>
+
+<span class="w">        </span><span class="nx">rm</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">ParticleBackgroundRenderer</span><span class="p">;</span>
+<span class="p">});</span>
+</code></pre></div></td></tr></table></div>
 <hr />
 <h2 id="_3">附录<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
 <h3 id="_4">名称认识<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
