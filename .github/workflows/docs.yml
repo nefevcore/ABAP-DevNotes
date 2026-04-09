@@ -9,6 +9,11 @@ permissions:
   contents: read
   pages: write
   id-token: write
+
+# 强制使用 Node.js 24 运行所有 JavaScript Actions
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   deploy:
     environment:
@@ -16,15 +21,26 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/configure-pages@v5
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4  # checkout v5 已存在，但建议用 v4（更稳定）
+      
       - uses: actions/setup-python@v5
         with:
-          python-version: 3.x
-      - run: pip install zensical
-      - run: zensical build --clean
-      - uses: actions/upload-pages-artifact@v4
+          python-version: '3.x'  # 建议用引号包裹
+      
+      - name: Install dependencies
+        run: pip install zensical
+      
+      - name: Build documentation
+        run: zensical build --clean
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3  # 注意：upload-pages-artifact 最新是 v3
         with:
           path: site
-      - uses: actions/deploy-pages@v4
+      
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
         id: deployment

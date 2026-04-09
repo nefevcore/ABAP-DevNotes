@@ -4927,7 +4927,29 @@
 <li><strong><code>oControl.getId()</code> 的核心作用</strong>：当控件数据变化触发重渲染时，SAPUI5框架利用此ID精准定位到对应的DOM元素，从而实现高效的局部更新，而非重建整个控件。</li>
 </ul>
 <p>其重渲染机制可概括为：</p>
-<div class="codehilite"><pre><span></span><code>```mermaid
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code>```mermaid
 graph TD
     subgraph &quot;数据变更&quot;
         A[绑定数据更新] --&gt; B[触发重渲染流程]
@@ -4950,8 +4972,7 @@ graph TD
     style F fill:#f3e5f5
     style G fill:#e8f5e8
 ```
-</code></pre></div>
-
+</code></pre></div></td></tr></table></div>
 <ul>
 <li><strong>ID生成规则</strong>：SAPUI5会自动为每个控件生成唯一的ID，通常基于控件层次结构，如 <code>__component0---app--myControl</code>，开发者无需关心ID的具体生成规则，直接通过oControl.getId()获取即可。</li>
 </ul>
@@ -10022,8 +10043,8 @@ graph TD
 <p><strong>目标</strong>：快速生成一个与 CDM 主题系统对齐的 ECharts 主题配置 JSON 文件，用于初步预览效果。</p>
 <p><strong>参考文件</strong>：</p>
 <ul>
-<li><code>@cdm-variables.css</code>：项目已定义好的 CSS 主题变量。</li>
-<li><code>@echart-theme-config.json</code>：从 ECharts 官方导出的主题配置模板文件。</li>
+<li><a href="../cdm_resources/file/cdm-variables.css" target="_blank">@cdm-variables.css</a>：项目已定义好的 CSS 主题变量</li>
+<li><a href="../cdm_resources/file/echart-theme-config.json.txt" target="_blank">@echart-theme-config.json</a>：从 ECharts 官方导出的主题配置模板文件</li>
 </ul>
 <p><strong>提示词</strong>：</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>请参考 @cdm-variables.css 中定义的 CSS 变量，将 @echart-theme-config.json 模板中的可配置项都替换为已设定好的具体颜色值。
@@ -10040,8 +10061,8 @@ AI 生成了一个以 CSS 变量形式引用的 ECharts 主题配置文件。</p
 <p><strong>目标</strong>：将上一步生成的、包含 CSS 变量的主题配置，转换为 ECharts 可以直接解析的纯 JSON 格式，以便在项目中实际加载使用。</p>
 <p><strong>参考文件</strong>：</p>
 <ul>
-<li><code>@cdm-variables.css</code>：项目已定义好的 CSS 主题变量。</li>
-<li><code>@echart-theme.json</code>：从 ECharts 官网下载的主题 JSON 文件（非导出，格式不同）。</li>
+<li><a href="../cdm_resources/file/cdm-variables.css" target="_blank">@cdm-variables.css</a>：项目已定义好的 CSS 主题变量</li>
+<li><a href="../cdm_resources/file/echart-theme.json.txt" target="_blank">@echart-theme.json</a>：从 ECharts 官网下载的主题 JSON 文件（非导出，格式不同）</li>
 </ul>
 <p><strong>提示词</strong>：</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>请参考 @cdm-variables.css 中的 CSS 变量值，将 @echart-theme.json 中的可配置项，替换为对应的参数变量（如 `var(--cdm-color-primary)`）。
@@ -10055,7 +10076,7 @@ AI 生成了一个 ECharts 可直接使用的 JSON 主题文件。</p>
 <p><strong>目标</strong>：解决 ECharts 在运行时无法直接解析 CSS 变量的问题。我们需要在 JavaScript 代码中，将 CSS 变量动态解析为具体像素值，然后生成主题配置对象。</p>
 <p><strong>参考文件</strong>：</p>
 <ul>
-<li><code>@EchartContainer.js</code>：尚未实现主题动态解析功能的 ECharts 容器控件代码。</li>
+<li><a href="../cdm_resources/file/EchartContainer.js" target="_blank">@EchartContainer.js</a>：尚未实现主题动态解析功能的 ECharts 容器控件代码。</li>
 </ul>
 <p><strong>提示词</strong>：</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>ECharts 的主题配置中使用了 var() 函数，这在运行时不会生效。请修改 @EchartContainer.js 中的代码，在初始化 ECharts 实例前，通过 JavaScript 获取页面根元素的计算样式，将主题配置中的所有 CSS 变量（如 `var(--cdm-color-primary)`）解析为实际的 RGB 或颜色字符串值，再传递给 ECharts。
