@@ -3624,6 +3624,45 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. 单页面模拟多页面切换
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. 单页面模拟多页面切换">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 生成第一版代码
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 根据实际效果进行调整
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4571,6 +4610,45 @@
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. 单页面模拟多页面切换
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. 单页面模拟多页面切换">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 生成第一版代码
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 根据实际效果进行调整
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -10109,13 +10187,144 @@ AI 调整了组件代码，使其能在运行时动态解析 CSS 变量，生成
 <span class="p">});</span>
 </code></pre></div></td></tr></table></div>
 <hr />
+<h3 id="7"><span id="case-7">7. 单页面模拟多页面切换</span><a class="headerlink" href="#7" title="Permanent link">&para;</a></h3>
+<p><strong>问题背景</strong>：
+在单个屏幕内需要展示多个页面内容，通过模拟水平切换效果，实现类似多页面浏览的交互体验。</p>
+<h4 id="71">7.1 生成第一版代码<a class="headerlink" href="#71" title="Permanent link">&para;</a></h4>
+<p><strong>参考文件</strong>：</p>
+<ul>
+<li><a href="../cdm_resources/file/Monitor.js" target="_blank">@Monitor.js</a></li>
+<li><a href="../cdm_resources/file/MonitorRenderer.js" target="_blank">@MonitorRenderer.js</a></li>
+<li><a href="../cdm_resources/file/Home.view.xml" target="_blank">@Home.view.xml</a></li>
+<li><a href="../cdm_resources/file/Home.controller.js" target="_blank">@Home.controller.js</a></li>
+</ul>
+<p><strong>提示词</strong>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code>基于SAPUI5自定义控件模板（ @Monitor.js @MonitorRenderer.js ），设计一个新的自定义控件：
+
+1. 该控件用于在单页面中模拟多页面水平切换
+2. 控件内容为多个页面（ sap.ui.core.mvc.View ）
+3. 通过样式类 CdmView、CdmViewShow、CdmViewHide 控制页面切换
+4. 支持自动切换，同时提供半透明按钮或悬停时显示的按钮用于手动切换
+5. 参考视图示例（ @Home.view.xml ）和控制器代码（ @Home.controller.js ）
+</code></pre></div></td></tr></table></div>
+<p><strong>结果</strong>：
+AI 生成了 <code>MonitorViewSwitcher</code> 控件及其渲染器的核心代码。</p>
+<p><a href="../cdm_resources/chat_response/case-7-1/" target="_blank">查看AI的回复与代码</a></p>
+<p><strong>分析与调整</strong>：
+AI 生成的控件主体逻辑可直接使用，但渲染器代码存在偏差。由于受“继承”表述影响，AI 尝试复用基类渲染器，导致 DOM 结构不符合布局需求。经手动调整，渲染器改为独立生成容器与画布，并正确配置 <code>zIndex</code> 与 <code>pointer-events</code> 等属性，最终达到预期视觉效果。</p>
+<p>修正后的渲染器代码如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">sap</span><span class="p">.</span><span class="nx">ui</span><span class="p">.</span><span class="nx">define</span><span class="p">([</span>
+<span class="w">    </span><span class="s2">&quot;cdm/ui/control/MonitorBackgroundRenderer&quot;</span>
+<span class="p">],</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">MonitorBackgroundRenderer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="s2">&quot;use strict&quot;</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">ParticleBackgroundRenderer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">({},</span><span class="w"> </span><span class="nx">MonitorBackgroundRenderer</span><span class="p">);</span>
+
+<span class="w">    </span><span class="nx">ParticleBackgroundRenderer</span><span class="p">.</span><span class="nx">render</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">rm</span><span class="p">,</span><span class="w"> </span><span class="nx">oControl</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">sId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">oControl</span><span class="p">.</span><span class="nx">getId</span><span class="p">();</span>
+
+<span class="w">        </span><span class="nx">rm</span><span class="p">.</span><span class="nx">openStart</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">sId</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="kd">class</span><span class="p">(</span><span class="s2">&quot;cdm-particle-container&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;absolute&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;top&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;100%&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;100%&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;z-index&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">oControl</span><span class="p">.</span><span class="nx">getZIndex</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;pointer-events&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">oControl</span><span class="p">.</span><span class="nx">getInteractive</span><span class="p">()</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s2">&quot;auto&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">openEnd</span><span class="p">();</span>
+
+<span class="w">        </span><span class="nx">rm</span><span class="p">.</span><span class="nx">openStart</span><span class="p">(</span><span class="s2">&quot;canvas&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">sId</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;-particleCanvas&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="kd">class</span><span class="p">(</span><span class="s2">&quot;cdm-particle-canvas&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">rm</span><span class="p">.</span><span class="nx">openEnd</span><span class="p">();</span>
+<span class="w">        </span><span class="nx">rm</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="s2">&quot;canvas&quot;</span><span class="p">);</span>
+
+<span class="w">        </span><span class="nx">rm</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">ParticleBackgroundRenderer</span><span class="p">;</span>
+<span class="p">});</span>
+</code></pre></div></td></tr></table></div>
+<h4 id="72">7.2 根据实际效果进行调整<a class="headerlink" href="#72" title="Permanent link">&para;</a></h4>
+<p><strong>参考文件</strong>：</p>
+<ul>
+<li><a href="../cdm_resources/file/MonitorViewSwitcher.js" target="_blank">@MonitorViewSwitcher.js</a> 前面生成的代码</li>
+</ul>
+<p><strong>提示词</strong>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code>@MonitorViewSwitcher.js
+
+为了让页面切换更加符合直觉和沉浸体验，应该采用三段式样式变化，实现以下页面变化：
+
+1. 切换到下一页
+   旧页： cdm-view-show -&gt; cdm-view-hide-left -&gt; cdm-view-hide 
+   新页： cdm-view-hide -&gt; cdm-view-hide-right -&gt; cdm-view-show
+
+2. 切换到上一页
+   旧页： cdm-view-show -&gt; cdm-view-hide-right -&gt; cdm-view-hide 
+   新页： cdm-view-hide -&gt; cdm-view-hide-left -&gt; cdm-view-show
+</code></pre></div></td></tr></table></div>
+<p><strong>结果</strong>：
+AI 更新了 <code>MonitorViewSwitcher</code> 控件的页面切换逻辑，实现了三段式样式变化。</p>
+<p><a href="../cdm_resources/chat_response/case-7-2/" target="_blank">查看AI的回复与代码</a></p>
+<p><strong>最终效果图</strong>：
+<img alt="单页面模拟多页面切换效果图" src="..//cdm_resources/images/case-7-2.gif" /></p>
+<blockquote>
+<p>注：为便于演示，视频中采用按钮点击方式触发切换，实际环境中为自动切换。</p>
+</blockquote>
+<hr />
 <h2 id="_3">附录<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
 <h3 id="_4">名称认识<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong><code>cdm</code></strong>：<strong>Custom Data Monitor</strong>（自定义数据监控大屏）。</li>
 </ul>
 <h3 id="_5">项目文件<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
-<p><a href=".././cdm_resources/file/cdm-2026-02-280901.zip">项目文件</a></p>
+<p><a href=".././cdm_resources/file/cdm-2026-03-260228.zip">项目文件</a></p>
 
 
 
