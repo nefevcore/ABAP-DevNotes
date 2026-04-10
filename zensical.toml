@@ -3,6 +3,7 @@ site_name = "SAP开发笔记"
 site_description = "SAP开发技术文档与笔记"
 site_author = "来一点风栗"
 site_url = "https://nefevcore.github.io/ABAP-DevNotes/"
+base_url = "/ABAP-DevNotes/"
 
 # 导航配置 - 适配新目录结构
 nav = [
