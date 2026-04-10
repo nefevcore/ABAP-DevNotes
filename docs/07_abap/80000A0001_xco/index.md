@@ -54,7 +54,7 @@ DATA(lv_uuid_c32) = xco=>uuid( )->as( xco_uuid=>format-c32 )->value. " STRING
 
 ## 域值
 
-> 参考[基于XCO的域值取值工具](/07_abap/80010A0007_zcl_text.md#xco_1)
+> 参考[基于XCO的域值取值工具](/ABAP-DevNotes/07_abap/80010A0007_zcl_text.md#xco_1)
 
 ## JSON
 

@@ -317,4 +317,4 @@ ENDCLASS.
 
 </details>
 
-> 参考：[RAP开发流程示例](/09_cloud/80030C0002_rap_dev_demo/)
+> 参考：[RAP开发流程示例](/ABAP-DevNotes/09_cloud/80030C0002_rap_dev_demo/)
