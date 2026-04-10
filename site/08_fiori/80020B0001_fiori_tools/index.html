@@ -3311,7 +3311,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../80020B0008_fiori_cdm.md" class="md-nav__link">
+      <a href="../80020B0008_fiori_cdm/" class="md-nav__link">
         
   
   
@@ -3956,7 +3956,7 @@
       <a href="../.." class="md-path__link">
         
   <span class="md-ellipsis">
-    技术文档库
+    概述
   </span>
 
       </a>
@@ -4028,10 +4028,10 @@
 <p>项目上总结的一套工具，后续都将使用该工具的代码辅助说明：</p>
 <ul>
 <li>
-<p><a href=".././fiori/lib/abap/ZCL_BC_ODATA_HELPER.abap.txt">ZCL_BC_ODATA_HELPER</a></p>
+<p><a href="lib/abap/ZCL_BC_ODATA_HELPER.abap.txt">ZCL_BC_ODATA_HELPER</a></p>
 </li>
 <li>
-<p><a href=".././fiori/lib/abap/LCL_OSQL_VISTR.abap.txt">LCL_OSQL_VISTR</a>，为上面的本地类</p>
+<p><a href="lib/abap/LCL_OSQL_VISTR.abap.txt">LCL_OSQL_VISTR</a>，为上面的本地类</p>
 </li>
 </ul>
 <h3 id="_3">聚合查询增强<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
@@ -4043,7 +4043,7 @@
 </blockquote>
 <p>权衡之下，项目选择对齐标准，因此通过增强来复用标准处理。</p>
 <p>首先在类 <strong>ZCL_BC_ODATA_HELPER</strong> 中定义全局参数 <strong>GT_BUSINESS_KEY</strong> ，然后对类 <strong>CL_SADL_MDP_DELEGATOR</strong> 的两方法 <strong>GET_ENTITY_LOAD</strong> / <strong>GET_ENTITY_LOAD_BY_ID</strong> ，实施Post-Exit增强：
-<img alt="Alt text" src="../../08_fiori/images/1702951958564.jpg" /></p>
+<img alt="Alt text" src="images/img1.jpg" /></p>
 <p>增强内加入下面代码：</p>
 <details open>
   <summary>示例代码</summary>
@@ -4205,7 +4205,7 @@
 <h2 id="_5">前端<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <p>前端问题比较零碎，并没有能影响到实施的核心问题，因此本节主要对常见需求，以及基于这些需求封装出来的工具，进行说明。</p>
 <h3 id="_6">通用<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
-<p><a href=".././fiori/lib/js/Common.js">Common.js</a>，该工具依赖于controller，需要在onInit方法中初始化，功能包括：i18n取值，导航，加锁解锁（主要是功能前后要求转圈等待）。</p>
+<p><a href="lib/js/Common.js">Common.js</a>，该工具依赖于controller，需要在onInit方法中初始化，功能包括：i18n取值，导航，加锁解锁（主要是功能前后要求转圈等待）。</p>
 <details open>
   <summary>示例代码</summary>
 
@@ -4233,7 +4233,7 @@
 </details>
 
 <h3 id="_7">消息处理<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
-<p><a href=".././fiori/lib/js/Message.js">Message.js</a>，该工具封装标准的MessageBox，改为异步处理。</p>
+<p><a href="lib/js/Message.js">Message.js</a>，该工具封装标准的MessageBox，改为异步处理。</p>
 <details open>
   <summary>示例代码</summary>
 
@@ -4313,7 +4313,7 @@
 </details>
 
 <h3 id="odata">ODATA处理<a class="headerlink" href="#odata" title="Permanent link">&para;</a></h3>
-<p><a href=".././fiori/lib/js/Service.js">Service.js</a>，该工具主要将ODATA改为异步处理，同时加入等待逻辑，异常处理逻辑。</p>
+<p><a href="lib/js/Service.js">Service.js</a>，该工具主要将ODATA改为异步处理，同时加入等待逻辑，异常处理逻辑。</p>
 <details open>
   <summary>示例代码</summary>
 
@@ -4429,7 +4429,7 @@
 </details>
 
 <h3 id="_8">搜索帮助处理<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
-<p><a href=".././fiori/lib/js/ValueHelper.js">ValueHelper.js</a>，该工具封装搜索帮助处理。</p>
+<p><a href="lib/js/ValueHelper.js">ValueHelper.js</a>，该工具封装搜索帮助处理。</p>
 <details open>
   <summary>示例代码</summary>
 
@@ -4469,7 +4469,7 @@
 </details>
 
 <h3 id="_9">弹窗处理<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
-<p><a href=".././fiori/lib/js/DialogHelper.js">DialogHelper.js</a>，该工具封装弹窗处理。</p>
+<p><a href="lib/js/DialogHelper.js">DialogHelper.js</a>，该工具封装弹窗处理。</p>
 <details open>
   <summary>示例代码</summary>
 
@@ -4499,7 +4499,7 @@
 </details>
 
 <h3 id="smarttable">SmartTable处理<a class="headerlink" href="#smarttable" title="Permanent link">&para;</a></h3>
-<p><a href=".././fiori/lib/js/SmartTableHelper.js">SmartTableHelper.js</a>，该工具封装SmartTable常用处理。</p>
+<p><a href="lib/js/SmartTableHelper.js">SmartTableHelper.js</a>，该工具封装SmartTable常用处理。</p>
 <blockquote>
 <p>2025年更新，实际上用起来场景不多，我自己也不怎么用这个</p>
 </blockquote>
@@ -4609,8 +4609,8 @@ DEPLOY_PASSWORD=*********
 </details>
 
 <h2 id="_11">源码<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
-<p><a href=".././fiori/lib/lib-ui5.zip">lib-ui5.zip</a></p>
-<p><a href=".././fiori/lib/lib-abap.zip">lib-abap.zip</a></p>
+<p><a href="lib/lib-ui5.zip">lib-ui5.zip</a></p>
+<p><a href="lib/lib-abap.zip">lib-abap.zip</a></p>
 
 
 
